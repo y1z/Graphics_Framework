@@ -3,10 +3,6 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/matrix_access.hpp"
 
-cTransform::cTransform()
-{
-}
-
 void
 cTransform::moveTransform(float x, float y, float z, float w, float deltaTime)
 {
@@ -15,11 +11,18 @@ cTransform::moveTransform(float x, float y, float z, float w, float deltaTime)
   m_transformMatrix = glm::translate(m_transformMatrix, moveVector);
 }
 
-bool
+cTransform& 
+cTransform::operator=(const cTransform& other)
+{
+  this->m_transformMatrix = other.m_transformMatrix;
+
+  return *this;
+}
+
+void
 cTransform::Init() noexcept
 {
   m_transformMatrix = glm::identity<glm::mat4>();
-  return true;
 }
 
 void

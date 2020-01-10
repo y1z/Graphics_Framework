@@ -15,8 +15,10 @@ public:
 
   ~cTransform() = default;
 public:
+  cTransform& operator =(const cTransform& other);
+public:
 
-  bool 
+  void
     Init() noexcept;
 
   /*! this will move the current transform matrix in a direction */

@@ -81,7 +81,7 @@ ID3D11SamplerState* g_pSamplerLinear = NULL;
 glm::mat4x4 g_World(1.0f);
 glm::mat4x4 g_View(1.0f);
 glm::mat4x4 g_Projection(1.0f);
-glm::vec4 g_vMeshColor(0.7f, 0.7f, 0.7f, 1.0f);
+glm::vec4 g_MeshColor(0.7f, 0.7f, 0.7f, 1.0f);
 
 static const std::filesystem::path g_initPath = std::filesystem::current_path();
 //--------------------------------------------------------------------------------------
@@ -200,8 +200,6 @@ HRESULT CompileShaderFromFile(const wchar_t* szFileName, LPCSTR szEntryPoint, LP
 #endif
 
   ID3DBlob* pErrorBlob;
-  /*hr = D3DX11CompileFromFile(szFileName, NULL, NULL, szEntryPoint, szShaderModel,
-    dwShaderFlags, 0, NULL, ppBlobOut, &pErrorBlob, NULL);*/
 
   hr = D3DCompileFromFile(szFileName,
     nullptr,
@@ -552,7 +550,7 @@ InitDevice()
 
   // Initialize the view matrix
   glm::vec3 Eye(0.0f, 3.0f, -6.0f);
-  glm::vec3 At(0.0f, 1.0f, 0.0f);
+  glm::vec3 At(0.0f, 0.0f, -1.0f);
   glm::vec3 Up(0.0f, 1.0f, 0.0f);
   g_View = glm::lookAtLH(Eye, At, Up);
 
@@ -660,9 +658,9 @@ void Render()
   g_World = glm::rotate(glm::identity<glm::mat4x4>(), (t), glm::vec3(0.0f, 1.0f, 0.0f));
 
   // Modify the color
-  g_vMeshColor.x = (sinf(t * 1.0f) + 1.0f) * 0.5f;
-  g_vMeshColor.y = (cosf(t * 3.0f) + 1.0f) * 0.5f;
-  g_vMeshColor.z = (sinf(t * 5.0f) + 1.0f) * 0.5f;
+  g_MeshColor.x = (sinf(t * 1.0f) + 1.0f) * 0.5f;
+  g_MeshColor.y = (cosf(t * 3.0f) + 1.0f) * 0.5f;
+  g_MeshColor.z = (sinf(t * 5.0f) + 1.0f) * 0.5f;
 
   //
   // Clear the back buffer
@@ -680,7 +678,7 @@ void Render()
   //
   CBChangesEveryFrame cb;
   cb.mWorld = glm::transpose(g_World);
-  cb.vMeshColor = g_vMeshColor;
+  cb.vMeshColor = g_MeshColor;
   g_pImmediateContext->UpdateSubresource(g_pCBChangesEveryFrame, 0, NULL, &cb, 0, 0);
 
   //
