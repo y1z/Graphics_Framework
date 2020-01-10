@@ -183,11 +183,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\BaseCamera.cpp" />
+    <ClCompile Include="src\cTransform.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\BaseCamera.h" />
+    <ClInclude Include="include\cTransform.h" />
+    <ClInclude Include="include\en_defs.h" />
     <ClInclude Include="include\helperFucs.h" />
     <ClInclude Include="include\MacroslessWindow.h" />
+    <ClInclude Include="include\MathTypes.h" />
     <ClInclude Include="include\Resource.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
