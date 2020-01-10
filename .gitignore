@@ -384,3 +384,6 @@ healthchecksdb
 MigrationBackup/
 
 # End of https://www.gitignore.io/api/c++,visualstudio
+
+# custom file 
+_don't use_ GraphcisFramework_old_/
