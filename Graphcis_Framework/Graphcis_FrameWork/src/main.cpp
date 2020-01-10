@@ -10,7 +10,6 @@
 //#include <d3dx11.h>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
-//#include <xnamath.h>
 #include "Resource.h"
 
 //--------------------------------------------------------------------------------------
@@ -78,6 +77,7 @@ ID3D11Buffer* g_pCBChangeOnResize = NULL;
 ID3D11Buffer* g_pCBChangesEveryFrame = NULL;
 ID3D11ShaderResourceView* g_pTextureRV = NULL;
 ID3D11SamplerState* g_pSamplerLinear = NULL;
+
 glm::mat4x4 g_World(1.0f);
 glm::mat4x4 g_View(1.0f);
 glm::mat4x4 g_Projection(1.0f);
