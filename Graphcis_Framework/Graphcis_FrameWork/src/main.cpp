@@ -26,6 +26,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "DirectXTK/include/DDSTextureLoader.h"
 #include "DirectXTK/include/WICTextureLoader.h"
+#include "enPerspectiveCamera.h"
 
 namespace dx = DirectX;
 //--------------------------------------------------------------------------------------
@@ -77,6 +78,9 @@ ID3D11Buffer* g_pCBChangeOnResize = NULL;
 ID3D11Buffer* g_pCBChangesEveryFrame = NULL;
 ID3D11ShaderResourceView* g_pTextureRV = NULL;
 ID3D11SamplerState* g_pSamplerLinear = NULL;
+
+
+enPerspectiveCamera my_camera;
 
 glm::mat4x4 g_World(1.0f);
 glm::mat4x4 g_View(1.0f);
@@ -545,6 +549,16 @@ InitDevice()
   if (FAILED(hr))
     return hr;
 
+  sPerspectiveCameraDesc descriptorCamera;
+  descriptorCamera.upDir = enVector3(0.0f, 1.0f, 0.0f);
+  descriptorCamera.lookAtPosition = enVector3(0.0f, 0.0f, -1.0f);
+  descriptorCamera.rightDir = enVector3(1.0f, 0.0f, 0.0f);
+  descriptorCamera.height = height;
+  descriptorCamera.width = width;
+
+  my_camera.init(descriptorCamera);
+
+
   // Initialize the world matrices
   g_World = glm::identity<glm::mat4x4>();
 
@@ -555,7 +569,8 @@ InitDevice()
   g_View = glm::lookAtLH(Eye, At, Up);
 
   CBNeverChanges cbNeverChanges;
-  cbNeverChanges.mView = glm::transpose(g_View);
+  cbNeverChanges.mView = glm::transpose(my_camera.getView());
+
 
   g_pImmediateContext->UpdateSubresource(g_pCBNeverChanges, 0, NULL, &cbNeverChanges, 0, 0);
 
@@ -569,7 +584,7 @@ InitDevice()
     100.0f);
 
   CBChangeOnResize cbChangesOnResize;
-  cbChangesOnResize.mProjection = glm::transpose(g_Projection);
+  cbChangesOnResize.mProjection = glm::transpose(my_camera.getProjection());
   g_pImmediateContext->UpdateSubresource(g_pCBChangeOnResize, 0, NULL, &cbChangesOnResize, 0, 0);
 
   return S_OK;
