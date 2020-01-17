@@ -230,7 +230,7 @@ HRESULT CompileShaderFromFile(const wchar_t* szFileName, LPCSTR szEntryPoint, LP
 
 
 
-bool 
+bool
 InitPreDevice()
 {
   HMODULE Hmodule;
@@ -552,7 +552,6 @@ InitDevice()
   sPerspectiveCameraDesc descriptorCamera;
   descriptorCamera.upDir = enVector3(0.0f, 1.0f, 0.0f);
   descriptorCamera.lookAtPosition = enVector3(0.0f, 0.0f, -1.0f);
-  descriptorCamera.rightDir = enVector3(1.0f, 0.0f, 0.0f);
   descriptorCamera.height = height;
   descriptorCamera.width = width;
 
@@ -577,7 +576,8 @@ InitDevice()
   // Initialize the projection matrix
   float TempWidth = width;
   float TempHeight = height;
-  g_Projection = glm::perspectiveFovLH(dx::XM_PIDIV4,
+
+  g_Projection = glm::perspectiveFovLH(glm::quarter_pi<float>(),
     TempWidth,
     TempHeight,
     0.01f,
@@ -594,7 +594,7 @@ InitDevice()
 //--------------------------------------------------------------------------------------
 // Clean up the objects we've created
 //--------------------------------------------------------------------------------------
-void 
+void
 CleanupDevice()
 {
   /*Uninitialized the comm library*/
@@ -639,6 +639,39 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_DESTROY:
     PostQuitMessage(0);
     break;
+
+  case WM_KEYDOWN:
+  {
+
+    if (wParam == (WPARAM)'W')
+    {
+      my_camera.TranslateRelative(0.0f, 0.0f, 1.0f);
+    }
+
+    if (wParam == (WPARAM)'S')
+    {
+      my_camera.TranslateRelative(0.0f, 0.0f,-1.0f);
+    }
+    if (wParam == (WPARAM)'D')
+
+    {
+      my_camera.TranslateRelative(1.0f, 0.0f, 0.0f);
+    }
+    if (wParam == (WPARAM)'A')
+    {
+      my_camera.TranslateRelative(-1.0f, 0.0f, 0.0f);
+    }
+
+
+    CBNeverChanges cbNeverChanges;
+    cbNeverChanges.mView = glm::transpose(my_camera.getView());
+    g_pImmediateContext->UpdateSubresource(g_pCBNeverChanges, 0, NULL, &cbNeverChanges, 0, 0);
+      
+    CBChangeOnResize cbChangesOnResize;
+    cbChangesOnResize.mProjection = glm::transpose(my_camera.getProjection());
+    g_pImmediateContext->UpdateSubresource(g_pCBChangeOnResize, 0, NULL, &cbChangesOnResize, 0, 0);
+  }
+  break;
 
   default:
     return DefWindowProc(hWnd, message, wParam, lParam);

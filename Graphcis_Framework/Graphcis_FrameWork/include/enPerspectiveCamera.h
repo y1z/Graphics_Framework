@@ -6,7 +6,7 @@
 
 /**
 * @brief : the descriptor for this camera, should only require that
-*          you fill out the following 'upDir' , 'lookAtPosition' ,'rightDir', 'frontDir','height' and 'width'
+*          you fill out the following 'upDir' , 'lookAtPosition' ,'frontDir','height' and 'width'
 *
 */
 struct sPerspectiveCameraDesc
@@ -19,9 +19,6 @@ struct sPerspectiveCameraDesc
 
   /** describes the 'Up' direction relative to the camera*/
   enVector3 upDir;
-
-  /** describes the 'right' direction relative to the camera*/
-  enVector3 rightDir;
 
   /** describes how tall the projection is*/
   float height = -1337.0f;
