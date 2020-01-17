@@ -25,7 +25,7 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "DirectXTK/include/DDSTextureLoader.h"
-#include"DirectXTK/include/WICTextureLoader.h"
+#include "DirectXTK/include/WICTextureLoader.h"
 
 namespace dx = DirectX;
 //--------------------------------------------------------------------------------------

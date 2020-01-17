@@ -1,6 +1,4 @@
 #pragma once
-#include "glm/glm.hpp"
-
 // TODO : Remove when you make your own math library
 #define USE_GLM_MATH  1
 

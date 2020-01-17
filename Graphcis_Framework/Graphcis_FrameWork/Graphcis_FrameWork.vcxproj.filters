@@ -21,7 +21,10 @@
     <ClCompile Include="src\cTransform.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\BaseCamera.cpp">
+    <ClCompile Include="src\enPerspectiveCamera.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BasePerspectiveCamera.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,7 +47,10 @@
     <ClInclude Include="include\MathTypes.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\BaseCamera.h">
+    <ClInclude Include="include\enPerspectiveCamera.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BasePerspectiveCamera.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

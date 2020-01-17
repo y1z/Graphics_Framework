@@ -183,13 +183,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\BaseCamera.cpp" />
+    <ClCompile Include="src\BasePerspectiveCamera.cpp" />
     <ClCompile Include="src\cTransform.cpp" />
+    <ClCompile Include="src\enPerspectiveCamera.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\BaseCamera.h" />
+    <ClInclude Include="include\BasePerspectiveCamera.h" />
     <ClInclude Include="include\cTransform.h" />
+    <ClInclude Include="include\enPerspectiveCamera.h" />
     <ClInclude Include="include\en_defs.h" />
     <ClInclude Include="include\helperFucs.h" />
     <ClInclude Include="include\MacroslessWindow.h" />
