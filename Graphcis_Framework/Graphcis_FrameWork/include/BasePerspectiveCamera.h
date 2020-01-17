@@ -61,6 +61,9 @@ public:
   enVector3
     getRight() const;
 
+  enVector3
+    getDirction() const;
+
   /**
   * @returns : the fov of the camera in radians
   * @bug : no known bugs.
@@ -95,6 +98,12 @@ public:
  */
   float
     getNear() const;
+
+  float
+    getHorizontalAngle() const;
+
+  float
+    getVerticalAngle() const;
 
   /**
   * @returns : the speed of the camera.
@@ -202,6 +211,23 @@ public:
     setRight(const enVector3& newRight);
 
   /**
+  * @brief :sets the direction which the camera is looking at of the camera
+  * @bug : no known bugs.
+  * @param x , y ,z [in] is the new up direction for the camera.
+  */
+  void
+    setDirection(float x, float y, float z);
+
+  /**
+  * @brief :sets the direction  of the camera
+  * @bug : no known bugs.
+  * @param newUp[in] is the new up direction for the camera.
+  */
+
+  void
+    setDirection(const enVector3& newDirection);
+
+  /**
   * @brief :sets the 'height' direction of the camera
   * @bug : no known bugs.
   * @param newHeight [in] is the new up direction for the camera.
@@ -232,6 +258,31 @@ public:
   */
   void
     setNear(float newNear);
+/**
+* @brief : set the horizontal  angle in degrees
+*/
+  void
+    setHorzantalAngleDeg(float newAngleInDegrees);
+/**
+* @brief : set the horizontal  angle in  radians
+*/
+
+  void
+    setHorzantalAngleRad(float newAngleInRadians);
+
+
+/**
+* @brief : set the vertical angle in degrees
+*/
+  void//vertical
+    setVerticalAngleDeg(float newAngleInDegrees);
+
+/**
+* @brief : set the vertical angle in  radians
+*/
+
+  void
+    setVerticalAngleRad(float newAngleInRadians);
 
   /**
   * @brief :sets how fast the camera is.
@@ -240,6 +291,7 @@ public:
   */
   void
     setSpeed(float newSpeed);
+
 
 protected:
   /**
@@ -270,6 +322,8 @@ protected:
   * @brief :it's the direction that's to the cameras right
   */
   enVector3 m_right;
+
+  enVector3 m_direction;
   /**
   *  @brief : used to control how wide the 'lens' of the camera is.
   */
@@ -290,6 +344,10 @@ protected:
     * @brief : determines how close an object can get before it ignores the object.
     */
   float m_near;
+
+  float m_horizantalAngle;
+
+  float m_verticalAngle;
   /**
   *  @brief : used to control how fast the camera moves in world-space.
   */

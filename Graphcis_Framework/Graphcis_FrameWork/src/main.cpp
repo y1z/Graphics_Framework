@@ -7,7 +7,6 @@
 //--------------------------------------------------------------------------------------
 #include "MacroslessWindow.h"
 #include <d3d11.h>
-//#include <d3dx11.h>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 #include "Resource.h"
@@ -624,7 +623,8 @@ CleanupDevice()
 //--------------------------------------------------------------------------------------
 // Called every time the application receives a message
 //--------------------------------------------------------------------------------------
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK 
+WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
   PAINTSTRUCT ps;
   HDC hdc;
@@ -661,6 +661,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
       my_camera.TranslateRelative(-1.0f, 0.0f, 0.0f);
     }
+
+    if (wParam == VK_UP) {
+      //my_camera.rotateFrontVectorDeg(1.0f);
+
+      my_camera.rotateVector(10.0f, 0.0f, 0.0f);
+    }
+
+    if (wParam == VK_DOWN) {
+      my_camera.rotateVector(-10.0f, 0.0f, 0.0f);
+    }
+
 
 
     CBNeverChanges cbNeverChanges;

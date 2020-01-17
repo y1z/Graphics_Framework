@@ -26,6 +26,11 @@ struct sPerspectiveCameraDesc
   /** describes how wide the projection is*/
   float width = -1337.0f;
 
+  float horizantalAngle = 3.1415f;
+
+  //vertical
+  float verticalAngle = 0.00f;
+
   /** describes the field of view*/
   float fov = 1.04719f;
 };
@@ -49,10 +54,18 @@ public:// functions
 
   /**
   * @brief : move the camera relative to it's own directions(aka 'up' , 'front' ,'right')
-  * @param : descriptor[in] used to give the camera user defined values
+  * @param : x [in]  how much in 'x' to translate
+  * @param : y [in]  how much in 'y' to translate
+  * @param : z [in]  how much in 'z' to translate
   */
   void
     TranslateRelative(float x, float y, float z);
+
+  void
+    rotateVector(float x, float y, float z,float angleInDegrees = 10.0f );
+
+  void
+    rotateFrontVectorDeg(float angleInDegrees);
 private:// functions
 
   /**

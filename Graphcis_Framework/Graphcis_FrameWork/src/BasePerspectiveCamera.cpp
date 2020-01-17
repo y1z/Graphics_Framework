@@ -58,6 +58,12 @@ BasePerspectiveCamera::getRight() const
   return m_right;
 }
 
+enVector3 
+BasePerspectiveCamera::getDirction() const
+{
+  return m_direction;
+}
+
 float 
 BasePerspectiveCamera::getFov() const
 {
@@ -86,6 +92,18 @@ float
 BasePerspectiveCamera::getNear() const
 {
   return m_near;
+}
+
+float 
+BasePerspectiveCamera::getHorizontalAngle() const
+{
+  return m_horizantalAngle;
+}
+
+float 
+BasePerspectiveCamera::getVerticalAngle() const
+{
+  return m_verticalAngle;
 }
 
 float 
@@ -167,6 +185,18 @@ BasePerspectiveCamera::setRight(const enVector3& newRight)
 }
 
 void 
+BasePerspectiveCamera::setDirection(float x, float y, float z)
+{
+  m_direction = enVector3(x, y, z);
+}
+
+void
+BasePerspectiveCamera::setDirection(const enVector3& newDirection)
+{
+  m_direction = newDirection;
+}
+
+void 
 BasePerspectiveCamera::setHeight(float newHeight)
 {
   m_height = newHeight;
@@ -188,6 +218,30 @@ void
 BasePerspectiveCamera::setNear(float newNear)
 {
   m_near = newNear;
+}
+
+void 
+BasePerspectiveCamera::setHorzantalAngleDeg(float newAngleInDegrees)
+{
+  m_horizantalAngle = glm::radians(newAngleInDegrees);
+}
+
+void 
+BasePerspectiveCamera::setHorzantalAngleRad(float newAngleInRandians )
+{
+  m_horizantalAngle = newAngleInRandians;
+}
+
+void 
+BasePerspectiveCamera::setVerticalAngleDeg(float newAngleInDegrees)
+{
+  m_verticalAngle = glm::radians(newAngleInDegrees);
+}
+
+void 
+BasePerspectiveCamera::setVerticalAngleRad(float newAngleInRadians)
+{
+  m_verticalAngle = newAngleInRadians;
 }
 
 void 
