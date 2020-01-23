@@ -62,10 +62,11 @@ public:// functions
     TranslateRelative(float x, float y, float z);
 
   void
-    rotateVector(float x, float y, float z,float angleInDegrees = 10.0f );
+  rotateInYaw(float angleInDegs);
 
   void
-    rotateFrontVectorDeg(float angleInDegrees);
+    rotateVector(float x, float y, float z,float angleInDegrees = 10.0f );
+
 private:// functions
 
   /**
@@ -74,6 +75,7 @@ private:// functions
   */
   void
     updateMatrixes();
+private: //variable
 
 };
 

@@ -623,7 +623,7 @@ CleanupDevice()
 //--------------------------------------------------------------------------------------
 // Called every time the application receives a message
 //--------------------------------------------------------------------------------------
-LRESULT CALLBACK 
+LRESULT CALLBACK
 WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
   PAINTSTRUCT ps;
@@ -650,7 +650,7 @@ WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     if (wParam == (WPARAM)'S')
     {
-      my_camera.TranslateRelative(0.0f, 0.0f,-1.0f);
+      my_camera.TranslateRelative(0.0f, 0.0f, -1.0f);
     }
     if (wParam == (WPARAM)'D')
 
@@ -661,23 +661,30 @@ WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
       my_camera.TranslateRelative(-1.0f, 0.0f, 0.0f);
     }
-
-    if (wParam == VK_UP) {
-      //my_camera.rotateFrontVectorDeg(1.0f);
-
-      my_camera.rotateVector(10.0f, 0.0f, 0.0f);
+    if (wParam == static_cast<WPARAM>('E')) 
+    {
+      my_camera.TranslateRelative(0.0f, 1.0f, 0.0f);
     }
 
-    if (wParam == VK_DOWN) {
-      my_camera.rotateVector(-10.0f, 0.0f, 0.0f);
+    if (wParam == static_cast<WPARAM>('Q')) 
+    {
+      my_camera.TranslateRelative(0.0f, -1.0f, 0.0f);
     }
 
+    if (wParam == VK_RIGHT) 
+    {
+      my_camera.rotateInYaw(10.0f);
+    }
 
+    if (wParam == VK_LEFT) 
+    {
+      my_camera.rotateInYaw(-10.0f);
+    }
 
     CBNeverChanges cbNeverChanges;
     cbNeverChanges.mView = glm::transpose(my_camera.getView());
     g_pImmediateContext->UpdateSubresource(g_pCBNeverChanges, 0, NULL, &cbNeverChanges, 0, 0);
-      
+
     CBChangeOnResize cbChangesOnResize;
     cbChangesOnResize.mProjection = glm::transpose(my_camera.getProjection());
     g_pImmediateContext->UpdateSubresource(g_pCBChangeOnResize, 0, NULL, &cbChangesOnResize, 0, 0);
