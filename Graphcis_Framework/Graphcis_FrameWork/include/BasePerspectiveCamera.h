@@ -344,10 +344,14 @@ protected:
     * @brief : determines how close an object can get before it ignores the object.
     */
   float m_near;
-
+/**
+* @brief :
+*/
   float m_horizantalAngle;
 
   float m_verticalAngle;
+
+  float m_zAngle;
   /**
   *  @brief : used to control how fast the camera moves in world-space.
   */

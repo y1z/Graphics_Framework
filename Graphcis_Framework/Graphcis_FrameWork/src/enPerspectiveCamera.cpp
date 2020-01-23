@@ -48,6 +48,13 @@ enPerspectiveCamera::rotateInYaw(float angleInDegs)
   this->updateMatrixes();
 }
 
+void 
+enPerspectiveCamera::rotateInPitch(float angleInDegs)
+{
+  m_verticalAngle += glm::radians(angleInDegs);
+  this->updateMatrixes();
+}
+
 void
 enPerspectiveCamera::rotateVector(float x, float y, float z, float angleInDegrees)
 {

@@ -661,25 +661,36 @@ WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
       my_camera.TranslateRelative(-1.0f, 0.0f, 0.0f);
     }
-    if (wParam == static_cast<WPARAM>('E')) 
+    if (wParam == static_cast<WPARAM>('E'))
     {
       my_camera.TranslateRelative(0.0f, 1.0f, 0.0f);
     }
 
-    if (wParam == static_cast<WPARAM>('Q')) 
+    if (wParam == static_cast<WPARAM>('Q'))
     {
       my_camera.TranslateRelative(0.0f, -1.0f, 0.0f);
     }
 
-    if (wParam == VK_RIGHT) 
+    if (wParam == VK_RIGHT)
     {
       my_camera.rotateInYaw(10.0f);
     }
 
-    if (wParam == VK_LEFT) 
+    if (wParam == VK_LEFT)
     {
       my_camera.rotateInYaw(-10.0f);
     }
+
+    if (wParam == VK_UP)
+    {
+      my_camera.rotateInPitch(10.0f);
+    }
+
+    if (wParam == VK_DOWN)
+    {
+      my_camera.rotateInPitch(-10.0f);
+    }
+
 
     CBNeverChanges cbNeverChanges;
     cbNeverChanges.mView = glm::transpose(my_camera.getView());

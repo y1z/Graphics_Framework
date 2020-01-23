@@ -65,7 +65,10 @@ public:// functions
   rotateInYaw(float angleInDegs);
 
   void
-    rotateVector(float x, float y, float z,float angleInDegrees = 10.0f );
+    rotateInPitch(float angleInDegs);
+
+  void
+  rotateVector(float x, float y, float z,float angleInDegrees = 10.0f );
 
 private:// functions
 
