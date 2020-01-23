@@ -84,5 +84,5 @@ enPerspectiveCamera::updateMatrixes()
 
   m_projection = glm::perspectiveFovLH(m_fov, m_width, m_height, m_near, m_far);
 
-  m_view = glm::lookAt(m_position,m_position + m_front , m_up);
+  m_view = glm::lookAtLH(m_position,m_position + m_front , m_up);
 }

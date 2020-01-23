@@ -655,11 +655,11 @@ WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     if (wParam == (WPARAM)'D')
 
     {
-      my_camera.TranslateRelative(1.0f, 0.0f, 0.0f);
+      my_camera.TranslateRelative(-1.0f, 0.0f, 0.0f);
     }
     if (wParam == (WPARAM)'A')
     {
-      my_camera.TranslateRelative(-1.0f, 0.0f, 0.0f);
+      my_camera.TranslateRelative(1.0f, 0.0f, 0.0f);
     }
     if (wParam == static_cast<WPARAM>('E'))
     {

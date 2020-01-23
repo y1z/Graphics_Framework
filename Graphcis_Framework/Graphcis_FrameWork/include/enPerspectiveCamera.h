@@ -26,7 +26,7 @@ struct sPerspectiveCameraDesc
   /** describes how wide the projection is*/
   float width = -1337.0f;
 
-  float horizantalAngle = 3.1415f;
+  float horizantalAngle = 0.00f;
 
   //vertical
   float verticalAngle = 0.00f;
