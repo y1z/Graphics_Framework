@@ -106,6 +106,12 @@ BasePerspectiveCamera::getVerticalAngle() const
   return m_verticalAngle;
 }
 
+float
+BasePerspectiveCamera::getZAngle() const
+{
+  return  m_zAngle;
+}
+
 float 
 BasePerspectiveCamera::getSpeed() const
 {
@@ -242,6 +248,18 @@ void
 BasePerspectiveCamera::setVerticalAngleRad(float newAngleInRadians)
 {
   m_verticalAngle = newAngleInRadians;
+}
+
+void 
+BasePerspectiveCamera::setZAngleDeg(float newAngleInDegrees)
+{
+  m_zAngle = glm::radians(newAngleInDegrees);
+}
+
+void 
+BasePerspectiveCamera::setZAngleRad(float newAngleInRadians)
+{
+  m_zAngle = newAngleInRadians;
 }
 
 void 

@@ -1,10 +1,10 @@
 #include "../include/enPerspectiveCamera.h"
 #include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/matrix_access.hpp"
 
 enPerspectiveCamera::enPerspectiveCamera()
   :BasePerspectiveCamera()
-{
-}
+{}
 
 enErrorCode
 enPerspectiveCamera::init(const sPerspectiveCameraDesc& descriptor)
@@ -28,7 +28,7 @@ enPerspectiveCamera::init(const sPerspectiveCameraDesc& descriptor)
 void
 enPerspectiveCamera::TranslateRelative(float x, float y, float z)
 {
-  m_position += m_right * x;
+  m_position += -m_right * x;
   //m_lookAt += m_right * x;
 
   m_position += m_up * y;
@@ -41,17 +41,26 @@ enPerspectiveCamera::TranslateRelative(float x, float y, float z)
   updateMatrixes();
 }
 
-void 
+void
 enPerspectiveCamera::rotateInYaw(float angleInDegs)
 {
   m_horizantalAngle += glm::radians(angleInDegs);
+
   this->updateMatrixes();
 }
 
-void 
+void
 enPerspectiveCamera::rotateInPitch(float angleInDegs)
 {
   m_verticalAngle += glm::radians(angleInDegs);
+  this->updateMatrixes();
+}
+
+void
+enPerspectiveCamera::rotateInRoll(float angleInDegs)
+{
+  m_zAngle += glm::radians(angleInDegs);
+
   this->updateMatrixes();
 }
 
@@ -77,12 +86,22 @@ enPerspectiveCamera::updateMatrixes()
   (
     std::sinf(m_horizantalAngle - (glm::pi<float>() / 2)),
     0.0f,
-    std::cosf(m_horizantalAngle -  (glm::pi<float>() / 2) )
+    std::cosf(m_horizantalAngle - (glm::pi<float>() / 2))
   );
 
-  m_up = glm::normalize(glm::cross(m_right, m_front));
+  m_up = glm::normalize(glm::cross(m_front, m_right));
 
   m_projection = glm::perspectiveFovLH(m_fov, m_width, m_height, m_near, m_far);
 
-  m_view = glm::lookAtLH(m_position,m_position + m_front , m_up);
+  m_view = glm::lookAtLH(m_position, m_position + m_front, m_up);
+
+  glm::mat4x4 zRotation(1.0f);
+  const enVector4 FirstRow(std::cosf(m_zAngle), -std::sinf(m_zAngle), 0.0f, 0.0f);
+  const enVector4 secondRow(std::sinf(m_zAngle), std::cosf(m_zAngle), 0.0f, 0.0f);
+
+  zRotation = glm::row(zRotation, 0, FirstRow);
+  zRotation = glm::row(zRotation, 1, secondRow);
+
+  m_view *= zRotation;
+
 }

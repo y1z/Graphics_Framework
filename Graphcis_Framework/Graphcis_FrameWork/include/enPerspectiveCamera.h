@@ -31,6 +31,8 @@ struct sPerspectiveCameraDesc
   //vertical
   float verticalAngle = 0.00f;
 
+  float zAngle = 0.00f;
+
   /** describes the field of view*/
   float fov = 1.04719f;
 };
@@ -66,6 +68,9 @@ public:// functions
 
   void
     rotateInPitch(float angleInDegs);
+
+  void
+    rotateInRoll(float angleInDegs);
 
   void
   rotateVector(float x, float y, float z,float angleInDegrees = 10.0f );

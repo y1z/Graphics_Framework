@@ -1,4 +1,5 @@
 #pragma once
+#include "util/Header.h"
 #include <string>
 #include <string_view>
 #include <cstdlib>
@@ -6,6 +7,7 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+
 
 namespace helper
 {
@@ -27,18 +29,18 @@ namespace helper
   /**
   *@brief converts a wstring/const wchar_t* to it's string equivalent assuming it has any.
   */
- static std::string
+  static std::string
     convertWStringToString(std::wstring_view wideString)
   {
     std::string Result(wideString.length() + 1, '\0');
 
     // converts a wide string to a char/multi-byte string
     std::size_t checkForError = std::wcstombs(Result.data(),
-      wideString.data(),
-      wideString.length());
+                                              wideString.data(),
+                                              wideString.length());
 
-    // how to check for errors  https://en.cppreference.com/w/cpp/string/multibyte/wcstombs
-    if (checkForError == static_cast<std::size_t>(-1))
+                                            // how to check for errors  https://en.cppreference.com/w/cpp/string/multibyte/wcstombs
+    if( checkForError == static_cast<std::size_t>(-1) )
     {
       assert(checkForError != static_cast<std::size_t>(-1) && "invalid string conversion");
     }
@@ -56,7 +58,7 @@ namespace helper
 
     std::size_t checkForError = std::mbstowcs(Result.data(), String.data(), String.length());
 
-    if (checkForError == static_cast<std::size_t>(-1))
+    if( checkForError == static_cast<std::size_t>(-1) )
     {
       assert(checkForError != static_cast<std::size_t>(-1) && "invalid string conversion");
     }
@@ -71,12 +73,11 @@ namespace helper
     std::string Result{ "Error" };
     std::ifstream File(filePath);
 
-    if (File.is_open())
+    if( File.is_open() )
     {
       std::stringstream SStream;
       SStream << File.rdbuf();
       Result = SStream.str();
-
       File.close();
       return Result;
     }
@@ -93,7 +94,7 @@ namespace helper
   {
     std::string Result{ "Error" };
     std::ifstream File(filePath);
-    if (File.is_open())
+    if( File.is_open() )
     {
       std::stringstream SStream;
       SStream << File.rdbuf();
@@ -109,5 +110,21 @@ namespace helper
     return Result;
   }
 
+  /*************/
+  static void
+    makeMaze(ID3D11Buffer& cubeBuffer,
+             enMatrix4x4& cubeMatrix,
+             ID3D11DeviceContext& dContext)
+  {
+    static  std::vector<enVector3> translations =
+    {
+     {enVector3(0.0f,2.0f,0.0f)},{enVector3(0.0f,2.0f,0.0f)},
+     {enVector3(0.0f,2.0f,0.0f)},{enVector3(0.0f,2.0f,0.0f)},
+     {enVector3(0.0f,2.0f,0.0f)}
+
+
+    };
+
+  }
 }
 

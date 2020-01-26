@@ -5,10 +5,7 @@
 //
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //--------------------------------------------------------------------------------------
-#include "MacroslessWindow.h"
-#include <d3d11.h>
-#include <d3dcompiler.h>
-#include <DirectXMath.h>
+#include "util/Header.h"
 #include "Resource.h"
 
 //--------------------------------------------------------------------------------------
@@ -21,7 +18,6 @@
 // my includes 
 //--------------------------------------------------------------------------------------
 #include "helperFucs.h"
-#include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "DirectXTK/include/DDSTextureLoader.h"
 #include "DirectXTK/include/WICTextureLoader.h"
@@ -82,7 +78,6 @@ ID3D11SamplerState* g_pSamplerLinear = NULL;
 enPerspectiveCamera my_camera;
 
 glm::mat4x4 g_World(1.0f);
-glm::mat4x4 g_View(1.0f);
 glm::mat4x4 g_Projection(1.0f);
 glm::vec4 g_MeshColor(0.7f, 0.7f, 0.7f, 1.0f);
 
@@ -115,10 +110,10 @@ Render();
 int
 main()
 {
-  if (InitPreDevice() == false)
+  if( InitPreDevice() == false )
     return -1;
 
-  if (FAILED(InitDevice()))
+  if( FAILED(InitDevice()) )
   {
     CleanupDevice();
     return 0;
@@ -126,9 +121,9 @@ main()
 
   // Main message loop
   MSG msg = { 0 };
-  while (WM_QUIT != msg.message)
+  while( WM_QUIT != msg.message )
   {
-    if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+    if( PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) )
     {
       TranslateMessage(&msg);
       DispatchMessage(&msg);
@@ -166,7 +161,7 @@ InitWindow(HINSTANCE hInstance, int nCmdShow)
   wcex.lpszMenuName = NULL;
   wcex.lpszClassName = L"TutorialWindowClass";
   wcex.hIconSm = LoadIcon(wcex.hInstance, (LPCTSTR)IDI_TUTORIAL1);
-  if (!RegisterClassEx(&wcex))
+  if( !RegisterClassEx(&wcex) )
     return E_FAIL;
 
   // Create window
@@ -174,10 +169,10 @@ InitWindow(HINSTANCE hInstance, int nCmdShow)
   RECT rc = { 0, 0, 640, 480 };
   AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
   g_hWnd = CreateWindow(L"TutorialWindowClass", L"Direct3D 11 Tutorial 7", WS_OVERLAPPEDWINDOW,
-    CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, hInstance,
-    NULL);
+                        CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, hInstance,
+                        NULL);
 
-  if (!g_hWnd)
+  if( !g_hWnd )
     return E_FAIL;
 
   ShowWindow(g_hWnd, nCmdShow);
@@ -189,7 +184,8 @@ InitWindow(HINSTANCE hInstance, int nCmdShow)
 //--------------------------------------------------------------------------------------
 // Helper for compiling shaders with D3DX11
 //--------------------------------------------------------------------------------------
-HRESULT CompileShaderFromFile(const wchar_t* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut)
+HRESULT
+CompileShaderFromFile(const wchar_t* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut)
 {
   HRESULT hr = S_OK;
 
@@ -205,24 +201,24 @@ HRESULT CompileShaderFromFile(const wchar_t* szFileName, LPCSTR szEntryPoint, LP
   ID3DBlob* pErrorBlob;
 
   hr = D3DCompileFromFile(szFileName,
-    nullptr,
-    nullptr,
-    szEntryPoint,
-    szShaderModel,
-    dwShaderFlags,
-    0,
-    ppBlobOut,
-    &pErrorBlob);
+                          nullptr,
+                          nullptr,
+                          szEntryPoint,
+                          szShaderModel,
+                          dwShaderFlags,
+                          0,
+                          ppBlobOut,
+                          &pErrorBlob);
 
 
-  if (FAILED(hr))
+  if( FAILED(hr) )
   {
-    if (pErrorBlob != NULL)
+    if( pErrorBlob != NULL )
       OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
-    if (pErrorBlob) pErrorBlob->Release();
+    if( pErrorBlob ) pErrorBlob->Release();
     return hr;
   }
-  if (pErrorBlob) pErrorBlob->Release();
+  if( pErrorBlob ) pErrorBlob->Release();
 
   return S_OK;
 }
@@ -236,15 +232,15 @@ InitPreDevice()
 
   BOOL checkIfSucceeded = GetModuleHandleEx(0x00, NULL, &Hmodule);
 
-  if (checkIfSucceeded == FALSE)
+  if( checkIfSucceeded == FALSE )
     return false;
 
-  if (FAILED(InitWindow(Hmodule, SW_SHOWDEFAULT)))
+  if( FAILED(InitWindow(Hmodule, SW_SHOWDEFAULT)) )
     return false;
 
   /*Initializes the COM library
   this is so I can load images for directX */
-  if (FAILED(CoInitializeEx(NULL, COINIT_MULTITHREADED)))
+  if( FAILED(CoInitializeEx(NULL, COINIT_MULTITHREADED)) )
   {
     return false;
   }
@@ -301,26 +297,26 @@ InitDevice()
   sd.SampleDesc.Quality = 0;
   sd.Windowed = TRUE;
 
-  for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++)
+  for( UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++ )
   {
     g_driverType = driverTypes[driverTypeIndex];
     hr = D3D11CreateDeviceAndSwapChain(NULL, g_driverType, NULL, createDeviceFlags, featureLevels, numFeatureLevels,
-      D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &g_featureLevel, &g_pImmediateContext);
-    if (SUCCEEDED(hr))
+                                       D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &g_featureLevel, &g_pImmediateContext);
+    if( SUCCEEDED(hr) )
       break;
   }
-  if (FAILED(hr))
+  if( FAILED(hr) )
     return hr;
 
   // Create a render target view
   ID3D11Texture2D* pBackBuffer = NULL;
   hr = g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
-  if (FAILED(hr))
+  if( FAILED(hr) )
     return hr;
 
   hr = g_pd3dDevice->CreateRenderTargetView(pBackBuffer, NULL, &g_pRenderTargetView);
   pBackBuffer->Release();
-  if (FAILED(hr))
+  if( FAILED(hr) )
     return hr;
 
   // Create depth stencil texture
@@ -338,7 +334,7 @@ InitDevice()
   descDepth.CPUAccessFlags = 0;
   descDepth.MiscFlags = 0;
   hr = g_pd3dDevice->CreateTexture2D(&descDepth, NULL, &g_pDepthStencil);
-  if (FAILED(hr))
+  if( FAILED(hr) )
     return hr;
 
   // Create the depth stencil view
@@ -348,7 +344,7 @@ InitDevice()
   descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
   descDSV.Texture2D.MipSlice = 0;
   hr = g_pd3dDevice->CreateDepthStencilView(g_pDepthStencil, &descDSV, &g_pDepthStencilView);
-  if (FAILED(hr))
+  if( FAILED(hr) )
     return hr;
 
   g_pImmediateContext->OMSetRenderTargets(1, &g_pRenderTargetView, g_pDepthStencilView);
@@ -366,16 +362,16 @@ InitDevice()
   // Compile the vertex shader
   ID3DBlob* pVSBlob = NULL;
   hr = CompileShaderFromFile(L"GraphcisFramework.fx", "VS", "vs_4_0", &pVSBlob);
-  if (FAILED(hr))
+  if( FAILED(hr) )
   {
     MessageBox(NULL,
-      L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
+               L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
     return hr;
   }
 
   // Create the vertex shader
   hr = g_pd3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), NULL, &g_pVertexShader);
-  if (FAILED(hr))
+  if( FAILED(hr) )
   {
     pVSBlob->Release();
     return hr;
@@ -391,9 +387,9 @@ InitDevice()
 
   // Create the input layout
   hr = g_pd3dDevice->CreateInputLayout(layout, numElements, pVSBlob->GetBufferPointer(),
-    pVSBlob->GetBufferSize(), &g_pVertexLayout);
+                                       pVSBlob->GetBufferSize(), &g_pVertexLayout);
   pVSBlob->Release();
-  if (FAILED(hr))
+  if( FAILED(hr) )
     return hr;
 
   // Set the input layout
@@ -402,17 +398,17 @@ InitDevice()
   // Compile the pixel shader
   ID3DBlob* pPSBlob = NULL;
   hr = CompileShaderFromFile(L"GraphcisFramework.fx", "PS", "ps_4_0", &pPSBlob);
-  if (FAILED(hr))
+  if( FAILED(hr) )
   {
     MessageBox(NULL,
-      L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
+               L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
     return hr;
   }
 
   // Create the pixel shader
   hr = g_pd3dDevice->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), NULL, &g_pPixelShader);
   pPSBlob->Release();
-  if (FAILED(hr))
+  if( FAILED(hr) )
     return hr;
 
   // Create vertex buffer
@@ -462,7 +458,7 @@ InitDevice()
 
   hr = g_pd3dDevice->CreateBuffer(&bd, &InitData, &g_pVertexBuffer);
 
-  if (FAILED(hr))
+  if( FAILED(hr) )
     return hr;
 
   // Set vertex buffer
@@ -499,7 +495,7 @@ InitDevice()
   bd.CPUAccessFlags = 0;
   InitData.pSysMem = indices;
   hr = g_pd3dDevice->CreateBuffer(&bd, &InitData, &g_pIndexBuffer);
-  if (FAILED(hr))
+  if( FAILED(hr) )
     return hr;
 
   // Set index buffer
@@ -514,24 +510,24 @@ InitDevice()
   bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
   bd.CPUAccessFlags = 0;
   hr = g_pd3dDevice->CreateBuffer(&bd, NULL, &g_pCBNeverChanges);
-  if (FAILED(hr))
+  if( FAILED(hr) )
     return hr;
 
   bd.ByteWidth = sizeof(CBChangeOnResize);
   hr = g_pd3dDevice->CreateBuffer(&bd, NULL, &g_pCBChangeOnResize);
-  if (FAILED(hr))
+  if( FAILED(hr) )
     return hr;
 
   bd.ByteWidth = sizeof(CBChangesEveryFrame);
   hr = g_pd3dDevice->CreateBuffer(&bd, NULL, &g_pCBChangesEveryFrame);
-  if (FAILED(hr))
+  if( FAILED(hr) )
     return hr;
 
   // Load the Texture
   //hr = dx::CreateDDSTextureFromFile(g_pd3dDevice, L"seafloor.dds", nullptr, &g_pTextureRV);
   hr = dx::CreateWICTextureFromFile(g_pd3dDevice, L"neon light.jpg", nullptr, &g_pTextureRV);
 
-  if (FAILED(hr))
+  if( FAILED(hr) )
     return hr;
 
   // Create the sample state
@@ -545,7 +541,7 @@ InitDevice()
   sampDesc.MinLOD = 0;
   sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
   hr = g_pd3dDevice->CreateSamplerState(&sampDesc, &g_pSamplerLinear);
-  if (FAILED(hr))
+  if( FAILED(hr) )
     return hr;
 
   sPerspectiveCameraDesc descriptorCamera;
@@ -564,7 +560,6 @@ InitDevice()
   glm::vec3 Eye(0.0f, 3.0f, -6.0f);
   glm::vec3 At(0.0f, 0.0f, -1.0f);
   glm::vec3 Up(0.0f, 1.0f, 0.0f);
-  g_View = glm::lookAtLH(Eye, At, Up);
 
   CBNeverChanges cbNeverChanges;
   cbNeverChanges.mView = glm::transpose(my_camera.getView());
@@ -577,10 +572,10 @@ InitDevice()
   float TempHeight = height;
 
   g_Projection = glm::perspectiveFovLH(glm::quarter_pi<float>(),
-    TempWidth,
-    TempHeight,
-    0.01f,
-    100.0f);
+                                       TempWidth,
+                                       TempHeight,
+                                       0.01f,
+                                       100.0f);
 
   CBChangeOnResize cbChangesOnResize;
   cbChangesOnResize.mProjection = glm::transpose(my_camera.getProjection());
@@ -599,24 +594,24 @@ CleanupDevice()
   /*Uninitialized the comm library*/
   CoUninitialize();
 
-  if (g_pImmediateContext) g_pImmediateContext->ClearState();
+  if( g_pImmediateContext ) g_pImmediateContext->ClearState();
 
-  if (g_pSamplerLinear) g_pSamplerLinear->Release();
-  if (g_pTextureRV) g_pTextureRV->Release();
-  if (g_pCBNeverChanges) g_pCBNeverChanges->Release();
-  if (g_pCBChangeOnResize) g_pCBChangeOnResize->Release();
-  if (g_pCBChangesEveryFrame) g_pCBChangesEveryFrame->Release();
-  if (g_pVertexBuffer) g_pVertexBuffer->Release();
-  if (g_pIndexBuffer) g_pIndexBuffer->Release();
-  if (g_pVertexLayout) g_pVertexLayout->Release();
-  if (g_pVertexShader) g_pVertexShader->Release();
-  if (g_pPixelShader) g_pPixelShader->Release();
-  if (g_pDepthStencil) g_pDepthStencil->Release();
-  if (g_pDepthStencilView) g_pDepthStencilView->Release();
-  if (g_pRenderTargetView) g_pRenderTargetView->Release();
-  if (g_pSwapChain) g_pSwapChain->Release();
-  if (g_pImmediateContext) g_pImmediateContext->Release();
-  if (g_pd3dDevice) g_pd3dDevice->Release();
+  if( g_pSamplerLinear ) g_pSamplerLinear->Release();
+  if( g_pTextureRV ) g_pTextureRV->Release();
+  if( g_pCBNeverChanges ) g_pCBNeverChanges->Release();
+  if( g_pCBChangeOnResize ) g_pCBChangeOnResize->Release();
+  if( g_pCBChangesEveryFrame ) g_pCBChangesEveryFrame->Release();
+  if( g_pVertexBuffer ) g_pVertexBuffer->Release();
+  if( g_pIndexBuffer ) g_pIndexBuffer->Release();
+  if( g_pVertexLayout ) g_pVertexLayout->Release();
+  if( g_pVertexShader ) g_pVertexShader->Release();
+  if( g_pPixelShader ) g_pPixelShader->Release();
+  if( g_pDepthStencil ) g_pDepthStencil->Release();
+  if( g_pDepthStencilView ) g_pDepthStencilView->Release();
+  if( g_pRenderTargetView ) g_pRenderTargetView->Release();
+  if( g_pSwapChain ) g_pSwapChain->Release();
+  if( g_pImmediateContext ) g_pImmediateContext->Release();
+  if( g_pd3dDevice ) g_pd3dDevice->Release();
 }
 
 
@@ -629,81 +624,91 @@ WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   PAINTSTRUCT ps;
   HDC hdc;
 
-  switch (message)
+  switch( message )
   {
-  case WM_PAINT:
-    hdc = BeginPaint(hWnd, &ps);
-    EndPaint(hWnd, &ps);
+    case WM_PAINT:
+      hdc = BeginPaint(hWnd, &ps);
+      EndPaint(hWnd, &ps);
+      break;
+
+    case WM_DESTROY:
+      PostQuitMessage(0);
+      break;
+
+    case WM_KEYDOWN:
+    {
+
+      if( wParam == (WPARAM)'W' )
+      {
+        my_camera.TranslateRelative(0.0f, 0.0f, 1.0f);
+      }
+
+      if( wParam == (WPARAM)'S' )
+      {
+        my_camera.TranslateRelative(0.0f, 0.0f, -1.0f);
+      }
+      if( wParam == (WPARAM)'D' )
+
+      {
+        my_camera.TranslateRelative(-1.0f, 0.0f, 0.0f);
+      }
+      if( wParam == (WPARAM)'A' )
+      {
+        my_camera.TranslateRelative(1.0f, 0.0f, 0.0f);
+      }
+      if( wParam == static_cast<WPARAM>('E') )
+      {
+        my_camera.TranslateRelative(0.0f, 1.0f, 0.0f);
+      }
+
+      if( wParam == static_cast<WPARAM>('Q') )
+      {
+        my_camera.TranslateRelative(0.0f, -1.0f, 0.0f);
+      }
+
+      if( wParam == VK_RIGHT )
+      {
+        my_camera.rotateInYaw(-10.0f);
+      }
+
+      if( wParam == VK_LEFT )
+      {
+        my_camera.rotateInYaw(10.0f);
+      }
+
+      if( wParam == VK_UP )
+      {
+        my_camera.rotateInPitch(10.0f);
+      }
+
+      if( wParam == VK_DOWN )
+      {
+        my_camera.rotateInPitch(-10.0f);
+      }
+
+      if( wParam == static_cast<WPARAM>('I') )
+      {
+        my_camera.rotateInRoll(10.0f);
+      }
+
+      if( wParam == static_cast<WPARAM>('O') )
+      {
+        my_camera.rotateInRoll(-10.0f);
+      }
+
+
+      CBNeverChanges cbNeverChanges;
+      cbNeverChanges.mView = glm::transpose(my_camera.getView());
+      g_pImmediateContext->UpdateSubresource(g_pCBNeverChanges, 0, NULL, &cbNeverChanges, 0, 0);
+
+      CBChangeOnResize cbChangesOnResize;
+      cbChangesOnResize.mProjection = glm::transpose(my_camera.getProjection());
+      g_pImmediateContext->UpdateSubresource(g_pCBChangeOnResize, 0, NULL, &cbChangesOnResize, 0, 0);
+    }
     break;
 
-  case WM_DESTROY:
-    PostQuitMessage(0);
-    break;
-
-  case WM_KEYDOWN:
-  {
-
-    if (wParam == (WPARAM)'W')
-    {
-      my_camera.TranslateRelative(0.0f, 0.0f, 1.0f);
-    }
-
-    if (wParam == (WPARAM)'S')
-    {
-      my_camera.TranslateRelative(0.0f, 0.0f, -1.0f);
-    }
-    if (wParam == (WPARAM)'D')
-
-    {
-      my_camera.TranslateRelative(-1.0f, 0.0f, 0.0f);
-    }
-    if (wParam == (WPARAM)'A')
-    {
-      my_camera.TranslateRelative(1.0f, 0.0f, 0.0f);
-    }
-    if (wParam == static_cast<WPARAM>('E'))
-    {
-      my_camera.TranslateRelative(0.0f, 1.0f, 0.0f);
-    }
-
-    if (wParam == static_cast<WPARAM>('Q'))
-    {
-      my_camera.TranslateRelative(0.0f, -1.0f, 0.0f);
-    }
-
-    if (wParam == VK_RIGHT)
-    {
-      my_camera.rotateInYaw(10.0f);
-    }
-
-    if (wParam == VK_LEFT)
-    {
-      my_camera.rotateInYaw(-10.0f);
-    }
-
-    if (wParam == VK_UP)
-    {
-      my_camera.rotateInPitch(10.0f);
-    }
-
-    if (wParam == VK_DOWN)
-    {
-      my_camera.rotateInPitch(-10.0f);
-    }
-
-
-    CBNeverChanges cbNeverChanges;
-    cbNeverChanges.mView = glm::transpose(my_camera.getView());
-    g_pImmediateContext->UpdateSubresource(g_pCBNeverChanges, 0, NULL, &cbNeverChanges, 0, 0);
-
-    CBChangeOnResize cbChangesOnResize;
-    cbChangesOnResize.mProjection = glm::transpose(my_camera.getProjection());
-    g_pImmediateContext->UpdateSubresource(g_pCBChangeOnResize, 0, NULL, &cbChangesOnResize, 0, 0);
-  }
-  break;
-
-  default:
-    return DefWindowProc(hWnd, message, wParam, lParam);
+    default:
+      return DefWindowProc(hWnd, message, wParam, lParam);
   }
 
   return 0;
@@ -717,22 +722,22 @@ void Render()
 {
   // Update our time
   static float t = 0.0f;
-  if (g_driverType == D3D_DRIVER_TYPE_REFERENCE)
+  if( g_driverType == D3D_DRIVER_TYPE_REFERENCE )
   {
-    t += (float)dx::XM_PI * 0.0125f;
+    t += (float)glm::pi<float>()* 0.0125f;
   }
   else
   {
     static DWORD dwTimeStart = 0;
     DWORD dwTimeCur = GetTickCount();
-    if (dwTimeStart == 0)
+    if( dwTimeStart == 0 )
       dwTimeStart = dwTimeCur;
     t = (dwTimeCur - dwTimeStart) / 1000.0f;
   }
 
   // Rotate cube around the origin
 
-  g_World = glm::rotate(glm::identity<glm::mat4x4>(), (t), glm::vec3(0.0f, 1.0f, 0.0f));
+  //g_World = glm::rotate(glm::identity<glm::mat4x4>(), (t), glm::vec3(0.0f, 1.0f, 0.0f));
 
   // Modify the color
   g_MeshColor.x = (sinf(t * 1.0f) + 1.0f) * 0.5f;
@@ -751,14 +756,6 @@ void Render()
   g_pImmediateContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
   //
-  // Update variables that change once per frame
-  //
-  CBChangesEveryFrame cb;
-  cb.mWorld = glm::transpose(g_World);
-  cb.vMeshColor = g_MeshColor;
-  g_pImmediateContext->UpdateSubresource(g_pCBChangesEveryFrame, 0, NULL, &cb, 0, 0);
-
-  //
   // Render the cube
   //
   g_pImmediateContext->VSSetShader(g_pVertexShader, NULL, 0);
@@ -769,9 +766,21 @@ void Render()
   g_pImmediateContext->PSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
   g_pImmediateContext->PSSetShaderResources(0, 1, &g_pTextureRV);
   g_pImmediateContext->PSSetSamplers(0, 1, &g_pSamplerLinear);
-  g_pImmediateContext->DrawIndexed(36, 0, 0);
 
-  //
+  CBChangesEveryFrame cb;
+  cb.vMeshColor = g_MeshColor;
+  for( uint32_t i = 0; i < 20; ++i )
+  {
+    g_World = glm::translate(g_World, enVector3(2.0f, 0, 0));
+    cb.mWorld = glm::transpose(g_World);
+
+
+    g_pImmediateContext->UpdateSubresource(g_pCBChangesEveryFrame, 0, NULL, &cb, 0, 0);
+    g_pImmediateContext->DrawIndexed(36, 0, 0);
+  }
+
+  g_World = glm::identity<glm::mat4x4>();
+
   // Present our back buffer to our front buffer
   //
   g_pSwapChain->Present(0, 0);

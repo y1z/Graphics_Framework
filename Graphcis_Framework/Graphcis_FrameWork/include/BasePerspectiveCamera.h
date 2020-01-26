@@ -105,6 +105,9 @@ public:
   float
     getVerticalAngle() const;
 
+  float
+    getZAngle() const;
+
   /**
   * @returns : the speed of the camera.
   * @bug : no known bugs.
@@ -284,6 +287,13 @@ public:
   void
     setVerticalAngleRad(float newAngleInRadians);
 
+
+  void
+    setZAngleDeg(float newAngleInDegrees);
+
+
+  void
+    setZAngleRad(float newAngleInRadians);
   /**
   * @brief :sets how fast the camera is.
   * @bug : no known bugs.
