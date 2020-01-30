@@ -573,7 +573,7 @@ InitDevice()
                                        100.0f);
 
   CBChangeOnResize cbChangesOnResize;
-  cbChangesOnResize.mProjection = glm::transpose(my_firstPersonCamera.getProjection() /*my_camera.getProjection()*/);
+  cbChangesOnResize.mProjection = glm::transpose( my_camera.getProjection() /*my_camera.getProjection()*/);
   g_pImmediateContext->UpdateSubresource(g_pCBChangeOnResize, 0, NULL, &cbChangesOnResize, 0, 0);
 
   return S_OK;
