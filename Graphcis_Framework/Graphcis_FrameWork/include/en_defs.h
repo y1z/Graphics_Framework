@@ -41,7 +41,7 @@ using uByte8 = uint_least64_t;//<! 8 bytes per instance
 */
 enum class enErrorCode :Byte4
 {
-  Sucessful = 0b000'0000'0000'0000'0000'0000'0000'0000, //!<  indicates that no error occurred  
+  NoError = 0b000'0000'0000'0000'0000'0000'0000'0000, //!<  indicates that no error occurred  
   UnClassified = 0b000'0000'0000'0000'0000'0000'0000'0001,//!<  indicates that there is no-know name for the error 
   NotReady = 0b000'0000'0000'0000'0000'0000'0000'0010, //!<  means that the function/class/object needed more set up before it's ready to be used  
   InvalidPath = 0b000'0000'0000'0000'0000'0000'0000'0100,//!< means that a provided path is invalid 
@@ -84,7 +84,7 @@ namespace enError
 
     switch (errorCode)
     {
-    case enErrorCode::Sucessful:
+    case enErrorCode::NoError:
       messageFormat(FunctionName, "executed successfully");
       break;
     case enErrorCode::UnClassified:

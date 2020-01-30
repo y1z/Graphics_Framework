@@ -1,13 +1,13 @@
-#include "../include/enPerspectiveCamera.h"
+#include "enPerspectiveFreeCamera.h"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/matrix_access.hpp"
 
-enPerspectiveCamera::enPerspectiveCamera()
+enPerspectiveFreeCamera::enPerspectiveFreeCamera()
   :BasePerspectiveCamera()
 {}
 
 enErrorCode
-enPerspectiveCamera::init(const sPerspectiveCameraDesc& descriptor)
+enPerspectiveFreeCamera::init(const sPerspectiveCameraDesc& descriptor)
 {
   m_position = descriptor.position;
   m_lookAt = descriptor.lookAtPosition;
@@ -22,11 +22,11 @@ enPerspectiveCamera::init(const sPerspectiveCameraDesc& descriptor)
 
 
   this->updateMatrixes();
-  return enErrorCode::Sucessful;
+  return enErrorCode::NoError;
 }
 
 void
-enPerspectiveCamera::TranslateRelative(float x, float y, float z)
+enPerspectiveFreeCamera::TranslateRelative(float x, float y, float z)
 {
   m_position += -m_right * x;
   //m_lookAt += m_right * x;
@@ -42,7 +42,7 @@ enPerspectiveCamera::TranslateRelative(float x, float y, float z)
 }
 
 void
-enPerspectiveCamera::rotateInYaw(float angleInDegs)
+enPerspectiveFreeCamera::rotateInYaw(float angleInDegs)
 {
   m_horizantalAngle += glm::radians(angleInDegs);
 
@@ -50,14 +50,14 @@ enPerspectiveCamera::rotateInYaw(float angleInDegs)
 }
 
 void
-enPerspectiveCamera::rotateInPitch(float angleInDegs)
+enPerspectiveFreeCamera::rotateInPitch(float angleInDegs)
 {
   m_verticalAngle += glm::radians(angleInDegs);
   this->updateMatrixes();
 }
 
 void
-enPerspectiveCamera::rotateInRoll(float angleInDegs)
+enPerspectiveFreeCamera::rotateInRoll(float angleInDegs) 
 {
   m_zAngle += glm::radians(angleInDegs);
 
@@ -65,15 +65,17 @@ enPerspectiveCamera::rotateInRoll(float angleInDegs)
 }
 
 void
-enPerspectiveCamera::rotateVector(float x, float y, float z, float angleInDegrees)
+enPerspectiveFreeCamera::rotateVector(const enVector2 &rotationDir,
+                                      float deltaTime )
 {
-  m_view = glm::rotate(m_view, glm::radians(angleInDegrees), enVector3(x, y, z));
+  m_horizantalAngle += glm::radians(rotationDir.x * deltaTime);
+  m_verticalAngle += glm::radians(rotationDir.y * deltaTime);
 
   updateMatrixes();
 }
 
 void
-enPerspectiveCamera::updateMatrixes()
+enPerspectiveFreeCamera::updateMatrixes()
 {
   m_front = enVector3
   (

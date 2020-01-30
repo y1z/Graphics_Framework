@@ -30,3 +30,29 @@ static inline std::ostream&
 operator <<(std::ostream& Stream, const enVector4& vec4) {
   return Stream << '<' << vec4.x << ", " << vec4.y << ", " << vec4.z << ", " << vec4.w << '>';
 }
+
+/**
+* Struct type defines
+*/
+
+struct SimpleVertex
+{
+  glm::vec3 Pos;
+  glm::vec2 Tex;
+};
+
+struct CBNeverChanges
+{
+  glm::mat4x4 mView;
+};
+
+struct CBChangeOnResize
+{
+  glm::mat4x4 mProjection;
+};
+
+struct CBChangesEveryFrame
+{
+  glm::mat4x4 mWorld;
+  glm::vec4 vMeshColor;
+};

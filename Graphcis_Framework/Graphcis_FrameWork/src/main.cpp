@@ -21,34 +21,11 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "DirectXTK/include/DDSTextureLoader.h"
 #include "DirectXTK/include/WICTextureLoader.h"
-#include "enPerspectiveCamera.h"
+#include "../include/enPerspectiveFreeCamera.h"
+#include "../include/enFirstPersonCamera.h"
+#include"enCameraManager.h"
 
 namespace dx = DirectX;
-//--------------------------------------------------------------------------------------
-// Structures
-//--------------------------------------------------------------------------------------
-struct SimpleVertex
-{
-  glm::vec3 Pos;
-  glm::vec2 Tex;
-};
-
-struct CBNeverChanges
-{
-  glm::mat4x4 mView;
-};
-
-struct CBChangeOnResize
-{
-  glm::mat4x4 mProjection;
-};
-
-struct CBChangesEveryFrame
-{
-  glm::mat4x4 mWorld;
-  glm::vec4 vMeshColor;
-};
-
 
 //--------------------------------------------------------------------------------------
 // Global Variables
@@ -73,13 +50,17 @@ ID3D11Buffer* g_pCBChangeOnResize = NULL;
 ID3D11Buffer* g_pCBChangesEveryFrame = NULL;
 ID3D11ShaderResourceView* g_pTextureRV = NULL;
 ID3D11SamplerState* g_pSamplerLinear = NULL;
-
-
-enPerspectiveCamera my_camera;
+/**************************************************/
+enPerspectiveFreeCamera my_camera;
+enFirstPersonCamera my_firstPersonCamera;
+enCameraManager my_manager;
+/**************************************************/
 
 glm::mat4x4 g_World(1.0f);
 glm::mat4x4 g_Projection(1.0f);
 glm::vec4 g_MeshColor(0.7f, 0.7f, 0.7f, 1.0f);
+
+static bool  g_useFreeCamera = true;
 
 static const std::filesystem::path g_initPath = std::filesystem::current_path();
 //--------------------------------------------------------------------------------------
@@ -544,6 +525,9 @@ InitDevice()
   if( FAILED(hr) )
     return hr;
 
+//************************************//************************************//************************************/************************************/
+//************************************//************************************//************************************/************************************/
+//************************************//************************************//************************************/************************************/
   sPerspectiveCameraDesc descriptorCamera;
   descriptorCamera.upDir = enVector3(0.0f, 1.0f, 0.0f);
   descriptorCamera.lookAtPosition = enVector3(0.0f, 0.0f, -1.0f);
@@ -552,6 +536,17 @@ InitDevice()
 
   my_camera.init(descriptorCamera);
 
+  sFirstPersonCameraDesc cameraDescriptor;
+  my_firstPersonCamera.init(cameraDescriptor);
+
+
+
+  my_manager.addCamera(&my_camera);
+  my_manager.addCamera(&my_firstPersonCamera);
+
+//************************************//************************************//************************************/************************************/
+//************************************//************************************//************************************/************************************/
+//************************************//************************************//************************************/************************************/
 
   // Initialize the world matrices
   g_World = glm::identity<glm::mat4x4>();
@@ -562,7 +557,7 @@ InitDevice()
   glm::vec3 Up(0.0f, 1.0f, 0.0f);
 
   CBNeverChanges cbNeverChanges;
-  cbNeverChanges.mView = glm::transpose(my_camera.getView());
+  cbNeverChanges.mView = glm::transpose(my_camera.getView() /* my_camera.getView()*/);
 
 
   g_pImmediateContext->UpdateSubresource(g_pCBNeverChanges, 0, NULL, &cbNeverChanges, 0, 0);
@@ -578,7 +573,7 @@ InitDevice()
                                        100.0f);
 
   CBChangeOnResize cbChangesOnResize;
-  cbChangesOnResize.mProjection = glm::transpose(my_camera.getProjection());
+  cbChangesOnResize.mProjection = glm::transpose(my_firstPersonCamera.getProjection() /*my_camera.getProjection()*/);
   g_pImmediateContext->UpdateSubresource(g_pCBChangeOnResize, 0, NULL, &cbChangesOnResize, 0, 0);
 
   return S_OK;
@@ -624,6 +619,18 @@ WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   PAINTSTRUCT ps;
   HDC hdc;
 
+
+  BasePerspectiveCamera* cameraPtr = nullptr;
+  if( g_useFreeCamera )
+  {
+    cameraPtr = my_manager.getFirstPersonCamera();
+  }
+  else
+  {
+    cameraPtr = my_manager.getFreeCamera();
+  }
+
+
   switch( message )
   {
     case WM_PAINT:
@@ -638,72 +645,250 @@ WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_KEYDOWN:
     {
 
+      if( wParam == (WPARAM)'1' )
+      {
+        if( g_useFreeCamera )
+        {
+          g_useFreeCamera = false;
+          std::cout << "false\n";
+        }
+        else
+        {
+          g_useFreeCamera = true;
+          std::cout << "true\n";
+        }
+      }
+
       if( wParam == (WPARAM)'W' )
       {
-        my_camera.TranslateRelative(0.0f, 0.0f, 1.0f);
+      //  my_firstPersonCamera.TranslateRelative(0.0f, 0.0f, 1.0f);
+        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
+        {
+          FirstPersonCam->TranslateRelative(0.0f, 0.0f, 1.0f);
+        }
+
+        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        {
+          freeCam->TranslateRelative(0.0f, 0.0f, 1.0f);
+        }
+
       }
 
       if( wParam == (WPARAM)'S' )
       {
-        my_camera.TranslateRelative(0.0f, 0.0f, -1.0f);
+        //my_firstPersonCamera.TranslateRelative(0.0f, 0.0f, -1.0f);
+
+        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
+        {
+          FirstPersonCam->TranslateRelative(0.0f, 0.0f, -1.0f);
+        }
+
+        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        {
+          freeCam->TranslateRelative(0.0f, 0.0f, -1.0f);
+        }
       }
       if( wParam == (WPARAM)'D' )
 
       {
-        my_camera.TranslateRelative(-1.0f, 0.0f, 0.0f);
+        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
+        {
+          FirstPersonCam->TranslateRelative(-1.0f, 0.0f, 0.0f);
+        }
+
+        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        {
+          freeCam->TranslateRelative(-1.0f, 0.0f, 0.0f);
+        }
+        //my_firstPersonCamera.TranslateRelative(-1.0f, 0.0f, 0.0f);
       }
       if( wParam == (WPARAM)'A' )
       {
-        my_camera.TranslateRelative(1.0f, 0.0f, 0.0f);
+        my_firstPersonCamera.TranslateRelative(1.0f, 0.0f, 0.0f);
+
+        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
+        {
+          FirstPersonCam->TranslateRelative(1.0f, 0.0f, 0.0f);
+        }
+
+        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        {
+          freeCam->TranslateRelative(1.0f, 0.0f, 0.0f);
+        }
       }
       if( wParam == static_cast<WPARAM>('E') )
       {
-        my_camera.TranslateRelative(0.0f, 1.0f, 0.0f);
+        //my_firstPersonCamera.TranslateRelative(0.0f, 1.0f, 0.0f);
+
+        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
+        {
+          FirstPersonCam->TranslateRelative(0.0f, 1.0f, 0.0f);
+        }
+
+        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        {
+          freeCam->TranslateRelative(0.0f, 1.0f, 0.0f);
+        }
       }
 
       if( wParam == static_cast<WPARAM>('Q') )
       {
-        my_camera.TranslateRelative(0.0f, -1.0f, 0.0f);
+        //my_firstPersonCamera.TranslateRelative(0.0f, -1.0f, 0.0f);
+
+        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
+        {
+          FirstPersonCam->TranslateRelative(0.0f, -1.0f, 0.0f);
+        }
+
+        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        {
+          freeCam->TranslateRelative(0.0f, -1.0f, 0.0f);
+        }
       }
 
       if( wParam == VK_RIGHT )
       {
-        my_camera.rotateInYaw(-10.0f);
+//        my_firstPersonCamera.rotateInYaw(-10.0f);
+
+        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
+        {
+          FirstPersonCam->rotateInYaw(-10.0f);
+        }
+
+        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        {
+          freeCam->rotateInYaw(-10.0f);
+        }
       }
 
       if( wParam == VK_LEFT )
       {
-        my_camera.rotateInYaw(10.0f);
+        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
+        {
+          FirstPersonCam->rotateInYaw(10.0f);
+        }
+
+        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        {
+          freeCam->rotateInYaw(10.0f);
+        }
+        ///my_firstPersonCamera.rotateInYaw(10.0f);
       }
 
       if( wParam == VK_UP )
       {
-        my_camera.rotateInPitch(10.0f);
+
+        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
+        {
+          FirstPersonCam->rotateInPitch(-10.0f);
+        }
+
+        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        {
+          freeCam->rotateInPitch(-10.0f);
+        }
+        //my_firstPersonCamera.rotateInPitch(-10.0f);
       }
 
       if( wParam == VK_DOWN )
       {
-        my_camera.rotateInPitch(-10.0f);
+        //my_firstPersonCamera.rotateInPitch(10.0f);
+
+        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
+        {
+          FirstPersonCam->rotateInPitch(10.0f);
+        }
+
+        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        {
+          freeCam->rotateInPitch(10.0f);
+        }
       }
 
       if( wParam == static_cast<WPARAM>('I') )
       {
-        my_camera.rotateInRoll(10.0f);
+        //my_firstPersonCamera.rotateInRoll(10.0f);
+
+        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
+        {
+          FirstPersonCam->rotateInRoll(10.0f);
+        }
+
+        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        {
+          freeCam->rotateInRoll(10.0f);
+        }
       }
 
       if( wParam == static_cast<WPARAM>('O') )
       {
-        my_camera.rotateInRoll(-10.0f);
+        //my_firstPersonCamera.rotateInRoll(-10.0f);
+
+        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
+        {
+          FirstPersonCam->rotateInRoll(-10.0f);
+        }
+
+        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        {
+          freeCam->rotateInRoll(-10.0f);
+        }
       }
 
 
       CBNeverChanges cbNeverChanges;
-      cbNeverChanges.mView = glm::transpose(my_camera.getView());
+      cbNeverChanges.mView = glm::transpose(cameraPtr->getView());
       g_pImmediateContext->UpdateSubresource(g_pCBNeverChanges, 0, NULL, &cbNeverChanges, 0, 0);
 
       CBChangeOnResize cbChangesOnResize;
-      cbChangesOnResize.mProjection = glm::transpose(my_camera.getProjection());
+      cbChangesOnResize.mProjection = glm::transpose(cameraPtr->getProjection());
       g_pImmediateContext->UpdateSubresource(g_pCBChangeOnResize, 0, NULL, &cbChangesOnResize, 0, 0);
+    }
+    break;
+
+    case(WM_MOUSEMOVE):
+    {
+      if( wParam & MK_SHIFT )
+      {
+        WINDOWINFO windInfo;
+        windInfo.cbSize = sizeof(WINDOWINFO);
+        GetWindowInfo(hWnd, &windInfo);
+
+        const int32_t WindowLocationX = (windInfo.rcWindow.right - windInfo.rcWindow.left);
+        const int32_t WindowLocationY = (windInfo.rcWindow.bottom - windInfo.rcWindow.top);
+
+        POINT  currentPos;
+        GetCursorPos(&currentPos);
+
+        SetCursorPos(WindowLocationX * .5f,
+                     WindowLocationY * .5f);
+
+        enVector3 mouseDir(currentPos.x - (WindowLocationX * .5f),
+                           currentPos.y - (WindowLocationY * .5f),
+                           0.0f);
+
+        mouseDir.x = -mouseDir.x;
+
+       // my_camera.rotateVector(mouseDir);
+
+        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
+        {
+          FirstPersonCam->rotateVector(mouseDir);
+        }
+
+        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        {
+          freeCam->rotateVector(mouseDir);
+        }
+
+        CBNeverChanges cbNeverChanges;
+        cbNeverChanges.mView = glm::transpose(cameraPtr->getView());
+        g_pImmediateContext->UpdateSubresource(g_pCBNeverChanges, 0, NULL, &cbNeverChanges, 0, 0);
+
+        CBChangeOnResize cbChangesOnResize;
+        cbChangesOnResize.mProjection = glm::transpose(cameraPtr->getProjection());
+        g_pImmediateContext->UpdateSubresource(g_pCBChangeOnResize, 0, NULL, &cbChangesOnResize, 0, 0);
+      }
     }
     break;
 
@@ -724,7 +909,7 @@ void Render()
   static float t = 0.0f;
   if( g_driverType == D3D_DRIVER_TYPE_REFERENCE )
   {
-    t += (float)glm::pi<float>()* 0.0125f;
+    t += (float)glm::pi<float>() * 0.0125f;
   }
   else
   {
@@ -734,10 +919,6 @@ void Render()
       dwTimeStart = dwTimeCur;
     t = (dwTimeCur - dwTimeStart) / 1000.0f;
   }
-
-  // Rotate cube around the origin
-
-  //g_World = glm::rotate(glm::identity<glm::mat4x4>(), (t), glm::vec3(0.0f, 1.0f, 0.0f));
 
   // Modify the color
   g_MeshColor.x = (sinf(t * 1.0f) + 1.0f) * 0.5f;
@@ -769,15 +950,10 @@ void Render()
 
   CBChangesEveryFrame cb;
   cb.vMeshColor = g_MeshColor;
-  for( uint32_t i = 0; i < 20; ++i )
-  {
-    g_World = glm::translate(g_World, enVector3(2.0f, 0, 0));
-    cb.mWorld = glm::transpose(g_World);
 
-
-    g_pImmediateContext->UpdateSubresource(g_pCBChangesEveryFrame, 0, NULL, &cb, 0, 0);
-    g_pImmediateContext->DrawIndexed(36, 0, 0);
-  }
+  helper::makeMaze(*g_pCBChangesEveryFrame,
+                   g_World,
+                   *g_pImmediateContext);
 
   g_World = glm::identity<glm::mat4x4>();
 

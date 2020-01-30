@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "MathTypes.h"
+#include "enTypes.h"
 
 /*class cDevice;
 class cDeviceContext;

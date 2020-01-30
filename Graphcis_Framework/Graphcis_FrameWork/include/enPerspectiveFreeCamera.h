@@ -40,19 +40,19 @@ struct sPerspectiveCameraDesc
 /**
 * @brief : this is a perspective camera
 */
-class enPerspectiveCamera final :
+class enPerspectiveFreeCamera final :
   public BasePerspectiveCamera
 {
 public:
-  enPerspectiveCamera();
-  ~enPerspectiveCamera() = default;
+  enPerspectiveFreeCamera();
+  ~enPerspectiveFreeCamera() = default;
 public:// functions
   /**
   * @brief : used to initialize the camera with user defined values
   * @param : descriptor[in] used to give the camera user defined values
   */
   enErrorCode
-    init(const sPerspectiveCameraDesc &descriptor);
+  init(const sPerspectiveCameraDesc &descriptor);
 
   /**
   * @brief : move the camera relative to it's own directions(aka 'up' , 'front' ,'right')
@@ -61,19 +61,20 @@ public:// functions
   * @param : z [in]  how much in 'z' to translate
   */
   void
-    TranslateRelative(float x, float y, float z);
+  TranslateRelative(float x, float y, float z);
 
   void
   rotateInYaw(float angleInDegs);
 
   void
-    rotateInPitch(float angleInDegs);
+  rotateInPitch(float angleInDegs);
 
   void
-    rotateInRoll(float angleInDegs);
+  rotateInRoll(float angleInDegs);
 
   void
-  rotateVector(float x, float y, float z,float angleInDegrees = 10.0f );
+  rotateVector(const enVector2 &rotationDir,
+               float deltaTime = 0.01666f);
 
 private:// functions
 

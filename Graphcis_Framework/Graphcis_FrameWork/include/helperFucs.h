@@ -8,6 +8,9 @@
 #include <fstream>
 #include <iostream>
 
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/matrix_access.hpp"
+
 
 namespace helper
 {
@@ -118,12 +121,92 @@ namespace helper
   {
     static  std::vector<enVector3> translations =
     {
-     {enVector3(0.0f,2.0f,0.0f)},{enVector3(0.0f,2.0f,0.0f)},
-     {enVector3(0.0f,2.0f,0.0f)},{enVector3(0.0f,2.0f,0.0f)},
-     {enVector3(0.0f,2.0f,0.0f)}
+     {enVector3(0.0f,0.0f,2.0f)},{enVector3(0.0f,0.0f,2.0f)},
+     {enVector3(0.0f,0.0f,2.0f)},{enVector3(0.0f,0.0f,2.0f)},
+     {enVector3(0.0f,0.0f,2.0f)},
 
+     {enVector3(-2.0f,0.0f,0.0f)},{enVector3(-2.0f,0.0f,0.0f)},
+     {enVector3(-2.0f,0.0f,0.0f)},{enVector3(-2.0f,0.0f,0.0f)},
+     {enVector3(-2.0f,0.0f,0.0f)},{enVector3(-2.0f,0.0f,0.0f)},
+
+     {enVector3(0.0f,0.0f,2.0f)},{enVector3(0.0f,0.0f,2.0f)},
+     {enVector3(0.0f,0.0f,2.0f)},{enVector3(0.0f,0.0f,2.0f)},
+     {enVector3(0.0f,0.0f,2.0f)},{enVector3(0.0f,0.0f,2.0f)},
+     {enVector3(0.0f,0.0f,2.0f)},
+
+
+     {enVector3(2.0f,0.0f,0.0f)},{enVector3(2.0f,0.0f,0.0f)},
+     {enVector3(2.0f,0.0f,0.0f)},{enVector3(2.0f,0.0f,0.0f)},
+     {enVector3(2.0f,0.0f,0.0f)},
+
+
+     {enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},
+     {enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},
+
+
+     {enVector3(2.0f,0.0f,0.0f)},{enVector3(2.0f,0.0f,0.0f)},
+     {enVector3(2.0f,0.0f,0.0f)},{enVector3(2.0f,0.0f,0.0f)},
+     {enVector3(2.0f,0.0f,0.0f)},{enVector3(2.0f,0.0f,0.0f)},
+     {enVector3(2.0f,0.0f,0.0f)},{enVector3(2.0f,0.0f,0.0f)},
+
+
+     {enVector3(0.0f,0.0f,2.0f)},{enVector3(0.0f,0.0f,2.0f)},
+     {enVector3(0.0f,0.0f,2.0f)},{enVector3(0.0f,0.0f,2.0f)},
+     {enVector3(0.0f,0.0f,2.0f)},{enVector3(0.0f,0.0f,2.0f)},
+     {enVector3(0.0f,0.0f,2.0f)},{enVector3(0.0f,0.0f,2.0f)},
+     {enVector3(0.0f,0.0f,2.0f)},{enVector3(0.0f,0.0f,2.0f)},
+
+
+     {enVector3(0.0f,0.0f,2.0f * 4.0f)},
+
+
+     {enVector3(2.0f,0.0f,0.0f)},{enVector3(2.0f,0.0f,0.0f)},
+     {enVector3(2.0f,0.0f,0.0f)},{enVector3(2.0f,0.0f,0.0f)},
+     {enVector3(2.0f,0.0f,0.0f)},
+
+
+     {enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},
+     {enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},
+     {enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},
+     {enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},
+     {enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},
+     {enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},
+
+
+     {enVector3(-2.0f,0.0f,0.0f)},{enVector3(-2.0f,0.0f,0.0f)},
+     {enVector3(-2.0f,0.0f,0.0f)},{enVector3(-2.0f,0.0f,0.0f)},
+     {enVector3(-2.0f,0.0f,0.0f)},{enVector3(-2.0f,0.0f,0.0f)},
+
+
+     {enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},
+     {enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},
 
     };
+
+
+    CBChangesEveryFrame EveryFrame;
+    EveryFrame.vMeshColor = enVector4(0.6f, 0.6f, 0.6f, 0.6f);
+
+    enMatrix4x4 scaleMatrixInY(1.0f);
+    scaleMatrixInY = glm::row(scaleMatrixInY, 1, enVector4(0.0f, 5.0f, 0.0f, 0.0f));
+    cubeMatrix *= scaleMatrixInY;
+    for( const enVector3& vector : translations )
+    {
+      cubeMatrix = glm::translate(cubeMatrix, vector);
+      EveryFrame.mWorld = glm::transpose(cubeMatrix);
+
+
+      dContext.UpdateSubresource(&cubeBuffer,
+                                 0,
+                                 NULL,
+                                 &EveryFrame,
+                                 0,
+                                 0);
+
+      dContext.DrawIndexed(36, 0, 0);
+    }
+
+    cubeMatrix = glm::identity<enMatrix4x4>();
 
   }
 }

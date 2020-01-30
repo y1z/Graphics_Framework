@@ -13,6 +13,9 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="include\util">
+      <UniqueIdentifier>{f12d2fbe-dece-4046-a467-ea3cc4406f7e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -21,10 +24,16 @@
     <ClCompile Include="src\cTransform.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\enPerspectiveCamera.cpp">
+    <ClCompile Include="src\BasePerspectiveCamera.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\BasePerspectiveCamera.cpp">
+    <ClCompile Include="src\enPerspectiveFreeCamera.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\enFirstPersonCamera.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\enCameraManager.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,13 +53,22 @@
     <ClInclude Include="include\cTransform.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\MathTypes.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\enPerspectiveCamera.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\BasePerspectiveCamera.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\Header.h">
+      <Filter>include\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enTypes.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enPerspectiveFreeCamera.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enFirstPersonCamera.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enCameraManager.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

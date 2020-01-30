@@ -1,5 +1,5 @@
 #pragma once
-#include "MathTypes.h"
+#include "enTypes.h"
 
 /**
 * @brief : this is a base class for any future camera classes.
