@@ -17,16 +17,26 @@ public:
 
 public:
 
-  enFirstPersonCamera*
-  getFirstPersonCamera();
 
+  /**
+  * @brief finds the first instance of a 'enFirstPersonCamera' camera and returns a pointer to it.
+  * @param[in] nthInstance :it's used to know which of type 'enFirstPersonCamera' to return (in case 
+  * there are more than one) by default it search the first(aka zero'eth instance).
+  */
+  enFirstPersonCamera*
+  getFirstPersonCamera(size_t nthInstance = 0);
+
+  /**
+  * @brief finds the first instance of a 'enFirstPersonCamera' camera and returns a pointer to it.
+  */
   enPerspectiveFreeCamera*
-  getFreeCamera();
+  getFreeCamera(size_t nthInstance = 0);
+
 
   void
   addCamera(BasePerspectiveCamera *ptrToCamera);
 
-public:
+private:
   std::vector<BasePerspectiveCamera* > m_cameras;
 
  };
