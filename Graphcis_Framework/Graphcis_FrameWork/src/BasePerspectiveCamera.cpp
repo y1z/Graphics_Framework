@@ -58,12 +58,6 @@ BasePerspectiveCamera::getRight() const
   return m_right;
 }
 
-enVector3 
-BasePerspectiveCamera::getDirction() const
-{
-  return m_direction;
-}
-
 float 
 BasePerspectiveCamera::getFov() const
 {
@@ -190,17 +184,6 @@ BasePerspectiveCamera::setRight(const enVector3& newRight)
   m_right = newRight;
 }
 
-void 
-BasePerspectiveCamera::setDirection(float x, float y, float z)
-{
-  m_direction = enVector3(x, y, z);
-}
-
-void
-BasePerspectiveCamera::setDirection(const enVector3& newDirection)
-{
-  m_direction = newDirection;
-}
 
 void 
 BasePerspectiveCamera::setHeight(float newHeight)

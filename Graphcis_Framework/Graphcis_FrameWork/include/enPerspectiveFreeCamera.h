@@ -75,6 +75,10 @@ public:// functions
   void
   rotateVector(const enVector2 &rotationDir,
                float deltaTime = 0.01666f);
+public:
+
+  virtual void
+  initDefault() override;
 
 private:// functions
 

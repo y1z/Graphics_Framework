@@ -61,9 +61,6 @@ public:
   enVector3
     getRight() const;
 
-  enVector3
-    getDirction() const;
-
   /**
   * @returns : the fov of the camera in radians
   * @bug : no known bugs.
@@ -214,23 +211,6 @@ public:
     setRight(const enVector3& newRight);
 
   /**
-  * @brief :sets the direction which the camera is looking at of the camera
-  * @bug : no known bugs.
-  * @param x , y ,z [in] is the new up direction for the camera.
-  */
-  void
-    setDirection(float x, float y, float z);
-
-  /**
-  * @brief :sets the direction  of the camera
-  * @bug : no known bugs.
-  * @param newUp[in] is the new up direction for the camera.
-  */
-
-  void
-    setDirection(const enVector3& newDirection);
-
-  /**
   * @brief :sets the 'height' direction of the camera
   * @bug : no known bugs.
   * @param newHeight [in] is the new up direction for the camera.
@@ -286,11 +266,16 @@ public:
 
   void
     setVerticalAngleRad(float newAngleInRadians);
-
+  /**
+  * @brief : set the Z axis angle in degrees
+  */
 
   void
     setZAngleDeg(float newAngleInDegrees);
 
+  /**
+  * @brief : set the Z axis angle in radians
+  */
 
   void
     setZAngleRad(float newAngleInRadians);
@@ -302,8 +287,16 @@ public:
   void
     setSpeed(float newSpeed);
 
+public: // virtual functions
 
-protected:
+  /**
+  * @brief : all variables related with the camera will be initialized with default values
+  */
+  virtual void
+  initDefault() = 0;
+
+
+protected: // variables 
   /**
   *  @brief : represent the following , where the camera is, how it's rotated .
   */
@@ -333,7 +326,6 @@ protected:
   */
   enVector3 m_right;
 
-  enVector3 m_direction;
   /**
   *  @brief : used to control how wide the 'lens' of the camera is.
   */

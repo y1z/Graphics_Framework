@@ -54,8 +54,8 @@ public:
   * @brief : initialized the camera with the values given by the descriptor
   * @param[in] descriptor ,use for the camera to have default values
   */
- enErrorCode
- init(const sFirstPersonCameraDesc &descriptor);
+  enErrorCode
+  init(const sFirstPersonCameraDesc &descriptor);
 
   /**
   * @brief :this function updates both the perspective and view matrix
@@ -82,10 +82,14 @@ public:
   rotateVector(const enVector2& rotationDir,
                float deltaTime = 0.01666f);
 
+public: // virtual functions
+
+  virtual void
+  initDefault() override;
+
 public:
   /**
-  * @brief : 
-  * @bug :
+  * @brief : the internal descriptor for the class, controls (rotation limits, and movement orientation)
   */
   sFirstPersonCameraDesc m_desc;
 

@@ -121,3 +121,7 @@ enFirstPersonCamera::rotateVector(const enVector2& rotationDir, float deltaTime)
 
   this->updateMatrixes();
 }
+
+void enFirstPersonCamera::initDefault()
+{
+}

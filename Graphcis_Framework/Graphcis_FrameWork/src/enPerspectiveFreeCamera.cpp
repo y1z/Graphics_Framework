@@ -75,6 +75,12 @@ enPerspectiveFreeCamera::rotateVector(const enVector2 &rotationDir,
 }
 
 void
+enPerspectiveFreeCamera::initDefault()
+{
+
+}
+
+void
 enPerspectiveFreeCamera::updateMatrixes()
 {
   m_front = enVector3

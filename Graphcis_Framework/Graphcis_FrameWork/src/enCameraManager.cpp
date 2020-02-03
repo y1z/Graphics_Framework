@@ -2,37 +2,29 @@
 #include <algorithm>
 
 enCameraManager::enCameraManager()
-{
-  m_cameras.reserve(4);
-}
+{}
 
 enCameraManager::~enCameraManager()
 {}
 
 enFirstPersonCamera*
-enCameraManager::getFirstPersonCamera(size_t nthInstance)
+enCameraManager::getFirstPersonCamera()
 {
   enFirstPersonCamera* result = nullptr;
 
-  for( auto& ptrToCamera : m_cameras )
+  for( BasePerspectiveCamera* ptrToCamera : m_cameras )
   {
-    result = dynamic_cast< enFirstPersonCamera*> (ptrToCamera);
+    result = dynamic_cast<enFirstPersonCamera*> (ptrToCamera);
 
-    if( result != nullptr && !(nthInstance == 0) )
-    {
-      nthInstance -= 1;
-    }
-    else if( result != nullptr && nthInstance == 0 )
-    {
-      return result;
-    }
+    if(result != nullptr ) 
+      break;
   }
 
-  return  nullptr;
+  return result;
 }
 
 enPerspectiveFreeCamera*
-enCameraManager::getFreeCamera(size_t nthInstance)
+enCameraManager::getFreeCamera()
 {
   enPerspectiveFreeCamera* result = nullptr;
 
@@ -40,17 +32,11 @@ enCameraManager::getFreeCamera(size_t nthInstance)
   {
     result = dynamic_cast<enPerspectiveFreeCamera*> (ptrToCamera);
 
-    if( result != nullptr && !(nthInstance == 0) )
-    {
-      nthInstance -= 1;
-    }
-    else if( result != nullptr && nthInstance == 0 )
-    {
-      return result;
-    }
+    if(result != nullptr ) 
+      break;
   }
 
-  return  nullptr;
+  return result;
 }
 
 void
