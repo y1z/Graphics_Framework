@@ -84,7 +84,7 @@ public:
 
 public: // virtual functions
 
-  virtual void
+  virtual bool 
   initDefault() override;
 
 public:

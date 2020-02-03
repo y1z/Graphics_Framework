@@ -241,17 +241,17 @@ public:
   */
   void
     setNear(float newNear);
-/**
-* @brief : set the horizontal  angle in degrees
-*/
+  /**
+  * @brief : set the horizontal  angle in degrees
+  */
   void
-    setHorzantalAngleDeg(float newAngleInDegrees);
+  setHorzantalAngleDeg(float newAngleInDegrees);
+
 /**
 * @brief : set the horizontal  angle in  radians
 */
-
   void
-    setHorzantalAngleRad(float newAngleInRadians);
+  setHorzantalAngleRad(float newAngleInRadians);
 
 
 /**
@@ -260,9 +260,9 @@ public:
   void//vertical
     setVerticalAngleDeg(float newAngleInDegrees);
 
-/**
-* @brief : set the vertical angle in  radians
-*/
+  /**
+  * @brief : set the vertical angle in  radians
+  */
 
   void
     setVerticalAngleRad(float newAngleInRadians);
@@ -286,15 +286,10 @@ public:
   */
   void
     setSpeed(float newSpeed);
+public: //virtual functions 
 
-public: // virtual functions
-
-  /**
-  * @brief : all variables related with the camera will be initialized with default values
-  */
-  virtual void
+  virtual bool
   initDefault() = 0;
-
 
 protected: // variables 
   /**

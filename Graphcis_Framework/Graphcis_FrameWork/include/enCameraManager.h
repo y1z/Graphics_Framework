@@ -35,6 +35,9 @@ public:
   addCamera(BasePerspectiveCamera *ptrToCamera);
 
 private:
+  /**
+  * @brief : contains the cameras used by the manager
+  */
   std::deque<BasePerspectiveCamera* > m_cameras;
 
  };

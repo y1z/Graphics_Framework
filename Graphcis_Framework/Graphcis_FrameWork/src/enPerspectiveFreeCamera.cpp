@@ -57,7 +57,7 @@ enPerspectiveFreeCamera::rotateInPitch(float angleInDegs)
 }
 
 void
-enPerspectiveFreeCamera::rotateInRoll(float angleInDegs) 
+enPerspectiveFreeCamera::rotateInRoll(float angleInDegs)
 {
   m_zAngle += glm::radians(angleInDegs);
 
@@ -65,8 +65,8 @@ enPerspectiveFreeCamera::rotateInRoll(float angleInDegs)
 }
 
 void
-enPerspectiveFreeCamera::rotateVector(const enVector2 &rotationDir,
-                                      float deltaTime )
+enPerspectiveFreeCamera::rotateVector(const enVector2& rotationDir,
+                                      float deltaTime)
 {
   m_horizantalAngle += glm::radians(rotationDir.x * deltaTime);
   m_verticalAngle += glm::radians(rotationDir.y * deltaTime);
@@ -74,11 +74,27 @@ enPerspectiveFreeCamera::rotateVector(const enVector2 &rotationDir,
   updateMatrixes();
 }
 
-void
+bool
 enPerspectiveFreeCamera::initDefault()
 {
+  sPerspectiveCameraDesc defaultValues;
 
+  m_position = defaultValues.position;
+  m_lookAt = defaultValues.lookAtPosition;
+  m_up = defaultValues.upDir;
+
+  m_fov = defaultValues.fov;
+  m_height = defaultValues.height;
+  m_width = defaultValues.width;
+
+  m_horizantalAngle = defaultValues.horizantalAngle;
+  m_verticalAngle = defaultValues.verticalAngle;
+
+  this->updateMatrixes();
+
+  return true;
 }
+
 
 void
 enPerspectiveFreeCamera::updateMatrixes()

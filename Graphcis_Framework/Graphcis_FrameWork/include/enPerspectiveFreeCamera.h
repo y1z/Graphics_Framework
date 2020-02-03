@@ -75,12 +75,12 @@ public:// functions
   void
   rotateVector(const enVector2 &rotationDir,
                float deltaTime = 0.01666f);
-public:
+public:// virtual functions
 
-  virtual void
-  initDefault() override;
+  virtual  bool
+  initDefault()  override;
 
-private:// functions
+private:// 
 
   /**
   * @brief :this function updates both the perspective and view matrix

@@ -8,6 +8,7 @@
 
 enFirstPersonCamera::enFirstPersonCamera()
   :BasePerspectiveCamera()
+  , m_desc(sFirstPersonCameraDesc())// default construction
 {}
 
 enErrorCode
@@ -56,7 +57,7 @@ enFirstPersonCamera::updateMatrixes()
   zRotation = glm::row(zRotation, 0, FirstRow);
   zRotation = glm::row(zRotation, 1, secondRow);
 
- m_projection *= zRotation;
+  m_projection *= zRotation;
 
 }
 
@@ -102,8 +103,8 @@ enFirstPersonCamera::rotateInRoll(float angleInDegs)
   m_zAngle += glm::radians(angleInDegs);
 
   m_zAngle = glm::clamp(m_zAngle,
-             m_desc.MinRollAngle,
-             m_desc.MaxRollAngle);
+                        m_desc.MinRollAngle,
+                        m_desc.MaxRollAngle);
 
   this->updateMatrixes();
 }
@@ -122,6 +123,11 @@ enFirstPersonCamera::rotateVector(const enVector2& rotationDir, float deltaTime)
   this->updateMatrixes();
 }
 
-void enFirstPersonCamera::initDefault()
+bool  
+enFirstPersonCamera::initDefault()
 {
+  m_desc = sFirstPersonCameraDesc();
+
+  this->updateMatrixes();
+  return true;
 }
