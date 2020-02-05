@@ -8,7 +8,6 @@
 
 enFirstPersonCamera::enFirstPersonCamera()
   :BasePerspectiveCamera()
-  , m_desc(sFirstPersonCameraDesc())// default construction
 {}
 
 enErrorCode

@@ -36,6 +36,9 @@
     <ClCompile Include="src\enCameraManager.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\appGraphcis.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\helperFucs.h">
@@ -69,6 +72,12 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\enCameraManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\cBaseApp.h">
+      <Filter>include\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\appGraphcis.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

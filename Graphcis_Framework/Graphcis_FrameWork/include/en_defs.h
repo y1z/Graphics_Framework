@@ -2,6 +2,8 @@
 #include <cstdint>
 #include <cstddef>
 #include <iostream>
+#include <cassert>
+
 /**
  * @brief This file contains all the typedef for the entropy engine 
  *
@@ -122,7 +124,7 @@ or if the setup wrong.)");
 }
 
 /*++++++++++++++++++++++++++++++++++++*/
-/* #define's  */
+/* define's  Debug */
 /*++++++++++++++++++++++++++++++++++++*/
 
 
@@ -154,4 +156,10 @@ happen */
 
 #endif// _UNICODE
 
+/*++++++++++++++++++++++++++++++++++++*/
+/* define's  utility*/
+/*++++++++++++++++++++++++++++++++++++*/
+
+#define DELETE_PTR(ptr) if(ptr != nullptr) {delete ptr; ptr= nullptr;}
+#define RELEASE_DX_PTR(dx_ptr) if(dx_ptr){dx_ptr->Release(); dx_ptr = nullptr;}
 

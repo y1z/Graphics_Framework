@@ -29,6 +29,7 @@ public:
   */
   virtual void
   destroy() = 0;
+private:
 
 };
 

@@ -25,6 +25,8 @@
 #include "../include/enFirstPersonCamera.h"
 #include"enCameraManager.h"
 
+#include "appGraphcis.h"
+
 namespace dx = DirectX;
 
 //--------------------------------------------------------------------------------------
@@ -91,34 +93,36 @@ Render();
 int
 main()
 {
-  if( InitPreDevice() == false )
-    return -1;
 
-  if( FAILED(InitDevice()) )
-  {
-    CleanupDevice();
-    return 0;
-  }
+  //if( InitPreDevice() == false )
+  //  return -1;
 
-  // Main message loop
-  MSG msg = { 0 };
-  while( WM_QUIT != msg.message )
-  {
-    if( PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) )
-    {
-      TranslateMessage(&msg);
-      DispatchMessage(&msg);
-    }
-    else
-    {
-      Render();
-    }
-  }
+  //if( FAILED(InitDevice()) )
+  //{
+  //  CleanupDevice();
+  //  return 0;
+  //}
 
+  //// Main message loop
+  //MSG msg = { 0 };
+  //while( WM_QUIT != msg.message )
+  //{
+  //  if( PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) )
+  //  {
+  //    TranslateMessage(&msg);
+  //    DispatchMessage(&msg);
+  //  }
+  //  else
+  //  {
+  //    Render();
+  //  }
+  //}
 
-  CleanupDevice();
-
-  return (int)msg.wParam;
+  cBaseApp * ptr_app = new appGraphcis();
+  ptr_app->init(); 
+  int result = ptr_app->run();
+  ptr_app->destroy();
+  return result;
 
 }
 
