@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <iostream>
 #include <cassert>
+#include "util/GraphicsDefines.h"
 
 /**
  * @brief This file contains all the typedef for the entropy engine 
@@ -122,6 +123,7 @@ or if the setup wrong.)");
 
   }
 }
+ 
 
 /*++++++++++++++++++++++++++++++++++++*/
 /* define's  Debug */
@@ -167,4 +169,6 @@ happen */
 /*++++++++++++++++++++++++++++++++++++*/
 /* struct's */
 /*++++++++++++++++++++++++++++++++++++*/
+
+
 

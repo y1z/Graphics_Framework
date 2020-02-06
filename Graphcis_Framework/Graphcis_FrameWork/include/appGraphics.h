@@ -4,7 +4,6 @@
 
 #include <filesystem>
 #include <memory>
-#include "MacroslessWindow.h"
   /**
   *  Forward declarations
   */
@@ -27,20 +26,22 @@ public:
 
 public:
   /**
-  * @brief :  where all resource are gathered
+  * @brief :  where all resource are gathered and classes are initialized
+  * @bug : no know bugs
   */
   virtual bool
   init() override;
 
   /**
   * @brief : this is where the main application starts after gathering resources
+  * @bug : no know bugs
   */
   virtual int
   run()override;
 
   /**
   * @brief : used for freeing resources
-  * @bugs : no know bugs
+  * @bug : no know bugs
   */
   virtual void
   destroy()override;
@@ -65,6 +66,10 @@ private:
                         ID3DBlob** ppBlobOut);
 
 
+ /**
+ * @TODO : move this function to it's own class
+ * @brief : creates a window
+ **/
   HRESULT
   InitWindow(HINSTANCE hInstance, int nCmdShow);
 
