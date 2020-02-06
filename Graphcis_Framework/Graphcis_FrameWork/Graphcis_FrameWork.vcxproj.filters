@@ -36,7 +36,7 @@
     <ClCompile Include="src\enCameraManager.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\appGraphcis.cpp">
+    <ClCompile Include="src\appGraphics.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -77,11 +77,11 @@
     <ClInclude Include="include\util\cBaseApp.h">
       <Filter>include\util</Filter>
     </ClInclude>
-    <ClInclude Include="include\appGraphcis.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\util\soModule.h">
       <Filter>include\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\appGraphics.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

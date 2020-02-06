@@ -1,5 +1,4 @@
-#include "appGraphcis.h"
-
+#include "appGraphics.h"
 //namespace dx = DirectX;
 
 int

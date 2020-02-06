@@ -1,4 +1,4 @@
-#include "..\include\appGraphcis.h"
+#include "..\include\appGraphics.h"
 
 #include "Resource.h"
 //--------------------------------------------------------------------------------------
