@@ -44,7 +44,7 @@ appGraphcis::init()
   if( checkIfSucceeded == FALSE )
     return false;
 
-  if (! InitStatics())
+  if( !InitStatics() )
     return false;
 
   if( FAILED(InitWindow(Hmodule, SW_SHOWDEFAULT)) )
@@ -63,7 +63,7 @@ appGraphcis::init()
     return false;
   }
 
-  my_initIsFinish = true; 
+  my_initIsFinish = true;
 
   return true;
 }
@@ -102,10 +102,10 @@ appGraphcis::destroy()
   }
 
   DELETE_PTR(my_camera)
-  DELETE_PTR(my_firstPersonCamera)
-  DELETE_PTR(my_manager)
+    DELETE_PTR(my_firstPersonCamera)
+    DELETE_PTR(my_manager)
 
-    //RELEASE_DX_PTR(p_ImmediateContext)
+      //RELEASE_DX_PTR(p_ImmediateContext)
     RELEASE_DX_PTR(p_SamplerLinear)
     RELEASE_DX_PTR(p_TextureRV)
     RELEASE_DX_PTR(p_CBNeverChanges)
@@ -298,7 +298,7 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
       if( wParam == VK_LEFT )
       {
-        if(auto* FreeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr))
+        if( auto* FreeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
           FreeCam->rotateInYaw(10.0f);
         }
@@ -443,9 +443,9 @@ appGraphcis::InitStatics()
     my_firstPersonCamera = new enFirstPersonCamera();
     my_manager = new enCameraManager();
   }
-  catch(const std::bad_alloc& allocError)
+  catch( const std::bad_alloc & allocError )
   {
- 
+
     std::cout << allocError.what() << '\n';
     return false;
   }
@@ -938,10 +938,14 @@ appGraphcis::Render()
 
   CBChangesEveryFrame cb;
   cb.vMeshColor = g_MeshColor;
+  cb.mWorld = glm::transpose(g_World);
 
-  helper::makeMaze(*p_CBChangesEveryFrame,
-                   g_World,
-                   *p_ImmediateContext);
+  //EveryFrame.mWorld = (cubeMatrix);
+
+  p_ImmediateContext->UpdateSubresource(p_CBChangesEveryFrame, 0, NULL, &cb, 0, 0);
+
+
+  p_ImmediateContext->DrawIndexed(36, 0, 0);
 
   g_World = glm::identity<glm::mat4x4>();
 

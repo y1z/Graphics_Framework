@@ -163,3 +163,8 @@ happen */
 #define DELETE_PTR(ptr) if(ptr != nullptr) {delete ptr; ptr= nullptr;}
 #define RELEASE_DX_PTR(dx_ptr) if(dx_ptr){dx_ptr->Release(); dx_ptr = nullptr;}
 
+
+/*++++++++++++++++++++++++++++++++++++*/
+/* struct's */
+/*++++++++++++++++++++++++++++++++++++*/
+

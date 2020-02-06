@@ -114,6 +114,7 @@ namespace helper
   }
 
   /*************/
+#if 0
   static void
     makeMaze(ID3D11Buffer& cubeBuffer,
              enMatrix4x4& cubeMatrix,
@@ -209,5 +210,6 @@ namespace helper
     cubeMatrix = glm::identity<enMatrix4x4>();
 
   }
+#endif 
 }
 

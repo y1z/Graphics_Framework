@@ -961,9 +961,6 @@ main()
 //  CBChangesEveryFrame cb;
 //  cb.vMeshColor = g_MeshColor;
 //
-//  helper::makeMaze(*g_pCBChangesEveryFrame,
-//                   g_World,
-//                   *g_pImmediateContext);
 //
 //  g_World = glm::identity<glm::mat4x4>();
 //

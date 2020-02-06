@@ -80,5 +80,8 @@
     <ClInclude Include="include\appGraphcis.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\util\soModule.h">
+      <Filter>include\util</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
