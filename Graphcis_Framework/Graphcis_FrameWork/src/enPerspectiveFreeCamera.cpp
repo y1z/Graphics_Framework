@@ -19,7 +19,7 @@ enPerspectiveFreeCamera::init(const sPerspectiveCameraDesc& descriptor)
 
   m_horizantalAngle = descriptor.horizantalAngle;
   m_verticalAngle = descriptor.verticalAngle;
-
+  m_zAngle = descriptor.zAngle;
 
   this->updateMatrixes();
   return enErrorCode::NoError;

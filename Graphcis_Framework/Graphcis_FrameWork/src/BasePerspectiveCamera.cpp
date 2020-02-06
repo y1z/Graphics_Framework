@@ -14,6 +14,7 @@ BasePerspectiveCamera::BasePerspectiveCamera()
   m_near(0.01f)
 {
   m_front = glm::normalize(m_lookAt - m_position);
+  m_zAngle = 0.00f;
 }
 
 enMatrix4x4

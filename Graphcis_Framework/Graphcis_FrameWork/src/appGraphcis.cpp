@@ -98,14 +98,14 @@ appGraphcis::destroy()
   if( p_ImmediateContext )
   {
     p_ImmediateContext->ClearState();
-    p_ImmediateContext = nullptr;
+    //p_ImmediateContext = nullptr;
   }
 
   DELETE_PTR(my_camera)
   DELETE_PTR(my_firstPersonCamera)
   DELETE_PTR(my_manager)
 
-    RELEASE_DX_PTR(p_ImmediateContext)
+    //RELEASE_DX_PTR(p_ImmediateContext)
     RELEASE_DX_PTR(p_SamplerLinear)
     RELEASE_DX_PTR(p_TextureRV)
     RELEASE_DX_PTR(p_CBNeverChanges)
@@ -120,7 +120,7 @@ appGraphcis::destroy()
     RELEASE_DX_PTR(p_DepthStencilView)
     RELEASE_DX_PTR(p_RenderTargetView)
     RELEASE_DX_PTR(p_SwapChain)
-    //RELEASE_DX_PTR(p_ImmediateContext)
+    RELEASE_DX_PTR(p_ImmediateContext)
     RELEASE_DX_PTR(p_d3dDevice)
 
     //if( p_d3dDevice ) p_d3dDevice->Release();
@@ -197,14 +197,14 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
       if( wParam == (WPARAM)'W' )
       {
-        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
-        {
-          FirstPersonCam->TranslateRelative(0.0f, 0.0f, 1.0f);
-        }
-
-        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
           freeCam->TranslateRelative(0.0f, 0.0f, 1.0f);
+        }
+
+        if( auto* FirstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        {
+          FirstPersonCam->TranslateRelative(0.0f, 0.0f, 1.0f);
         }
 
       }
@@ -213,27 +213,27 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
       {
         //my_firstPersonCamera.TranslateRelative(0.0f, 0.0f, -1.0f);
 
-        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
-        {
-          FirstPersonCam->TranslateRelative(0.0f, 0.0f, -1.0f);
-        }
-
-        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
           freeCam->TranslateRelative(0.0f, 0.0f, -1.0f);
+        }
+
+        if( auto* firstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        {
+          firstPersonCam->TranslateRelative(0.0f, 0.0f, -1.0f);
         }
       }
       if( wParam == (WPARAM)'D' )
 
       {
-        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
+        if( auto* FreeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
-          FirstPersonCam->TranslateRelative(-1.0f, 0.0f, 0.0f);
+          FreeCam->TranslateRelative(-1.0f, 0.0f, 0.0f);
         }
 
-        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        if( auto* FirstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
         {
-          freeCam->TranslateRelative(-1.0f, 0.0f, 0.0f);
+          FirstPersonCam->TranslateRelative(-1.0f, 0.0f, 0.0f);
         }
         //my_firstPersonCamera.TranslateRelative(-1.0f, 0.0f, 0.0f);
       }
@@ -241,28 +241,28 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
       {
        // my_firstPersonCamera.TranslateRelative(1.0f, 0.0f, 0.0f);
 
-        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
-        {
-          FirstPersonCam->TranslateRelative(1.0f, 0.0f, 0.0f);
-        }
-
-        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
           freeCam->TranslateRelative(1.0f, 0.0f, 0.0f);
+        }
+
+        if( auto* FirstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        {
+          FirstPersonCam->TranslateRelative(1.0f, 0.0f, 0.0f);
         }
       }
       if( wParam == static_cast<WPARAM>('E') )
       {
         //my_firstPersonCamera.TranslateRelative(0.0f, 1.0f, 0.0f);
 
-        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
-        {
-          FirstPersonCam->TranslateRelative(0.0f, 1.0f, 0.0f);
-        }
-
-        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
           freeCam->TranslateRelative(0.0f, 1.0f, 0.0f);
+        }
+
+        if( auto* FirstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        {
+          FirstPersonCam->TranslateRelative(0.0f, 1.0f, 0.0f);
         }
       }
 
@@ -270,14 +270,14 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
       {
         //my_firstPersonCamera.TranslateRelative(0.0f, -1.0f, 0.0f);
 
-        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
-        {
-          FirstPersonCam->TranslateRelative(0.0f, -1.0f, 0.0f);
-        }
-
-        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
           freeCam->TranslateRelative(0.0f, -1.0f, 0.0f);
+        }
+
+        if( auto* FirstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        {
+          FirstPersonCam->TranslateRelative(0.0f, -1.0f, 0.0f);
         }
       }
 
@@ -285,27 +285,27 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
       {
     //        my_firstPersonCamera.rotateInYaw(-10.0f);
 
-        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
+        if( auto* FreeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
-          FirstPersonCam->rotateInYaw(-10.0f);
+          FreeCam->rotateInYaw(-10.0f);
         }
 
-        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        if( auto* FirstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
         {
-          freeCam->rotateInYaw(-10.0f);
+          FirstPersonCam->rotateInYaw(-10.0f);
         }
       }
 
       if( wParam == VK_LEFT )
       {
-        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
+        if(auto* FreeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr))
         {
-          FirstPersonCam->rotateInYaw(10.0f);
+          FreeCam->rotateInYaw(10.0f);
         }
 
-        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        if( auto* FirstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
         {
-          freeCam->rotateInYaw(10.0f);
+          FirstPersonCam->rotateInYaw(10.0f);
         }
         ///my_firstPersonCamera.rotateInYaw(10.0f);
       }
@@ -313,14 +313,14 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
       if( wParam == VK_UP )
       {
 
-        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
-        {
-          FirstPersonCam->rotateInPitch(-10.0f);
-        }
-
-        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
           freeCam->rotateInPitch(-10.0f);
+        }
+
+        if( auto* FirstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        {
+          FirstPersonCam->rotateInPitch(-10.0f);
         }
         //my_firstPersonCamera.rotateInPitch(-10.0f);
       }
@@ -329,14 +329,14 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
       {
         //my_firstPersonCamera.rotateInPitch(10.0f);
 
-        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
+        if( auto* FreeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
-          FirstPersonCam->rotateInPitch(10.0f);
+          FreeCam->rotateInPitch(10.0f);
         }
 
-        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        if( auto* FirstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
         {
-          freeCam->rotateInPitch(10.0f);
+          FirstPersonCam->rotateInPitch(10.0f);
         }
       }
 
@@ -344,14 +344,14 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
       {
         //my_firstPersonCamera.rotateInRoll(10.0f);
 
-        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
-        {
-          FirstPersonCam->rotateInRoll(10.0f);
-        }
-
-        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
           freeCam->rotateInRoll(10.0f);
+        }
+
+        if( auto* FirstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        {
+          FirstPersonCam->rotateInRoll(10.0f);
         }
       }
 
@@ -359,14 +359,14 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
       {
         //my_firstPersonCamera.rotateInRoll(-10.0f);
 
-        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
-        {
-          FirstPersonCam->rotateInRoll(-10.0f);
-        }
-
-        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
           freeCam->rotateInRoll(-10.0f);
+        }
+
+        if( auto* FirstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+        {
+          FirstPersonCam->rotateInRoll(-10.0f);
         }
       }
 

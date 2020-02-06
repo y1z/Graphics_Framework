@@ -22,6 +22,10 @@ struct sFirstPersonCameraDesc
   */
   enVector3 upMovemientDir = enVector3(0.0f,.0f,.0f);
 
+  float m_horizantalAngle = 3.14159f * .5f;
+
+  float m_verticalAngle = 0.00f;
+
   //! approximately 80 degrees in radians
   float MaxPitchAngle =  1.3962f;
 

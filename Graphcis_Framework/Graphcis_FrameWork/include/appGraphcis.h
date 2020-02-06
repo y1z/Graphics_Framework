@@ -72,13 +72,13 @@ private:
   
   void
   Render();
-
 public:
 
   HINSTANCE                           g_hInst = nullptr;
   HWND                                g_hWnd = nullptr;
   D3D_DRIVER_TYPE                     g_driverType = D3D_DRIVER_TYPE_NULL;
   D3D_FEATURE_LEVEL                   g_featureLevel = D3D_FEATURE_LEVEL_11_0;
+
   ID3D11Device* p_d3dDevice = nullptr;
   static ID3D11DeviceContext* p_ImmediateContext;
   IDXGISwapChain* p_SwapChain = nullptr;
