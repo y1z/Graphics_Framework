@@ -4,6 +4,7 @@
 
 #include <filesystem>
 #include <memory>
+#include <string_view>
   /**
   *  Forward declarations
   */
@@ -55,17 +56,22 @@ private:
   bool 
   InitStatics();
 
-  HRESULT
+  
+  enErrorCode
   InitDevice();
 
   HRESULT
   InitEverythingElse();
 
-
+  /**
+  * @brief : compiles the chosen shader
+  * @param[in] FilePath : the path to the current shader.
+  * @bug :
+  */
   HRESULT
-  CompileShaderFromFile(const wchar_t* szFileName,
-                        LPCSTR szEntryPoint,
-                        LPCSTR szShaderModel,
+  CompileShaderFromFile(const wchar_t* FilePath,
+                        LPCSTR EntryPoint,
+                        LPCSTR ShaderModel,
                         ID3DBlob** ppBlobOut);
 
 
@@ -87,13 +93,19 @@ public:
   D3D_DRIVER_TYPE                     g_driverType = D3D_DRIVER_TYPE_NULL;
   D3D_FEATURE_LEVEL                   g_featureLevel = D3D_FEATURE_LEVEL_11_0;
 
+
   ID3D11Device* p_d3dDevice = nullptr;
+
   static ID3D11DeviceContext* p_ImmediateContext;
   IDXGISwapChain* p_SwapChain = nullptr;
   ID3D11RenderTargetView* p_RenderTargetView = nullptr;
   ID3D11Texture2D* p_DepthStencil = nullptr;
   ID3D11DepthStencilView* p_DepthStencilView = nullptr;
-  ID3D11VertexShader* p_VertexShader = nullptr;
+
+//  ID3D11VertexShader* p_VertexShader = nullptr;
+
+  enVertexShader* myVertexShader = nullptr;
+
   ID3D11PixelShader* p_PixelShader = nullptr;
   ID3D11InputLayout* p_VertexLayout = nullptr;
   ID3D11Buffer* p_VertexBuffer = nullptr;

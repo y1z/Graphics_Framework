@@ -9,7 +9,7 @@
 bool enDevice::is_Initalized = false;
 
 
-void
+int
 enDevice::OnStartUp(void* _Descriptor)
 {
 #if DIRECTX
@@ -18,6 +18,7 @@ enDevice::OnStartUp(void* _Descriptor)
 #endif // DIRECTX
   is_Initalized = true;
 
+  return 0;
 }
 
 void
@@ -280,3 +281,20 @@ enDevice::CreateSamplerState(enSampler& sampler)
 #endif // DIRECTX
   return false;
 }
+
+#if DIRECTX
+
+ID3D11Device*
+enDevice::getInterface()
+{
+  return m_interface;
+}
+
+ID3D11Device**
+enDevice::getInterfaceRef()
+{
+  return &m_interface;
+}
+
+
+#endif // DIRECTX

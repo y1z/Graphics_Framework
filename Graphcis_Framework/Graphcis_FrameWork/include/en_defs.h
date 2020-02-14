@@ -53,7 +53,7 @@ using uByte8 = uint_least64_t;//<! 8 bytes per instance
 /**
 *@brief used to determine the error that was committed
 */
-enum class enErrorCode :Byte8
+enum enErrorCode :Byte4
 {
   NoError = 0b000'0000'0000'0000'0000'0000'0000'0000, //!<  indicates that no error occurred  
   UnClassified = 0b000'0000'0000'0000'0000'0000'0000'0001,//!<  indicates that there is no-know name for the error 
@@ -153,7 +153,19 @@ or if the setup wrong.)");
     }
 
   }
+
+  static bool//success
+  enCheckSuccess(enErrorCode code)
+  {
+    if( code == enErrorCode::NoError )
+    {
+      return true;
+    }
+    return false;
+  }
 }
+
+
 
 
 /*++++++++++++++++++++++++++++++++++++*/
@@ -195,6 +207,11 @@ happen */
 
 #define DELETE_PTR(ptr) if(ptr != nullptr) {delete ptr; ptr= nullptr;}
 #define RELEASE_DX_PTR(dx_ptr) if(dx_ptr){dx_ptr->Release(); dx_ptr = nullptr;}
+  /**
+  * @retuns : true when the ErrorCode is `NoError` anything else returns false
+  * @bug : no known bugs
+  */
+#define EN_SUCCESS(errorCode) enError::enCheckSuccess(errorCode)
 
 
 /*++++++++++++++++++++++++++++++++++++*/

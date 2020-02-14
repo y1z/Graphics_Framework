@@ -19,8 +19,11 @@ public:
   ~enDevice() = default;
 
 public:
-
-  void
+  /**
+  * @brief :initializes the class as a module 
+  * @bug :
+  */
+  int 
   OnStartUp(void *_Descriptor) override;
 
   void
@@ -63,9 +66,15 @@ public:
   bool
   CreateSamplerState(enSampler& sampler);
 
+#if DIRECTX
+/*! returns a point directX device */
+  ID3D11Device*
+  getInterface();
+/*! returns a reference to a pointer of a directX device */
+  ID3D11Device**
+  getInterfaceRef();
 
 private:
-#if DIRECTX
 
   ID3D11Device* m_interface = nullptr;
 

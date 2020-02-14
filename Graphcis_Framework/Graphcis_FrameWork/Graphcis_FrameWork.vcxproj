@@ -185,6 +185,7 @@
   <ItemGroup>
     <ClCompile Include="src\enConstBuffer.cpp" />
     <ClCompile Include="src\enIndexBuffer.cpp" />
+    <ClCompile Include="src\enSampler.cpp" />
     <ClCompile Include="src\enVertexBuffer.cpp" />
     <ClCompile Include="src\appGraphics.cpp" />
     <ClCompile Include="src\enBaseBuffer.cpp" />
@@ -207,6 +208,7 @@
     <ClInclude Include="include\enFirstPersonCamera.h" />
     <ClInclude Include="include\enIndexBuffer.h" />
     <ClInclude Include="include\enPerspectiveFreeCamera.h" />
+    <ClInclude Include="include\enSampler.h" />
     <ClInclude Include="include\enVertexBuffer.h" />
     <ClInclude Include="include\en_defs.h" />
     <ClInclude Include="include\helperFucs.h" />

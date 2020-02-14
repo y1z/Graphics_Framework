@@ -36,17 +36,17 @@ public:
 	*			will be thrown.
 	*/
 	/************************************************************************************************************************/
-	static T& Instance()
+	static T& getInstance()
 	{
 		if (IsShutDown())
 		{
-			std::cout<<"soModule", "Instance()", "Trying to access a module but it hasn't been started up yet.";
+			std::cout<<"soModule", "getInstance()", "Trying to access a module but it hasn't been started up yet.";
 		}
 
 		if (IsDestroyed())
 		{
 			///console.log("soModule", "Instance()", "Trying to access a destroyed module.");
-			std::cerr << "soModule\n Instance()\n Trying to access a destroyed module.";
+			std::cerr << "soModule\n getInstance()\n Trying to access a destroyed module.";
 		}
 
 		return *_Instance();
@@ -58,19 +58,19 @@ public:
 	*			will be thrown.
 	*/
 	/************************************************************************************************************************/
-	static T* InstancePtr()
+	static T* getInstancePtr()
 	{
 		if (IsShutDown())
 		{
-			//console.log("soModule", "InstancePtr()", "Trying to access a module but it hasn't been started up yet.");
-			std::cerr << "soModule\n InstancePtr() \n Trying to access a module but it hasn't been started up yet.";
+			//console.log("soModule", "getInstancePtr()", "Trying to access a module but it hasn't been started up yet.");
+			std::cerr << "soModule\n getInstancePtr() \n Trying to access a module but it hasn't been started up yet.";
 			return NULL;
 		}
 
 		if (IsDestroyed())
 		{
-			//console.log("soModule", "InstancePtr()", "Trying to access a destroyed module.");
-			std::cerr << "soModule\n InstancePtr() \n Trying to access a destroyed module.";
+			//console.log("soModule", "getInstancePtr()", "Trying to access a destroyed module.");
+			std::cerr << "soModule\n getInstancePtr() \n Trying to access a destroyed module.";
 			return NULL;
 		}
 
@@ -82,7 +82,7 @@ public:
 	* @brief	Constructs and starts the module using the specified parameters.
 	*/
 	/************************************************************************************************************************/
-	static unsigned int StartUp(void* _Desc)
+	static int StartUp(void* _Desc)
 	{
 		if (!IsShutDown())
 		{
@@ -161,9 +161,10 @@ protected:
 	}
 
 
-	virtual void OnStartUp(void* _Desc)
+	virtual int OnStartUp(void* _Desc)
 	{
 
+		return -1;
 	}
 
 	/************************************************************************************************************************/
