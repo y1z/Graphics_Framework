@@ -254,6 +254,8 @@ appGraphcis::InitEverythingElse()
   enDevice & device = enDevice::getInstance();
   myVertexShader = new enVertexShader();
 
+  bool isSuccessful = false;
+
   HRESULT hr = S_FALSE;
 
   RECT rc;
@@ -322,8 +324,7 @@ appGraphcis::InitEverythingElse()
   p_ImmediateContext->RSSetViewports(1, &vp);
 
   // Compile the vertex shader
-  ID3DBlob* pVSBlob = NULL;
-  hr = CompileShaderFromFile(L"GraphcisFramework.fx", "VS", "vs_4_0", &pVSBlob);
+  hr = CompileShaderFromFile(L"GraphcisFramework.fx", "VS", "vs_4_0",&myVertexShader->m_desc.m_infoOfShader);
   if( FAILED(hr) )
   {
     MessageBox(NULL,
@@ -332,11 +333,12 @@ appGraphcis::InitEverythingElse()
   }
 
   // Create the vertex shader
-  hr = device.getInterface()->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), NULL, &myVertexShader->m_interface);
-  if( FAILED(hr) )
+  //hr = device.getInterface()->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), NULL, &myVertexShader->m_interface);
+  isSuccessful = device.CreateVertexShader(*myVertexShader);
+  if( !isSuccessful )
   {
-    pVSBlob->Release();
-    return hr;
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
+    return S_FALSE;
   }
 
   // Define the input layout
@@ -348,11 +350,15 @@ appGraphcis::InitEverythingElse()
   UINT numElements = ARRAYSIZE(layout);
 
   // Create the input layout
-  hr = device.getInterface()->CreateInputLayout(layout, numElements, pVSBlob->GetBufferPointer(),
-                                      pVSBlob->GetBufferSize(), &p_VertexLayout);
-  pVSBlob->Release();
+  hr = device.getInterface()->CreateInputLayout(layout,
+                                                numElements,
+                                                myVertexShader->m_desc.m_infoOfShader->GetBufferPointer(),
+                                                myVertexShader->m_desc.m_infoOfShader->GetBufferSize(),
+                                                //pVSBlob->GetBufferSize(),
+                                                &p_VertexLayout);
+  //pVSBlob->Release();
   if( FAILED(hr) )
-    return hr;
+      return hr;
 
   // Set the input layout
   p_ImmediateContext->IASetInputLayout(p_VertexLayout);
