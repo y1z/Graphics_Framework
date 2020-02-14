@@ -5,6 +5,7 @@
 class enVertexBuffer;
 class enIndexBuffer;
 class enConstBuffer;
+class enSampler;
 
 
   /**
@@ -57,6 +58,10 @@ public:
 
   bool
   CreateConstBuffer(enConstBuffer &constBuffer);
+
+   //! Creates a sampler 
+  bool
+  CreateSamplerState(enSampler& sampler);
 
 
 private:

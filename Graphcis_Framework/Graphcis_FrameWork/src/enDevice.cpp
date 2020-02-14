@@ -2,6 +2,8 @@
 #include "enVertexBuffer.h"
 #include "enIndexBuffer.h"
 #include "enConstBuffer.h"
+#include "enSampler.h"
+
 #include <vector>
 
 bool enDevice::is_Initalized = false;
@@ -255,6 +257,26 @@ enDevice::CreateConstBuffer(enConstBuffer& constBuffer)
   }
   return false;
 #elif OPENGL
+#endif // DIRECTX
+  return false;
+}
+
+bool
+enDevice::CreateSamplerState(enSampler& sampler)
+{
+#if DIRECTX
+  HRESULT hr = 0;
+  D3D11_SAMPLER_DESC directxSampler = sampler.getDirectxSamplerDesc();
+  hr = m_interface->CreateSamplerState(&directxSampler,
+                                       &sampler.m_interface);
+
+  if( SUCCEEDED(hr) )
+  {
+    return true;
+  }
+  return false;
+#elif OPENGL
+
 #endif // DIRECTX
   return false;
 }

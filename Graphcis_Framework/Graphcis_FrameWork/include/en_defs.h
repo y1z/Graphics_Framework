@@ -6,6 +6,7 @@
 #include <array>
 #include "util/GraphicsDefines.h"
 
+
 #if DIRECTX
 #include <d3d11.h>
 #endif//DIRECTX
@@ -270,10 +271,10 @@ struct enShaderBase
   enShaderBase() = default;
   ~enShaderBase()
   {
-#if DIRECTX
+  #if DIRECTX
     RELEASE_DX_PTR(m_infoOfShader);
-#elif OPENGL
-#endif // DIRECTX
+  #elif OPENGL
+  #endif // DIRECTX
   };
 #if DIRECTX
   ID3DBlob* m_infoOfShader = nullptr;
@@ -294,11 +295,11 @@ struct enTexture2D
 
   ~enTexture2D()
   {
-#if DIRECTX
+  #if DIRECTX
     RELEASE_DX_PTR(m_interface);
-#elif OPENGL
+  #elif OPENGL
     m_interface = 0;
-#endif // DIRECTX
+  #endif // DIRECTX
   }
 
 #if DIRECTX
@@ -323,11 +324,11 @@ struct enRenderTargetView
 
   ~enRenderTargetView()
   {
-#if DIRECTX
+  #if DIRECTX
     RELEASE_DX_PTR(m_interface);
-#elif OPENGL
+  #elif OPENGL
     m_interface = 0;
-#endif // DIRECTX
+  #endif // DIRECTX
   }
 
 
@@ -345,6 +346,23 @@ struct enRenderTargetView
 // TODO : convert to class
 struct enDepthStencilView
 {
+  enDepthStencilView() = default;
+  enDepthStencilView(const enDepthStencilView& other) = delete;
+  enDepthStencilView(enDepthStencilView&& other) noexcept
+    :m_interface(other.m_interface)
+  {
+  #if DIRECTX
+    other.m_interface = nullptr;
+  #endif // DIRECTX
+  }
+
+  ~enDepthStencilView()
+  {
+  #if DIRECTX
+    RELEASE_DX_PTR(m_interface);
+  #elif OPENGL
+  #endif // DIRECTX
+  };
 #if DIRECTX
   ID3D11DepthStencilView* m_interface = nullptr;
   sDepthStencilDescriptor m_desc;
@@ -358,6 +376,25 @@ struct enDepthStencilView
 struct enVertexShader
 {
   enShaderBase m_desc;
+
+  enVertexShader() = default;
+  enVertexShader(const enVertexShader& other) = delete;
+  enVertexShader(enVertexShader&& other) noexcept
+    :m_interface(other.m_interface)
+  {
+  #if DIRECTX
+    other.m_interface = nullptr;
+  #endif // DIRECTX
+  }
+
+  ~enVertexShader()
+  {
+  #if DIRECTX
+    RELEASE_DX_PTR(m_interface);
+  #elif OPENGL
+  #endif // DIRECTX
+  };
+
 #if DIRECTX
   ID3D11VertexShader* m_interface = nullptr;
 #elif OPENGL
@@ -368,6 +405,22 @@ struct enVertexShader
 // TODO : convert to class
 struct enPixelShader
 {
+  enPixelShader() = default;
+  enPixelShader(const enPixelShader& other) = delete;
+  enPixelShader(enPixelShader&& other) noexcept
+    :m_interface(other.m_interface)
+  {
+  #if DIRECTX
+    other.m_interface = nullptr;
+  #endif // DIRECTX
+  }
+  ~enPixelShader()
+  {
+  #if DIRECTX
+    RELEASE_DX_PTR(m_interface);
+  #elif OPENGL
+  #endif // DIRECTX
+  };
   enShaderBase m_desc;
 #if DIRECTX
   ID3D11PixelShader* m_interface = nullptr;
@@ -380,12 +433,18 @@ struct enPixelShader
 struct enInputLayout
 {
   enInputLayout() = default;
+  enInputLayout(const enInputLayout& other) = delete;
+  enInputLayout(enInputLayout&& other) noexcept
+    :m_interface(other.m_interface)
+  {
+    other.m_interface = nullptr;
+  }
   ~enInputLayout()
   {
-#if DIRECTX
+  #if DIRECTX
     RELEASE_DX_PTR(m_interface);
-#elif OPENGL
-#endif // DIRECTX
+  #elif OPENGL
+  #endif // DIRECTX
   };
   sInputDescriptor m_desc;
 
@@ -395,14 +454,6 @@ struct enInputLayout
 #endif // DIRECTX
 };
 
-struct enSampler
-{
-#if DIRECTX
-  ID3D11SamplerState * m_interface = nullptr;
-#elif OPENGL
-  int32 m_interface = 0;
-#endif // DIRECTX
-};
 /*********/
 /*********/
 
