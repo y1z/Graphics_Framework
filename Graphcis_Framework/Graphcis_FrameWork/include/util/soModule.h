@@ -25,6 +25,7 @@
 *			started up and shut down before and after use.
 */
 /************************************************************************************************************************/
+
 template <class T>
 class soModule
 {
@@ -44,7 +45,8 @@ public:
 
 		if (IsDestroyed())
 		{
-			console.log("soModule", "Instance()", "Trying to access a destroyed module.");
+			///console.log("soModule", "Instance()", "Trying to access a destroyed module.");
+			std::cerr << "soModule\n Instance()\n Trying to access a destroyed module.";
 		}
 
 		return *_Instance();
@@ -60,13 +62,15 @@ public:
 	{
 		if (IsShutDown())
 		{
-			console.log("soModule", "InstancePtr()", "Trying to access a module but it hasn't been started up yet.");
+			//console.log("soModule", "InstancePtr()", "Trying to access a module but it hasn't been started up yet.");
+			std::cerr << "soModule\n InstancePtr() \n Trying to access a module but it hasn't been started up yet.";
 			return NULL;
 		}
 
 		if (IsDestroyed())
 		{
-			console.log("soModule", "InstancePtr()", "Trying to access a destroyed module.");
+			//console.log("soModule", "InstancePtr()", "Trying to access a destroyed module.");
+			std::cerr << "soModule\n InstancePtr() \n Trying to access a destroyed module.";
 			return NULL;
 		}
 
@@ -82,8 +86,8 @@ public:
 	{
 		if (!IsShutDown())
 		{
-			console.log("soModule", "StartUp()", "Trying to start an already started module.");
-			return EC_FALSE;
+			std::cerr<< "soModule\n" <<"StartUp()\n" <<"Trying to start an already started module.\n";
+			return -1;
 		}
 
 		_Instance() = new T;
@@ -101,7 +105,7 @@ public:
 	{
 		if (IsShutDown())
 		{
-			console.log("soModule", "ShutDown()", "Trying to shut down an already shut down module.");
+      std::cerr<< "soModule\n" <<"ShutDown()\n" <<"Trying to shut down an already shut down module.\n";
 			return;
 		}
 
@@ -156,7 +160,7 @@ protected:
 
 	}
 
-	COMENTARIO SHABOTS
+
 	virtual void OnStartUp(void* _Desc)
 	{
 

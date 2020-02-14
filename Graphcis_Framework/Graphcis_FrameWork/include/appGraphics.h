@@ -58,6 +58,9 @@ private:
   HRESULT
   InitDevice();
 
+  HRESULT
+  InitEverythingElse();
+
 
   HRESULT
   CompileShaderFromFile(const wchar_t* szFileName,

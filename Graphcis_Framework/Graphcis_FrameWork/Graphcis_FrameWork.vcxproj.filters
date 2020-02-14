@@ -39,6 +39,21 @@
     <ClCompile Include="src\appGraphics.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\enDevice.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\enBaseBuffer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\enIndexBuffer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\enVertexBuffer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\enConstBuffer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\helperFucs.h">
@@ -81,7 +96,28 @@
       <Filter>include\util</Filter>
     </ClInclude>
     <ClInclude Include="include\appGraphics.h">
+      <Filter>include\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enDevice.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\enRenderTargetView.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enBaseBuffer.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enVertexBuffer.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enIndexBuffer.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enConstBuffer.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

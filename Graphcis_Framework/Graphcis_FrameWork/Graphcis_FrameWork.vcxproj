@@ -183,29 +183,43 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\enConstBuffer.cpp" />
+    <ClCompile Include="src\enIndexBuffer.cpp" />
+    <ClCompile Include="src\enVertexBuffer.cpp" />
     <ClCompile Include="src\appGraphics.cpp" />
+    <ClCompile Include="src\enBaseBuffer.cpp" />
     <ClCompile Include="src\enCameraManager.cpp" />
     <ClCompile Include="src\BasePerspectiveCamera.cpp" />
     <ClCompile Include="src\cTransform.cpp" />
+    <ClCompile Include="src\enDevice.cpp" />
     <ClCompile Include="src\enFirstPersonCamera.cpp" />
     <ClCompile Include="src\enPerspectiveFreeCamera.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\appGraphics.h" />
+    <ClInclude Include="include\enBaseBuffer.h" />
     <ClInclude Include="include\enCameraManager.h" />
     <ClInclude Include="include\BasePerspectiveCamera.h" />
     <ClInclude Include="include\cTransform.h" />
+    <ClInclude Include="include\enConstBuffer.h" />
+    <ClInclude Include="include\enDevice.h" />
     <ClInclude Include="include\enFirstPersonCamera.h" />
+    <ClInclude Include="include\enIndexBuffer.h" />
     <ClInclude Include="include\enPerspectiveFreeCamera.h" />
+    <ClInclude Include="include\enVertexBuffer.h" />
     <ClInclude Include="include\en_defs.h" />
     <ClInclude Include="include\helperFucs.h" />
     <ClInclude Include="include\MacroslessWindow.h" />
     <ClInclude Include="include\enTypes.h" />
+    <ClInclude Include="include\enRenderTargetView.h" />
     <ClInclude Include="include\Resource.h" />
     <ClInclude Include="include\util\cBaseApp.h" />
     <ClInclude Include="include\util\Header.h" />
     <ClInclude Include="include\util\soModule.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

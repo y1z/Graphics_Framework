@@ -5,7 +5,11 @@
 #include "enTypes.h"
 
 
+#if DIRECTX
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
+
+#endif // DIRECTX
+
 #include <cassert>

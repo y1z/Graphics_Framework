@@ -63,6 +63,12 @@ appGraphcis::init()
     return false;
   }
 
+  if( FAILED (InitEverythingElse()))
+  {
+    this->destroy();
+    return false;
+  }
+
   my_initIsFinish = true;
 
   return true;
@@ -98,14 +104,13 @@ appGraphcis::destroy()
   if( p_ImmediateContext )
   {
     p_ImmediateContext->ClearState();
-    //p_ImmediateContext = nullptr;
   }
 
-  DELETE_PTR(my_camera)
-    DELETE_PTR(my_firstPersonCamera)
-    DELETE_PTR(my_manager)
+  DELETE_PTR(my_camera);
 
-      //RELEASE_DX_PTR(p_ImmediateContext)
+  DELETE_PTR(my_firstPersonCamera);
+  DELETE_PTR(my_manager);
+
     RELEASE_DX_PTR(p_SamplerLinear)
     RELEASE_DX_PTR(p_TextureRV)
     RELEASE_DX_PTR(p_CBNeverChanges)
@@ -508,8 +513,23 @@ appGraphcis::InitDevice()
     if( SUCCEEDED(hr) )
       break;
   }
+
   if( FAILED(hr) )
     return hr;
+
+  return S_FALSE;
+   
+}
+
+HRESULT
+appGraphcis::InitEverythingElse()
+{
+  HRESULT hr = S_FALSE;
+
+  RECT rc;
+  GetClientRect(g_hWnd, &rc);
+  UINT width = rc.right - rc.left;
+  UINT height = rc.bottom - rc.top;
 
   // Create a render target view
   ID3D11Texture2D* pBackBuffer = NULL;
@@ -524,6 +544,15 @@ appGraphcis::InitDevice()
 
   // Create depth stencil texture
   D3D11_TEXTURE2D_DESC descDepth;
+  sTextureDescriptor descriptoText;
+
+  descriptoText.texWidth = width;
+  descriptoText.texHeight = height;
+  descriptoText.CpuAccess = 0;
+  descriptoText.texFormat = static_cast<int>(DXGI_FORMAT_D24_UNORM_S8_UINT);
+  descriptoText.Usage = D3D11_USAGE_DEFAULT;
+  descriptoText.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
   std::memset(&descDepth, 0, sizeof(descDepth));
   descDepth.Width = width;
   descDepth.Height = height;
@@ -795,6 +824,7 @@ appGraphcis::InitDevice()
   p_ImmediateContext->UpdateSubresource(p_CBChangeOnResize, 0, NULL, &cbChangesOnResize, 0, 0);
 
   return S_OK;
+  return E_NOTIMPL;
 }
 
 HRESULT
