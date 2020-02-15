@@ -6,7 +6,6 @@
 
 #include <vector>
 
-bool enDevice::is_Initalized = false;
 
 
 int
@@ -16,8 +15,6 @@ enDevice::OnStartUp(void* _Descriptor)
   m_interface = nullptr;
 #elif
 #endif // DIRECTX
-  is_Initalized = true;
-
   return 0;
 }
 
@@ -25,8 +22,8 @@ void
 enDevice::OnShutDown()
 {
 #if DIRECTX
-
   RELEASE_DX_PTR(m_interface)
+#elif OPENGL
 #endif // DIRECTX
 }
 
@@ -48,12 +45,39 @@ enDevice::CreateRenderTargetView(enTexture2D& texture,
 #if DIRECTX
   HRESULT hr = S_FALSE;
 
-
   hr = m_interface->CreateRenderTargetView(texture.m_interface,
                                            NULL,
                                            &renderTraget.m_interface);
   if( SUCCEEDED(hr) )
   {
+    return true;
+  }
+#elif OPENGL
+
+#endif // DIRECTX
+  return false;
+}
+
+bool 
+enDevice::CreateRenderTargetView(enRenderTargetView& renderTraget, uint32 targetIndex)
+{
+
+  if(renderTraget.c_randerTargetMax - 1 < targetIndex )
+  {
+    EN_LOG_DB("target index going out of bounds");
+    return false;
+  }
+#if DIRECTX
+  HRESULT hr = S_FALSE;
+
+  hr = m_interface->CreateRenderTargetView(renderTraget.m_targets[targetIndex].m_interface,
+                                           NULL,
+                                           &renderTraget.m_interface);
+  if( SUCCEEDED(hr) )
+  {
+    renderTraget.m_usedTargets[targetIndex] = true;
+    renderTraget.m_targetsCount++;
+
     return true;
   }
 #elif OPENGL
@@ -91,7 +115,6 @@ enDevice::CreateTexture2D(sTextureDescriptor& Description,
 #elif OPENGL
 #endif // DIRECTX
 return false;
-  return false;
 }
 
 bool
@@ -122,8 +145,8 @@ enDevice::CreateVertexShader(enVertexShader& vertexShader)
 {
 #if DIRECTX
   HRESULT hr;
-  hr = m_interface->CreateVertexShader(vertexShader.m_desc.m_infoOfShader->GetBufferPointer(),
-                                       vertexShader.m_desc.m_infoOfShader->GetBufferSize(),
+  hr = m_interface->CreateVertexShader(vertexShader.m_infoOfShader->GetBufferPointer(),
+                                       vertexShader.m_infoOfShader->GetBufferSize(),
                                        NULL,
                                        &vertexShader.m_interface);
 
@@ -142,8 +165,8 @@ enDevice::CreatePixelShader(enPixelShader& pixelShader)
 {
 #if DIRECTX
   HRESULT hr = S_FALSE;
-  hr = m_interface->CreatePixelShader(pixelShader.m_desc.m_infoOfShader->GetBufferPointer(),
-                                      pixelShader.m_desc.m_infoOfShader->GetBufferSize(),
+  hr = m_interface->CreatePixelShader(pixelShader.m_infoOfShader->GetBufferPointer(),
+                                      pixelShader.m_infoOfShader->GetBufferSize(),
                                       NULL,
                                       &pixelShader.m_interface);
 
@@ -182,8 +205,8 @@ enDevice::CreateInputLayout(enInputLayout& inputLayout,
 
   HRESULT  hr = m_interface->CreateInputLayout(&directxInputLayout[0],
                                                intermidateLayout.size(),
-                                               vertexShaderPath.m_desc.m_infoOfShader->GetBufferPointer(),
-                                               vertexShaderPath.m_desc.m_infoOfShader->GetBufferSize(),
+                                               vertexShaderPath.m_infoOfShader->GetBufferPointer(),
+                                               vertexShaderPath.m_infoOfShader->GetBufferSize(),
                                                &inputLayout.m_interface);
   if( SUCCEEDED(hr) )
   {
@@ -233,7 +256,6 @@ enDevice::CreateVertexBuffer(enVertexBuffer& vertexBuffer)
   {
     return true;
   }
-  return false;
 #elif OPENGL
 #endif // DIRECTX
 
@@ -256,7 +278,6 @@ enDevice::CreateConstBuffer(enConstBuffer& constBuffer)
   {
     return true;
   }
-  return false;
 #elif OPENGL
 #endif // DIRECTX
   return false;
@@ -275,7 +296,6 @@ enDevice::CreateSamplerState(enSampler& sampler)
   {
     return true;
   }
-  return false;
 #elif OPENGL
 
 #endif // DIRECTX

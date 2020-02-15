@@ -19,6 +19,7 @@
 //--------------------------------------------------------------------------------------
 #include <iostream>
 namespace dx = DirectX;
+using std::make_unique;
 
 
 enPerspectiveFreeCamera* appGraphcis::my_camera = nullptr;
@@ -39,7 +40,6 @@ appGraphcis::init()
   HMODULE Hmodule;
 
   BOOL checkIfSucceeded = GetModuleHandleEx(0x00, NULL, &Hmodule);
-
 
   if( checkIfSucceeded == FALSE )
     return false;
@@ -64,7 +64,13 @@ appGraphcis::init()
     return false;
   }
 
-  if( FAILED (InitEverythingElse()))
+  if( !initMyClasses() )
+  {
+    this->destroy();
+    return false;
+  }
+
+  if( FAILED(InitEverythingElse()) )
   {
     this->destroy();
     return false;
@@ -93,7 +99,6 @@ appGraphcis::run()
     }
   }
 
-  this->destroy();
   return (int)msg.wParam;
 }
 
@@ -108,48 +113,50 @@ appGraphcis::destroy()
   }
 
   DELETE_PTR(my_camera);
-
   DELETE_PTR(my_firstPersonCamera);
   DELETE_PTR(my_manager);
-  DELETE_PTR(myVertexShader);
 
-    RELEASE_DX_PTR(p_SamplerLinear)
-    RELEASE_DX_PTR(p_TextureRV)
-    RELEASE_DX_PTR(p_CBNeverChanges)
-    RELEASE_DX_PTR(p_CBChangeOnResize)
-    RELEASE_DX_PTR(p_CBChangesEveryFrame)
-    RELEASE_DX_PTR(p_VertexBuffer)
-    RELEASE_DX_PTR(p_IndexBuffer)
-    RELEASE_DX_PTR(p_VertexLayout)
-//   RELEASE_DX_PTR(p_VertexShader)
-    RELEASE_DX_PTR(p_PixelShader)
-    RELEASE_DX_PTR(p_DepthStencil)
-    RELEASE_DX_PTR(p_DepthStencilView)
-    RELEASE_DX_PTR(p_RenderTargetView)
-    RELEASE_DX_PTR(p_SwapChain)
-    RELEASE_DX_PTR(p_ImmediateContext)
-    RELEASE_DX_PTR(p_d3dDevice)
+  RELEASE_DX_PTR(p_SamplerLinear);
+  RELEASE_DX_PTR(p_TextureRV);
+  RELEASE_DX_PTR(p_CBNeverChanges);
+  RELEASE_DX_PTR(p_CBChangeOnResize);
+  RELEASE_DX_PTR(p_CBChangesEveryFrame);
+  RELEASE_DX_PTR(p_VertexBuffer);
+  RELEASE_DX_PTR(p_IndexBuffer);
+  RELEASE_DX_PTR(p_VertexLayout);
 
-    enDevice::ShutDown();
-    //if( p_d3dDevice ) p_d3dDevice->Release();
-  /*
-    if( p_CBChangeOnResize ) p_CBChangeOnResize->Release();
-    if( p_VertexLayout ) p_VertexLayout->Release();
-    if( p_IndexBuffer ) p_IndexBuffer->Release();
-    if( p_VertexBuffer ) p_VertexBuffer->Release();
-    if( p_CBChangesEveryFrame ) p_CBChangesEveryFrame->Release();
-    if( p_CBNeverChanges ) p_CBNeverChanges->Release();
-    if( p_TextureRV ) p_TextureRV->Release();
-    if( p_SamplerLinear ) p_SamplerLinear->Release();
-    if( p_VertexShader ) p_VertexShader->Release();
-    if( p_PixelShader ) p_PixelShader->Release();
-    if( p_DepthStencil ) p_DepthStencil->Release();
-    if( p_SwapChain ) p_SwapChain->Release();
-    if( p_DepthStencilView ) p_DepthStencilView->Release();
-    if( p_RenderTargetView ) p_RenderTargetView->Release();
-    if( p_SwapChain ) p_SwapChain->Release();
-    if( p_ImmediateContext ) p_ImmediateContext->Release();
-  */
+  RELEASE_DX_PTR(p_DepthStencilView);
+//  RELEASE_DX_PTR(p_RenderTargetView);
+  RELEASE_DX_PTR(p_SwapChain);
+  RELEASE_DX_PTR(p_ImmediateContext);
+//RELEASE_DX_PTR(p_d3dDevice);
+//RELEASE_DX_PTR(p_VertexShader)
+//RELEASE_DX_PTR(p_PixelShader)
+//RELEASE_DX_PTR(p_DepthStencil)
+
+
+  //myPixelShader.reset(nullptr);
+
+enDevice::ShutDown();
+//if( p_d3dDevice ) p_d3dDevice->Release();
+/*
+  if( p_CBChangeOnResize ) p_CBChangeOnResize->Release();
+  if( p_VertexLayout ) p_VertexLayout->Release();
+  if( p_IndexBuffer ) p_IndexBuffer->Release();
+  if( p_VertexBuffer ) p_VertexBuffer->Release();
+  if( p_CBChangesEveryFrame ) p_CBChangesEveryFrame->Release();
+  if( p_CBNeverChanges ) p_CBNeverChanges->Release();
+  if( p_TextureRV ) p_TextureRV->Release();
+  if( p_SamplerLinear ) p_SamplerLinear->Release();
+  if( p_VertexShader ) p_VertexShader->Release();
+  if( p_PixelShader ) p_PixelShader->Release();
+  if( p_DepthStencil ) p_DepthStencil->Release();
+  if( p_SwapChain ) p_SwapChain->Release();
+  if( p_DepthStencilView ) p_DepthStencilView->Release();
+  if( p_RenderTargetView ) p_RenderTargetView->Release();
+  if( p_SwapChain ) p_SwapChain->Release();
+  if( p_ImmediateContext ) p_ImmediateContext->Release();
+*/
 }
 
 
@@ -164,8 +171,7 @@ appGraphcis::InitStatics()
   }
   catch( const std::bad_alloc & allocError )
   {
-
-    std::cout << allocError.what() << '\n';
+    std::cout << allocError.what() << std::endl;
     return false;
   }
 
@@ -180,7 +186,7 @@ appGraphcis::InitDevice()
 
   enDevice::StartUp(nullptr);
 
-  enDevice & device = enDevice::getInstance();
+  enDevice& device = enDevice::getInstance();
 
   RECT rc;
   GetClientRect(g_hWnd, &rc);
@@ -248,11 +254,28 @@ appGraphcis::InitDevice()
   return enErrorCode::NoError;
 }
 
+bool
+appGraphcis::initMyClasses()
+{
+  try
+  {
+    myVertexShader = make_unique<enVertexShader>();
+    myPixelShader = make_unique<enPixelShader>();
+    myDepthStencil = make_unique<enTexture2D>();
+    myRenderTargetView = make_unique<enRenderTargetView>();
+  }
+  catch( const std::exception& e)
+  {
+    std::cerr << e.what() << std::endl;
+    return false;
+  }
+  return true;
+}
+
 HRESULT
 appGraphcis::InitEverythingElse()
 {
-  enDevice & device = enDevice::getInstance();
-  myVertexShader = new enVertexShader();
+  enDevice& device = enDevice::getInstance();
 
   bool isSuccessful = false;
 
@@ -264,54 +287,51 @@ appGraphcis::InitEverythingElse()
   UINT height = rc.bottom - rc.top;
 
   // Create a render target view
-  ID3D11Texture2D* pBackBuffer = NULL;
-  hr = p_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
+  //ID3D11Texture2D* pBackBuffer = NULL;
+  hr = p_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&myRenderTargetView->m_targets[0].m_interface);
   if( FAILED(hr) )
     return hr;
+  //hr = device.getInterface()->CreateRenderTargetView(pBackBuffer, NULL, &p_RenderTargetView);
 
-  hr = device.getInterface()->CreateRenderTargetView(pBackBuffer, NULL, &p_RenderTargetView);
-  pBackBuffer->Release();
+  isSuccessful = device.CreateRenderTargetView(*myRenderTargetView,myRenderTargetView->m_targetsCount);
+  if( !isSuccessful )
+  {
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
+    return S_FALSE;
+  }
+
+  //pBackBuffer->Release();
   if( FAILED(hr) )
     return hr;
 
   // Create depth stencil texture
-  D3D11_TEXTURE2D_DESC descDepth;
-  sTextureDescriptor descriptoText;
+  sTextureDescriptor descriptoDepth;
+  descriptoDepth.texWidth = width;
+  descriptoDepth.texHeight = height;
+  descriptoDepth.CpuAccess = 0;
+  descriptoDepth.texFormat = static_cast<int>(enFormats::depthStencil_format);
+  descriptoDepth.Usage = enBufferUse::Default;
+  descriptoDepth.BindFlags = enBufferBind::DepthStencil;
+  descriptoDepth.arraySize = 1;
 
-  descriptoText.texWidth = width;
-  descriptoText.texHeight = height;
-  descriptoText.CpuAccess = 0;
-  descriptoText.texFormat = static_cast<int>(DXGI_FORMAT_D24_UNORM_S8_UINT);
-  descriptoText.Usage = D3D11_USAGE_DEFAULT;
-  descriptoText.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-
-  std::memset(&descDepth, 0, sizeof(descDepth));
-  descDepth.Width = width;
-  descDepth.Height = height;
-  descDepth.MipLevels = 1;
-  descDepth.ArraySize = 1;
-  descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-  descDepth.SampleDesc.Count = 1;
-  descDepth.SampleDesc.Quality = 0;
-  descDepth.Usage = D3D11_USAGE_DEFAULT;
-  descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-  descDepth.CPUAccessFlags = 0;
-  descDepth.MiscFlags = 0;
-  hr = device.getInterface()->CreateTexture2D(&descDepth, NULL, &p_DepthStencil);
-  if( FAILED(hr) )
-    return hr;
+    isSuccessful = device.CreateTexture2D(descriptoDepth, *myDepthStencil);
+  if( !isSuccessful )
+  {
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
+    return S_FALSE;
+  }
 
   // Create the depth stencil view
   D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
   SecureZeroMemory(&descDSV, sizeof(descDSV));
-  descDSV.Format = descDepth.Format;
+  descDSV.Format = static_cast<DXGI_FORMAT> (descriptoDepth.texFormat);
   descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
   descDSV.Texture2D.MipSlice = 0;
-  hr = device.getInterface()->CreateDepthStencilView(p_DepthStencil, &descDSV, &p_DepthStencilView);
+  hr = device.getInterface()->CreateDepthStencilView(myDepthStencil->m_interface, &descDSV, &p_DepthStencilView);
   if( FAILED(hr) )
     return hr;
 
-  p_ImmediateContext->OMSetRenderTargets(1, &p_RenderTargetView, p_DepthStencilView);
+  p_ImmediateContext->OMSetRenderTargets(1, &myRenderTargetView->m_interface, p_DepthStencilView);
 
   // Setup the viewport
   D3D11_VIEWPORT vp;
@@ -324,7 +344,10 @@ appGraphcis::InitEverythingElse()
   p_ImmediateContext->RSSetViewports(1, &vp);
 
   // Compile the vertex shader
-  hr = CompileShaderFromFile(L"GraphcisFramework.fx", "VS", "vs_4_0",&myVertexShader->m_desc.m_infoOfShader);
+  hr = CompileShaderFromFile(L"GraphcisFramework.fx",
+                             "VS",
+                             "vs_4_0",
+                             &myVertexShader->m_infoOfShader);
   if( FAILED(hr) )
   {
     MessageBox(NULL,
@@ -352,20 +375,23 @@ appGraphcis::InitEverythingElse()
   // Create the input layout
   hr = device.getInterface()->CreateInputLayout(layout,
                                                 numElements,
-                                                myVertexShader->m_desc.m_infoOfShader->GetBufferPointer(),
-                                                myVertexShader->m_desc.m_infoOfShader->GetBufferSize(),
+                                                myVertexShader->m_infoOfShader->GetBufferPointer(),
+                                                myVertexShader->m_infoOfShader->GetBufferSize(),
                                                 //pVSBlob->GetBufferSize(),
                                                 &p_VertexLayout);
   //pVSBlob->Release();
   if( FAILED(hr) )
-      return hr;
+    return hr;
 
-  // Set the input layout
+// Set the input layout
   p_ImmediateContext->IASetInputLayout(p_VertexLayout);
 
   // Compile the pixel shader
-  ID3DBlob* pPSBlob = NULL;
-  hr = CompileShaderFromFile(L"GraphcisFramework.fx", "PS", "ps_4_0", &pPSBlob);
+  //ID3DBlob* pPSBlob = NULL;
+  hr = CompileShaderFromFile(L"GraphcisFramework.fx",
+                             "PS",
+                             "ps_4_0",
+                             &myPixelShader->m_infoOfShader);
   if( FAILED(hr) )
   {
     MessageBox(NULL,
@@ -374,10 +400,17 @@ appGraphcis::InitEverythingElse()
   }
 
   // Create the pixel shader
-  hr = device.getInterface()->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), NULL, &p_PixelShader);
-  pPSBlob->Release();
-  if( FAILED(hr) )
-    return hr;
+  isSuccessful = device.CreatePixelShader(*myPixelShader);
+  //hr = device.getInterface()->CreatePixelShader( myPixelShader->m_desc.m_infoOfShader->GetBufferPointer(),
+  //                                               myPixelShader->m_desc.m_infoOfShader->GetBufferSize(),
+  //                                              NULL,
+  //                                              &myPixelShader->m_interface);
+
+  if( !isSuccessful )
+  {
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation)
+    return S_FALSE;
+  }
 
   // Create vertex buffer
   SimpleVertex vertices[] =
@@ -683,7 +716,7 @@ appGraphcis::Render()
   // Clear the back buffer
   //
   float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; // red, green, blue, alpha
-  p_ImmediateContext->ClearRenderTargetView(p_RenderTargetView, ClearColor);
+  p_ImmediateContext->ClearRenderTargetView(myRenderTargetView->m_interface, ClearColor);
 
   //
   // Clear the depth buffer to 1.0 (max depth)
@@ -697,7 +730,7 @@ appGraphcis::Render()
   p_ImmediateContext->VSSetConstantBuffers(0, 1, &p_CBNeverChanges);
   p_ImmediateContext->VSSetConstantBuffers(1, 1, &p_CBChangeOnResize);
   p_ImmediateContext->VSSetConstantBuffers(2, 1, &p_CBChangesEveryFrame);
-  p_ImmediateContext->PSSetShader(p_PixelShader, NULL, 0);
+  p_ImmediateContext->PSSetShader(myPixelShader->m_interface, NULL, 0);
   p_ImmediateContext->PSSetConstantBuffers(2, 1, &p_CBChangesEveryFrame);
   p_ImmediateContext->PSSetShaderResources(0, 1, &p_TextureRV);
   p_ImmediateContext->PSSetSamplers(0, 1, &p_SamplerLinear);

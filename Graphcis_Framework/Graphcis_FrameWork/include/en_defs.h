@@ -75,13 +75,88 @@ enum enBufferBind
   Vertex = D3D11_BIND_VERTEX_BUFFER,
   Index = D3D11_BIND_INDEX_BUFFER,
   Const = D3D11_BIND_CONSTANT_BUFFER,
-  ShaderResource = D3D11_BIND_SHADER_RESOURCE
-
+  ShaderResource = D3D11_BIND_SHADER_RESOURCE,
+  RenderTarget = D3D11_BIND_RENDER_TARGET,
+  DepthStencil = D3D11_BIND_DEPTH_STENCIL,
 #else
   Vertex = 0b00'00'0000'0001,
   Index = 0b00'00'0000'0010,
   Const = 0b00'00'0000'0100,
   ShaderResource = 0b00'00'0000'1000,
+  RenderTarget = 0b00'00'0010'0000,
+  DepthStencil  = 0b00'00'0100'0000,
+#endif // DIRECTX
+};
+
+
+enum enBufferUse
+{
+#if DIRECTX
+  Default = D3D11_USAGE_DEFAULT,
+#elif OPENGL
+  Default  = 0,
+#endif//DIRECTX 
+};
+
+
+/** tells the a.p.i how the information is
+formated
+*/
+enum enFormats
+{
+#if DIRECTX
+  /* one channel */
+  uR8 = DXGI_FORMAT_R8_UINT,
+  uR16 = DXGI_FORMAT_R16_UINT,
+  fR16 = DXGI_FORMAT_R16_FLOAT,
+  uR32 = DXGI_FORMAT_R32_UINT,
+  fR32 = DXGI_FORMAT_R32_FLOAT,
+
+  /* two channel*/
+  fR16G16 = DXGI_FORMAT_R16G16_FLOAT,
+  /* three channel */
+
+  /*Four channel */
+  R8G8B8A8_uniform_norm = DXGI_FORMAT_R8G8B8A8_UNORM,
+  fR16G16B16A16 = DXGI_FORMAT_R16G16B16A16_FLOAT,
+  fR32G32B32A32 = DXGI_FORMAT_R32G32B32A32_FLOAT,
+  /* other */
+  depthStencil_format = DXGI_FORMAT_D24_UNORM_S8_UINT
+#elif OPEN_GL//TODO : GL
+  /* one channel */
+  uR8 = GL_UNSIGNED_BYTE, //GL_R8
+  uR16 = GL_UNSIGNED_SHORT,
+  fR16 = GL_HALF_FLOAT,
+  uR32 = GL_UNSIGNED_INT,
+  fR32 = GL_FLOAT,
+/*two channel */
+fR16G16 = GL_RGB16F,
+/* three channel */
+
+/*Four channel */
+R8G8B8A8_uniform_norm,
+fR16G16B16A16 = GL_RGBA16F,
+
+fR32G32B32A32 = GL_RGBA32F,
+/* other */
+depthStencil_format = GL_DEPTH24_STENCIL8,
+#else
+
+  uR8,
+  uR16,
+  fR16,
+  uR32,
+  fR32,
+/*two channel */
+fR16G16,
+/* three channel */
+
+/*Four channel */
+R8G8B8A8_uniform_norm,
+fR16G16B16A16,
+fR32G32B32A32,
+/* other */
+depthStencil_format,
 #endif // DIRECTX
 };
 
@@ -186,8 +261,8 @@ happen */
 #else
 // does nothing 
 #define EN_LOG_ERROR
-#define EN_LOG_ERROR_WITH_CODE (ErrorCode);
-#define EN_LOG_DB(message);
+#define EN_LOG_ERROR_WITH_CODE(ErrorCode)
+#define EN_LOG_DB(message)
 #endif // !NDEBUG
 
 #define LONG_CHAR(Message) L##Message
@@ -243,7 +318,7 @@ struct sBufferDesc
   uint32 cpuAccess{ 0 };
   uint32 miscFlags{ 0 };
   uint32 structured;
-  uint32 index = -1;
+  uint32 index =static_cast<uint32>(-1) ;
 };
 
 
@@ -286,7 +361,7 @@ struct sSamplerDesc
 struct enShaderBase
 {
   enShaderBase() = default;
-  ~enShaderBase()
+  virtual ~enShaderBase()
   {
   #if DIRECTX
     RELEASE_DX_PTR(m_infoOfShader);
@@ -336,7 +411,11 @@ struct enRenderTargetView
   enRenderTargetView(enRenderTargetView&& other) noexcept
     :m_interface(other.m_interface)
   {
+  #if DIRECTX
     other.m_interface = nullptr;
+  #elif OPENGL
+
+  #endif // DIRECTX
   }
 
   ~enRenderTargetView()
@@ -355,8 +434,11 @@ struct enRenderTargetView
   int32 m_interface;
 #endif // DIRECTX
 
+  static constexpr uint32 c_randerTargetMax = 8;
+
   uint32 m_targetsCount = 0U;
-  std::array<enTexture2D, 8> m_targets;
+  std::array<enTexture2D, c_randerTargetMax> m_targets;
+  std::array<bool, c_randerTargetMax > m_usedTargets;
 
 };
 
@@ -390,9 +472,8 @@ struct enDepthStencilView
 };
 
 // TODO : convert to class
-struct enVertexShader
+struct enVertexShader : public enShaderBase 
 {
-  enShaderBase m_desc;
 
   enVertexShader() = default;
   enVertexShader(const enVertexShader& other) = delete;
@@ -420,7 +501,7 @@ struct enVertexShader
 };
 
 // TODO : convert to class
-struct enPixelShader
+struct enPixelShader : public enShaderBase
 {
   enPixelShader() = default;
   enPixelShader(const enPixelShader& other) = delete;
@@ -438,7 +519,7 @@ struct enPixelShader
   #elif OPENGL
   #endif // DIRECTX
   };
-  enShaderBase m_desc;
+
 #if DIRECTX
   ID3D11PixelShader* m_interface = nullptr;
 #elif OPENGL

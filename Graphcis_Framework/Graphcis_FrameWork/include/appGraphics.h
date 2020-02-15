@@ -60,6 +60,9 @@ private:
   enErrorCode
   InitDevice();
 
+  bool 
+  initMyClasses();
+
   HRESULT
   InitEverythingElse();
 
@@ -94,19 +97,18 @@ public:
   D3D_FEATURE_LEVEL                   g_featureLevel = D3D_FEATURE_LEVEL_11_0;
 
 
-  ID3D11Device* p_d3dDevice = nullptr;
+  //ID3D11Device* p_d3dDevice = nullptr;
 
   static ID3D11DeviceContext* p_ImmediateContext;
   IDXGISwapChain* p_SwapChain = nullptr;
-  ID3D11RenderTargetView* p_RenderTargetView = nullptr;
-  ID3D11Texture2D* p_DepthStencil = nullptr;
+  //ID3D11RenderTargetView* p_RenderTargetView = nullptr;
+  //ID3D11Texture2D* p_DepthStencil = nullptr;
   ID3D11DepthStencilView* p_DepthStencilView = nullptr;
+  std::unique_ptr<enRenderTargetView> myRenderTargetView = nullptr; 
+  std::unique_ptr<enTexture2D> myDepthStencil = nullptr;
+  std::unique_ptr<enPixelShader> myPixelShader = nullptr;
+  std::unique_ptr<enVertexShader> myVertexShader = nullptr;
 
-//  ID3D11VertexShader* p_VertexShader = nullptr;
-
-  enVertexShader* myVertexShader = nullptr;
-
-  ID3D11PixelShader* p_PixelShader = nullptr;
   ID3D11InputLayout* p_VertexLayout = nullptr;
   ID3D11Buffer* p_VertexBuffer = nullptr;
   ID3D11Buffer* p_IndexBuffer = nullptr;

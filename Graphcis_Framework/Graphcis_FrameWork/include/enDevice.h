@@ -20,12 +20,16 @@ public:
 
 public:
   /**
-  * @brief :initializes the class as a module 
-  * @bug :
+  * @brief :initializes the module 
+  * @bug : no known bugs
   */
   int 
   OnStartUp(void *_Descriptor) override;
 
+  /**
+  * @brief : this is used to free any and all memory associated with the module
+  * @bug :
+  */
   void
   OnShutDown() override;;
 
@@ -36,6 +40,15 @@ public:
 
   bool
   CreateRenderTargetView(enTexture2D& texture, enRenderTargetView& renderTraget);
+
+  /**
+  * @brief : create a render-target-view with one render-target.
+  * @param[out] renderTragetView : the view into a render-target.
+  * @param[in] targetIndex : 
+  * @bug :
+  */
+  bool
+  CreateRenderTargetView(enRenderTargetView& renderTragetView, uint32 targetIndex = 0);
 
   bool
   CreateTexture2D(sTextureDescriptor& Description, enTexture2D& Texture);
@@ -82,7 +95,5 @@ private:
 
   int32 m_interface = 0;
 #endif // DIRECTX
-
-  static bool is_Initalized;
 };
 

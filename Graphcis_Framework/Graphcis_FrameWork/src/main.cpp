@@ -3,14 +3,14 @@
 int
 main()
 {
-  cBaseApp * ptr_app = new appGraphcis();
-  if( ptr_app->init() )
+  std::unique_ptr<cBaseApp> app = std::make_unique<appGraphcis>();
+  if( app->init() )
   {
-    int result = ptr_app->run();
-    ptr_app->destroy();
+    int result = app->run();
+    app->destroy();
     return result;
   }
-  EN_LOG_DB("FAILED TO INITIALIZE THE APPLICATION ")
+  EN_LOG_DB("FAILED TO INITIALIZE THE APPLICATION")
   return -1;
 }
 
