@@ -67,6 +67,7 @@ private:
   InitEverythingElse();
 
   /**
+  * @TODO : move this function to it's own class
   * @brief : compiles the chosen shader
   * @param[in] FilePath : the path to the current shader.
   * @bug :
@@ -117,6 +118,7 @@ public:
   ID3D11Buffer* p_CBChangesEveryFrame = nullptr;
   ID3D11ShaderResourceView* p_TextureRV = nullptr;
   ID3D11SamplerState* p_SamplerLinear = nullptr;
+
   /**************************************************/
   static enPerspectiveFreeCamera* my_camera;
   static enFirstPersonCamera* my_firstPersonCamera;

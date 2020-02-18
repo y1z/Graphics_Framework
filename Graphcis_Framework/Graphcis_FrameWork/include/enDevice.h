@@ -6,6 +6,7 @@ class enVertexBuffer;
 class enIndexBuffer;
 class enConstBuffer;
 class enSampler;
+class enInputLayout;
 
 
   /**

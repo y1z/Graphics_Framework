@@ -10,7 +10,7 @@
 #include "DirectXTK/include/WICTextureLoader.h"
 #include "../include/enPerspectiveFreeCamera.h"
 #include "../include/enFirstPersonCamera.h"
-#include"enCameraManager.h"
+#include "enCameraManager.h"
 #include "enDevice.h"
 
 

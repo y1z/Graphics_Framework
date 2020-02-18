@@ -3,6 +3,7 @@
 #include "enIndexBuffer.h"
 #include "enConstBuffer.h"
 #include "enSampler.h"
+#include "enInputLayout.h"
 
 #include <vector>
 
@@ -187,7 +188,7 @@ enDevice::CreateInputLayout(enInputLayout& inputLayout,
           //directX native input layout struct 
   std::vector<D3D11_INPUT_ELEMENT_DESC> directxInputLayout;
   // my input layout struct 
-  std::vector<sInputDescriptor> intermidateLayout = {inputLayout.m_desc};
+  std::vector<sInputDescriptor> intermidateLayout = inputLayout.getInputDesenriptor();
   /*convert my intermediate input layout format to
   directX input layout format */
   for( const sInputDescriptor& intermidate : intermidateLayout )
@@ -207,7 +208,7 @@ enDevice::CreateInputLayout(enInputLayout& inputLayout,
                                                intermidateLayout.size(),
                                                vertexShaderPath.m_infoOfShader->GetBufferPointer(),
                                                vertexShaderPath.m_infoOfShader->GetBufferSize(),
-                                               &inputLayout.m_interface);
+                                               inputLayout.getInterfaceRef());
   if( SUCCEEDED(hr) )
   {
     return true;

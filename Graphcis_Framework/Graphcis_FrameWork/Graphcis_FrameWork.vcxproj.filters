@@ -57,6 +57,9 @@
     <ClCompile Include="src\enSampler.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\enInputLayout.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\helperFucs.h">
@@ -120,6 +123,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\enSampler.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enInputLayout.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

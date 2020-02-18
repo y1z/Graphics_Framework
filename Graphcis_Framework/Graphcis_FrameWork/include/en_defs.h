@@ -527,31 +527,6 @@ struct enPixelShader : public enShaderBase
 #endif // DIRECTX
 };
 
-// TODO : convert to class
-struct enInputLayout
-{
-  enInputLayout() = default;
-  enInputLayout(const enInputLayout& other) = delete;
-  enInputLayout(enInputLayout&& other) noexcept
-    :m_interface(other.m_interface)
-  {
-    other.m_interface = nullptr;
-  }
-  ~enInputLayout()
-  {
-  #if DIRECTX
-    RELEASE_DX_PTR(m_interface);
-  #elif OPENGL
-  #endif // DIRECTX
-  };
-  sInputDescriptor m_desc;
-
-#if DIRECTX
-  ID3D11InputLayout* m_interface = nullptr;
-#elif OPENGL
-#endif // DIRECTX
-};
-
 /*********/
 /*********/
 
