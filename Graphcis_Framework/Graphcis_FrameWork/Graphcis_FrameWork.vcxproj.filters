@@ -60,6 +60,15 @@
     <ClCompile Include="src\enInputLayout.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\enBaseShader.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\enVertexShader.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\enPixelShader.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\helperFucs.h">
@@ -128,8 +137,18 @@
     <ClInclude Include="include\enInputLayout.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\enBaseShader.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enVertexShader.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enPixelShader.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

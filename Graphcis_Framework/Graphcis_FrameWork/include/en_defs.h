@@ -357,23 +357,6 @@ struct sSamplerDesc
 };
 
 
-// TODO : CONVERT TO BASE CLASS FOR SHADER
-struct enShaderBase
-{
-  enShaderBase() = default;
-  virtual ~enShaderBase()
-  {
-  #if DIRECTX
-    RELEASE_DX_PTR(m_infoOfShader);
-  #elif OPENGL
-  #endif // DIRECTX
-  };
-#if DIRECTX
-  ID3DBlob* m_infoOfShader = nullptr;
-#elif OPENGL
-#endif // DIRECTX
-};
-
 // TODO : convert to class
 struct enTexture2D
 {
@@ -439,7 +422,6 @@ struct enRenderTargetView
   uint32 m_targetsCount = 0U;
   std::array<enTexture2D, c_randerTargetMax> m_targets;
   std::array<bool, c_randerTargetMax > m_usedTargets;
-
 };
 
 // TODO : convert to class
@@ -468,62 +450,6 @@ struct enDepthStencilView
   enTexture2D m_texture;
 #elif OPENGL
   int32 m_interface = 0;
-#endif // DIRECTX
-};
-
-// TODO : convert to class
-struct enVertexShader : public enShaderBase 
-{
-
-  enVertexShader() = default;
-  enVertexShader(const enVertexShader& other) = delete;
-  enVertexShader(enVertexShader&& other) noexcept
-    :m_interface(other.m_interface)
-  {
-  #if DIRECTX
-    other.m_interface = nullptr;
-  #endif // DIRECTX
-  }
-
-  ~enVertexShader()
-  {
-  #if DIRECTX
-    RELEASE_DX_PTR(m_interface);
-  #elif OPENGL
-  #endif // DIRECTX
-  };
-
-#if DIRECTX
-  ID3D11VertexShader* m_interface = nullptr;
-#elif OPENGL
-  int32  m_interface = 0;
-#endif // DIRECTX
-};
-
-// TODO : convert to class
-struct enPixelShader : public enShaderBase
-{
-  enPixelShader() = default;
-  enPixelShader(const enPixelShader& other) = delete;
-  enPixelShader(enPixelShader&& other) noexcept
-    :m_interface(other.m_interface)
-  {
-  #if DIRECTX
-    other.m_interface = nullptr;
-  #endif // DIRECTX
-  }
-  ~enPixelShader()
-  {
-  #if DIRECTX
-    RELEASE_DX_PTR(m_interface);
-  #elif OPENGL
-  #endif // DIRECTX
-  };
-
-#if DIRECTX
-  ID3D11PixelShader* m_interface = nullptr;
-#elif OPENGL
-  int32  m_interface = 0;
 #endif // DIRECTX
 };
 

@@ -1,10 +1,9 @@
-#include "..\include\appGraphics.h"
 //--------------------------------------------------------------------------------------
 // my includes 
 //--------------------------------------------------------------------------------------
+#include "..\include\appGraphics.h"
 #include "helperFucs.h"
 #include "Resource.h"
-
 #include "glm/gtc/matrix_transform.hpp"
 #include "DirectXTK/include/DDSTextureLoader.h"
 #include "DirectXTK/include/WICTextureLoader.h"
@@ -12,7 +11,6 @@
 #include "../include/enFirstPersonCamera.h"
 #include "enCameraManager.h"
 #include "enDevice.h"
-
 
 //--------------------------------------------------------------------------------------
 // standard  includes 
@@ -57,8 +55,7 @@ appGraphcis::init()
     return false;
   }
 
-
-  if( !EN_SUCCESS(InitDevice()) )
+  if( !EN_SUCCESS(initDevice()) )
   {
     this->destroy();
     return false;
@@ -137,26 +134,26 @@ appGraphcis::destroy()
 
   //myPixelShader.reset(nullptr);
 
-enDevice::ShutDown();
-//if( p_d3dDevice ) p_d3dDevice->Release();
-/*
-  if( p_CBChangeOnResize ) p_CBChangeOnResize->Release();
-  if( p_VertexLayout ) p_VertexLayout->Release();
-  if( p_IndexBuffer ) p_IndexBuffer->Release();
-  if( p_VertexBuffer ) p_VertexBuffer->Release();
-  if( p_CBChangesEveryFrame ) p_CBChangesEveryFrame->Release();
-  if( p_CBNeverChanges ) p_CBNeverChanges->Release();
-  if( p_TextureRV ) p_TextureRV->Release();
-  if( p_SamplerLinear ) p_SamplerLinear->Release();
-  if( p_VertexShader ) p_VertexShader->Release();
-  if( p_PixelShader ) p_PixelShader->Release();
-  if( p_DepthStencil ) p_DepthStencil->Release();
-  if( p_SwapChain ) p_SwapChain->Release();
-  if( p_DepthStencilView ) p_DepthStencilView->Release();
-  if( p_RenderTargetView ) p_RenderTargetView->Release();
-  if( p_SwapChain ) p_SwapChain->Release();
-  if( p_ImmediateContext ) p_ImmediateContext->Release();
-*/
+  enDevice::ShutDown();
+  //if( p_d3dDevice ) p_d3dDevice->Release();
+  /*
+    if( p_CBChangeOnResize ) p_CBChangeOnResize->Release();
+    if( p_VertexLayout ) p_VertexLayout->Release();
+    if( p_IndexBuffer ) p_IndexBuffer->Release();
+    if( p_VertexBuffer ) p_VertexBuffer->Release();
+    if( p_CBChangesEveryFrame ) p_CBChangesEveryFrame->Release();
+    if( p_CBNeverChanges ) p_CBNeverChanges->Release();
+    if( p_TextureRV ) p_TextureRV->Release();
+    if( p_SamplerLinear ) p_SamplerLinear->Release();
+    if( p_VertexShader ) p_VertexShader->Release();
+    if( p_PixelShader ) p_PixelShader->Release();
+    if( p_DepthStencil ) p_DepthStencil->Release();
+    if( p_SwapChain ) p_SwapChain->Release();
+    if( p_DepthStencilView ) p_DepthStencilView->Release();
+    if( p_RenderTargetView ) p_RenderTargetView->Release();
+    if( p_SwapChain ) p_SwapChain->Release();
+    if( p_ImmediateContext ) p_ImmediateContext->Release();
+  */
 }
 
 
@@ -180,7 +177,7 @@ appGraphcis::InitStatics()
 }
 
 enErrorCode
-appGraphcis::InitDevice()
+appGraphcis::initDevice()
 {
   HRESULT hr = S_OK;
 
@@ -263,8 +260,9 @@ appGraphcis::initMyClasses()
     myPixelShader = make_unique<enPixelShader>();
     myDepthStencil = make_unique<enTexture2D>();
     myRenderTargetView = make_unique<enRenderTargetView>();
+    myInputLayout = make_unique<enInputLayout>();
   }
-  catch( const std::exception& e)
+  catch( const std::exception & e )
   {
     std::cerr << e.what() << std::endl;
     return false;
@@ -293,7 +291,7 @@ appGraphcis::InitEverythingElse()
     return hr;
   //hr = device.getInterface()->CreateRenderTargetView(pBackBuffer, NULL, &p_RenderTargetView);
 
-  isSuccessful = device.CreateRenderTargetView(*myRenderTargetView,myRenderTargetView->m_targetsCount);
+  isSuccessful = device.CreateRenderTargetView(*myRenderTargetView, myRenderTargetView->m_targetsCount);
   if( !isSuccessful )
   {
     EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
@@ -314,7 +312,7 @@ appGraphcis::InitEverythingElse()
   descriptoDepth.BindFlags = enBufferBind::DepthStencil;
   descriptoDepth.arraySize = 1;
 
-    isSuccessful = device.CreateTexture2D(descriptoDepth, *myDepthStencil);
+  isSuccessful = device.CreateTexture2D(descriptoDepth, *myDepthStencil);
   if( !isSuccessful )
   {
     EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
@@ -344,16 +342,23 @@ appGraphcis::InitEverythingElse()
   p_ImmediateContext->RSSetViewports(1, &vp);
 
   // Compile the vertex shader
-  hr = CompileShaderFromFile(L"GraphcisFramework.fx",
-                             "VS",
-                             "vs_4_0",
-                             &myVertexShader->m_infoOfShader);
-  if( FAILED(hr) )
+  //hr = CompileShaderFromFile(L"GraphcisFramework.fx",
+  //                           "VS",
+  //                           "vs_4_0",
+  //                            myVertexShader->getShaderInfoRef());
+
+  enErrorCode errorCode = myVertexShader->compileShaderFromFile("GraphcisFramework.fx",
+                                                                "VS",
+                                                                "vs_4_0");
+
+  if( !EN_SUCCESS(errorCode) )
   {
+    EN_LOG_ERROR_WITH_CODE(errorCode);
     MessageBox(NULL,
                L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
-    return hr;
+    return S_FALSE;
   }
+
 
   // Create the vertex shader
   //hr = device.getInterface()->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), NULL, &myVertexShader->m_interface);
@@ -364,34 +369,47 @@ appGraphcis::InitEverythingElse()
     return S_FALSE;
   }
 
-  // Define the input layout
-  D3D11_INPUT_ELEMENT_DESC layout[] =
-  {
-      { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-      { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-  };
-  UINT numElements = ARRAYSIZE(layout);
+  myInputLayout->ReadShaderData(*myVertexShader);
 
-  // Create the input layout
-  hr = device.getInterface()->CreateInputLayout(layout,
-                                                numElements,
-                                                myVertexShader->m_infoOfShader->GetBufferPointer(),
-                                                myVertexShader->m_infoOfShader->GetBufferSize(),
-                                                //pVSBlob->GetBufferSize(),
-                                                &p_VertexLayout);
+
+  isSuccessful = device.CreateInputLayout(*myInputLayout, *myVertexShader);
+
+  if( !isSuccessful )
+  {
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
+    return S_FALSE;
+  }
+  //// Define the input layout
+  //D3D11_INPUT_ELEMENT_DESC layout[] =
+  //{
+  //    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+  //    { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+  //};
+  //UINT numElements = ARRAYSIZE(layout);
+
+  //// Create the input layout
+  //hr = device.getInterface()->CreateInputLayout(layout,
+  //                                              numElements,
+  //                                              myVertexShader->getShaderInfo()->GetBufferPointer(),
+  //                                              myVertexShader->getShaderInfo()->GetBufferSize(),
+  //                                              //pVSBlob->GetBufferSize(),
+  //                                              &p_VertexLayout);
+
   //pVSBlob->Release();
-  if( FAILED(hr) )
-    return hr;
 
 // Set the input layout
-  p_ImmediateContext->IASetInputLayout(p_VertexLayout);
+  p_ImmediateContext->IASetInputLayout(myInputLayout->getInterface());
 
   // Compile the pixel shader
   //ID3DBlob* pPSBlob = NULL;
-  hr = CompileShaderFromFile(L"GraphcisFramework.fx",
-                             "PS",
-                             "ps_4_0",
-                             &myPixelShader->m_infoOfShader);
+  //hr = CompileShaderFromFile(L"GraphcisFramework.fx",
+  //                           "PS",
+  //                           "ps_4_0",
+  //                           myPixelShader->getShaderInfoRef());
+
+  isSuccessful = myPixelShader->compileShaderFromFile("GraphcisFramework.fx",
+                                                      "PS",
+                                                      "ps_4_0");
   if( FAILED(hr) )
   {
     MessageBox(NULL,
@@ -409,41 +427,41 @@ appGraphcis::InitEverythingElse()
   if( !isSuccessful )
   {
     EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation)
-    return S_FALSE;
+      return S_FALSE;
   }
 
   // Create vertex buffer
   SimpleVertex vertices[] =
   {
-      { glm::vec3(-1.0f, 1.0f, -1.0f), glm::vec2(0.0f, 0.0f) },
-      { glm::vec3(1.0f, 1.0f, -1.0f), glm::vec2(1.0f, 0.0f) },
-      { glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f) },
-      { glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f) },
+      { glm::vec4(-1.0f, 1.0f, -1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
+      { glm::vec4(1.0f, 1.0f, -1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
+      { glm::vec4(1.0f, 1.0f, 1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
+      { glm::vec4(-1.0f, 1.0f, 1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
 
-      { glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec2(0.0f, 0.0f) },
-      { glm::vec3(1.0f, -1.0f, -1.0f), glm::vec2(1.0f, 0.0f) },
-      { glm::vec3(1.0f, -1.0f, 1.0f), glm::vec2(1.0f, 1.0f) },
-      { glm::vec3(-1.0f, -1.0f, 1.0f), glm::vec2(0.0f, 1.0f) },
+      { glm::vec4(-1.0f, -1.0f, -1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
+      { glm::vec4(1.0f, -1.0f, -1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
+      { glm::vec4(1.0f, -1.0f, 1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
+      { glm::vec4(-1.0f, -1.0f, 1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
 
-      { glm::vec3(-1.0f, -1.0f, 1.0f), glm::vec2(0.0f, 0.0f) },
-      { glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec2(1.0f, 0.0f) },
-      { glm::vec3(-1.0f, 1.0f, -1.0f), glm::vec2(1.0f, 1.0f) },
-      { glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f) },
+      { glm::vec4(-1.0f, -1.0f, 1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
+      { glm::vec4(-1.0f, -1.0f, -1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
+      { glm::vec4(-1.0f, 1.0f, -1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
+      { glm::vec4(-1.0f, 1.0f, 1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
 
-      { glm::vec3(1.0f, -1.0f, 1.0f), glm::vec2(0.0f, 0.0f) },
-      { glm::vec3(1.0f, -1.0f, -1.0f), glm::vec2(1.0f, 0.0f) },
-      { glm::vec3(1.0f, 1.0f, -1.0f), glm::vec2(1.0f, 1.0f) },
-      { glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f) },
+      { glm::vec4(1.0f, -1.0f, 1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
+      { glm::vec4(1.0f, -1.0f, -1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
+      { glm::vec4(1.0f, 1.0f, -1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
+      { glm::vec4(1.0f, 1.0f, 1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
 
-      { glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec2(0.0f, 0.0f) },
-      { glm::vec3(1.0f, -1.0f, -1.0f), glm::vec2(1.0f, 0.0f) },
-      { glm::vec3(1.0f, 1.0f, -1.0f), glm::vec2(1.0f, 1.0f) },
-      { glm::vec3(-1.0f, 1.0f, -1.0f), glm::vec2(0.0f, 1.0f) },
+      { glm::vec4(-1.0f, -1.0f, -1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
+      { glm::vec4(1.0f, -1.0f, -1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
+      { glm::vec4(1.0f, 1.0f, -1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
+      { glm::vec4(-1.0f, 1.0f, -1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
 
-      { glm::vec3(-1.0f, -1.0f, 1.0f), glm::vec2(0.0f, 0.0f) },
-      { glm::vec3(1.0f, -1.0f, 1.0f), glm::vec2(1.0f, 0.0f) },
-      { glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f) },
-      { glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f) },
+      { glm::vec4(-1.0f, -1.0f, 1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
+      { glm::vec4(1.0f, -1.0f, 1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
+      { glm::vec4(1.0f, 1.0f, 1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
+      { glm::vec4(-1.0f, 1.0f, 1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
   };
 
   D3D11_BUFFER_DESC bd;
@@ -609,8 +627,7 @@ appGraphcis::CompileShaderFromFile(const wchar_t* szFileName, LPCSTR szEntryPoin
   // the release configuration of this program.
   dwShaderFlags |= D3DCOMPILE_DEBUG;
 #endif
-
-  ID3DBlob* pErrorBlob;
+  ID3DBlob* pErrorBlob = nullptr;
 
   hr = D3DCompileFromFile(szFileName,
                           nullptr,
@@ -726,11 +743,11 @@ appGraphcis::Render()
   //
   // Render the cube
   //
-  p_ImmediateContext->VSSetShader(myVertexShader->m_interface, NULL, 0);
+  p_ImmediateContext->VSSetShader(myVertexShader->getInterface(), NULL, 0);
   p_ImmediateContext->VSSetConstantBuffers(0, 1, &p_CBNeverChanges);
   p_ImmediateContext->VSSetConstantBuffers(1, 1, &p_CBChangeOnResize);
   p_ImmediateContext->VSSetConstantBuffers(2, 1, &p_CBChangesEveryFrame);
-  p_ImmediateContext->PSSetShader(myPixelShader->m_interface, NULL, 0);
+  p_ImmediateContext->PSSetShader(myPixelShader->getInterface(), NULL, 0);
   p_ImmediateContext->PSSetConstantBuffers(2, 1, &p_CBChangesEveryFrame);
   p_ImmediateContext->PSSetShaderResources(0, 1, &p_TextureRV);
   p_ImmediateContext->PSSetSamplers(0, 1, &p_SamplerLinear);

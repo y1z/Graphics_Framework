@@ -2,6 +2,13 @@
 #include "util/cBaseApp.h"
 #include "util/Header.h"
 
+#include "enInputLayout.h"
+#include "enPixelShader.h"
+#include "enVertexShader.h"
+#include "enVertexBuffer.h"
+#include "enConstBuffer.h"
+#include "enIndexBuffer.h"
+
 #include <filesystem>
 #include <memory>
 #include <string_view>
@@ -58,8 +65,12 @@ private:
 
   
   enErrorCode
-  InitDevice();
+  initDevice();
 
+  /**
+  * @brief :initializes all the classes i create
+  * @bug :
+  */
   bool 
   initMyClasses();
 
@@ -70,7 +81,8 @@ private:
   * @TODO : move this function to it's own class
   * @brief : compiles the chosen shader
   * @param[in] FilePath : the path to the current shader.
-  * @bug :
+  * @param[in] EntryPoint : the name of the main function for the shader
+  * @bug : no known bugs
   */
   HRESULT
   CompileShaderFromFile(const wchar_t* FilePath,
@@ -87,7 +99,10 @@ private:
   InitWindow(HINSTANCE hInstance, int nCmdShow);
 
 
-  
+  /**
+  * @brief : takes care of rendering the image to the screen.
+  * @bug : no known bugs.
+  */
   void
   Render();
 public:
@@ -105,10 +120,12 @@ public:
   //ID3D11RenderTargetView* p_RenderTargetView = nullptr;
   //ID3D11Texture2D* p_DepthStencil = nullptr;
   ID3D11DepthStencilView* p_DepthStencilView = nullptr;
+
   std::unique_ptr<enRenderTargetView> myRenderTargetView = nullptr; 
   std::unique_ptr<enTexture2D> myDepthStencil = nullptr;
   std::unique_ptr<enPixelShader> myPixelShader = nullptr;
   std::unique_ptr<enVertexShader> myVertexShader = nullptr;
+  std::unique_ptr<enInputLayout> myInputLayout = nullptr;
 
   ID3D11InputLayout* p_VertexLayout = nullptr;
   ID3D11Buffer* p_VertexBuffer = nullptr;

@@ -1,9 +1,13 @@
 #include "enDevice.h"
+
 #include "enVertexBuffer.h"
 #include "enIndexBuffer.h"
 #include "enConstBuffer.h"
+
 #include "enSampler.h"
 #include "enInputLayout.h"
+#include "enVertexShader.h"
+#include "enPixelShader.h"
 
 #include <vector>
 
@@ -146,10 +150,10 @@ enDevice::CreateVertexShader(enVertexShader& vertexShader)
 {
 #if DIRECTX
   HRESULT hr;
-  hr = m_interface->CreateVertexShader(vertexShader.m_infoOfShader->GetBufferPointer(),
-                                       vertexShader.m_infoOfShader->GetBufferSize(),
+  hr = m_interface->CreateVertexShader(vertexShader.getShaderInfo()->GetBufferPointer(),
+                                       vertexShader.getShaderInfo()->GetBufferSize(),
                                        NULL,
-                                       &vertexShader.m_interface);
+                                       vertexShader.getInterfaceRef());
 
   if( SUCCEEDED(hr) )
   {
@@ -166,10 +170,10 @@ enDevice::CreatePixelShader(enPixelShader& pixelShader)
 {
 #if DIRECTX
   HRESULT hr = S_FALSE;
-  hr = m_interface->CreatePixelShader(pixelShader.m_infoOfShader->GetBufferPointer(),
-                                      pixelShader.m_infoOfShader->GetBufferSize(),
+  hr = m_interface->CreatePixelShader(pixelShader.getShaderInfo()->GetBufferPointer(),
+                                      pixelShader.getShaderInfo()->GetBufferSize(),
                                       NULL,
-                                      &pixelShader.m_interface);
+                                      pixelShader.getInterfaceRef());
 
   if( SUCCEEDED(hr) )
   {
@@ -206,8 +210,8 @@ enDevice::CreateInputLayout(enInputLayout& inputLayout,
 
   HRESULT  hr = m_interface->CreateInputLayout(&directxInputLayout[0],
                                                intermidateLayout.size(),
-                                               vertexShaderPath.m_infoOfShader->GetBufferPointer(),
-                                               vertexShaderPath.m_infoOfShader->GetBufferSize(),
+                                               vertexShaderPath.getShaderInfo()->GetBufferPointer(),
+                                               vertexShaderPath.getShaderInfo()->GetBufferSize(),
                                                inputLayout.getInterfaceRef());
   if( SUCCEEDED(hr) )
   {

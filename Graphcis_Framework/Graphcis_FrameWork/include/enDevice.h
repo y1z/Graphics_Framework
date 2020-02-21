@@ -5,6 +5,10 @@
 class enVertexBuffer;
 class enIndexBuffer;
 class enConstBuffer;
+
+class enVertexShader;
+class enPixelShader;
+
 class enSampler;
 class enInputLayout;
 

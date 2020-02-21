@@ -74,7 +74,7 @@ namespace helper
     loadFileToString(std::string_view filePath)
   {
     std::string Result{ "Error" };
-    std::ifstream File(filePath);
+    std::ifstream File(filePath.data());
 
     if( File.is_open() )
     {
@@ -96,7 +96,7 @@ namespace helper
     loadFileToString(std::wstring_view filePath)
   {
     std::string Result{ "Error" };
-    std::ifstream File(filePath);
+    std::wifstream File(filePath.data());
     if( File.is_open() )
     {
       std::stringstream SStream;

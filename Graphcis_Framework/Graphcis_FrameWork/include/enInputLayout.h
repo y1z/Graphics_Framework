@@ -3,6 +3,9 @@
 #include <vector>
 
 
+class enVertexShader;
+
+
 class enInputLayout
 {
 public:

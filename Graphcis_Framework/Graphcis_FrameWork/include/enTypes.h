@@ -37,7 +37,7 @@ operator <<(std::ostream& Stream, const enVector4& vec4) {
 
 struct SimpleVertex
 {
-  glm::vec3 Pos;
+  glm::vec4 Pos;
   glm::vec2 Tex;
 };
 

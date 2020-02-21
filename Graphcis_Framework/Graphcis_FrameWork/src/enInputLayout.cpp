@@ -1,5 +1,5 @@
-#include "enInputLayout.h"
 #include "..\include\enInputLayout.h"
+#include "enVertexShader.h"
 
 #if DIRECTX
 ID3D11InputLayout*
@@ -13,9 +13,8 @@ enInputLayout::getInterfaceRef()
 {
   return &m_interface;
 }
-
-
 #endif // DIRECTX
+
 bool
 enInputLayout::ReadShaderData(enVertexShader& ShaderData, bool isPerVertex)
 {
@@ -23,8 +22,8 @@ enInputLayout::ReadShaderData(enVertexShader& ShaderData, bool isPerVertex)
   ID3D11ShaderReflection* ReflectorShader = nullptr;
 
 // to init a shader Reflection
-  HRESULT hr = D3DReflect(ShaderData.m_infoOfShader->GetBufferPointer(),
-                          ShaderData.m_infoOfShader->GetBufferSize(),
+  HRESULT hr = D3DReflect(ShaderData.getShaderInfo()->GetBufferPointer(),
+                          ShaderData. getShaderInfo()->GetBufferSize(),
                           IID_ID3D11ShaderReflection,
                           reinterpret_cast<void**>(&ReflectorShader));
 
@@ -38,7 +37,7 @@ enInputLayout::ReadShaderData(enVertexShader& ShaderData, bool isPerVertex)
   D3D11_SHADER_DESC ShaderDesc;
   // to know how long to make the for loop
   ReflectorShader->GetDesc(&ShaderDesc);
-  // helps to get the proper alignment 
+  // helps to get the proper alignment
 
 
   for( uint32_t i = 0; i < ShaderDesc.InputParameters; ++i )
@@ -62,9 +61,9 @@ enInputLayout::ReadShaderData(enVertexShader& ShaderData, bool isPerVertex)
       InputLayout.InstanceData = D3D11_INPUT_PER_INSTANCE_DATA;
     }
 
-// determine DXGI format 
-//https://docs.microsoft.com/en-us/windows/desktop/api/d3dcommon/ne-d3dcommon-d3d_register_component_type
-// 
+    // determine DXGI format 
+    //https://docs.microsoft.com/en-us/windows/desktop/api/d3dcommon/ne-d3dcommon-d3d_register_component_type
+    // 
     if( paramDesc.Mask == 1 )
     {
       // 1 component values
@@ -156,5 +155,5 @@ enInputLayout::ReadShaderData(enVertexShader& ShaderData, bool isPerVertex)
 std::vector<sInputDescriptor>
 enInputLayout::getInputDesenriptor() const
 {
-  return std::vector<sInputDescriptor>();
+  return m_InputLayouts; 
 }
