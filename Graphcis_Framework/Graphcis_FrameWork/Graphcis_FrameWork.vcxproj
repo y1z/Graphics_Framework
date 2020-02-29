@@ -350,6 +350,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="dependencies\imgui\imgui.cpp" />
+    <ClCompile Include="dependencies\imgui\imgui_demo.cpp" />
+    <ClCompile Include="dependencies\imgui\imgui_draw.cpp" />
+    <ClCompile Include="dependencies\imgui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="dependencies\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="dependencies\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\cApiComponent.cpp" />
+    <ClCompile Include="src\enShaderResourceView.cpp" />
+    <ClCompile Include="src\enDeviceContext.cpp" />
+    <ClCompile Include="src\enSwapChain.cpp" />
+    <ClCompile Include="src\enViewport.cpp" />
     <ClCompile Include="src\enBaseShader.cpp" />
     <ClCompile Include="src\enConstBuffer.cpp" />
     <ClCompile Include="src\enIndexBuffer.cpp" />
@@ -366,9 +377,21 @@
     <ClCompile Include="src\enFirstPersonCamera.cpp" />
     <ClCompile Include="src\enPerspectiveFreeCamera.cpp" />
     <ClCompile Include="src\enVertexShader.cpp" />
+    <ClCompile Include="src\enWindow.cpp" />
+    <ClCompile Include="src\imGuiManager.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="dependencies\imgui\imconfig.h" />
+    <ClInclude Include="dependencies\imgui\imgui.h" />
+    <ClInclude Include="dependencies\imgui\imgui_impl_dx11.h" />
+    <ClInclude Include="dependencies\imgui\imgui_impl_win32.h" />
+    <ClInclude Include="dependencies\imgui\imgui_internal.h" />
+    <ClInclude Include="dependencies\imgui\imstb_rectpack.h" />
+    <ClInclude Include="dependencies\imgui\imstb_textedit.h" />
+    <ClInclude Include="dependencies\imgui\imstb_truetype.h" />
+    <ClInclude Include="include\cApiComponent.h" />
+    <ClInclude Include="include\enShaderResourceView.h" />
     <ClInclude Include="include\appGraphics.h" />
     <ClInclude Include="include\enBaseBuffer.h" />
     <ClInclude Include="include\enBaseShader.h" />
@@ -377,16 +400,21 @@
     <ClInclude Include="include\cTransform.h" />
     <ClInclude Include="include\enConstBuffer.h" />
     <ClInclude Include="include\enDevice.h" />
+    <ClInclude Include="include\enDeviceContext.h" />
     <ClInclude Include="include\enFirstPersonCamera.h" />
     <ClInclude Include="include\enIndexBuffer.h" />
     <ClInclude Include="include\enInputLayout.h" />
     <ClInclude Include="include\enPerspectiveFreeCamera.h" />
     <ClInclude Include="include\enPixelShader.h" />
     <ClInclude Include="include\enSampler.h" />
+    <ClInclude Include="include\enSwapChain.h" />
     <ClInclude Include="include\enVertexBuffer.h" />
     <ClInclude Include="include\enVertexShader.h" />
+    <ClInclude Include="include\enViewport.h" />
+    <ClInclude Include="include\enWindow.h" />
     <ClInclude Include="include\en_defs.h" />
     <ClInclude Include="include\helperFucs.h" />
+    <ClInclude Include="include\imGuiManager.h" />
     <ClInclude Include="include\MacroslessWindow.h" />
     <ClInclude Include="include\enTypes.h" />
     <ClInclude Include="include\enRenderTargetView.h" />

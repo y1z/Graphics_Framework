@@ -16,6 +16,9 @@
     <Filter Include="include\util">
       <UniqueIdentifier>{f12d2fbe-dece-4046-a467-ea3cc4406f7e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\imgui">
+      <UniqueIdentifier>{23baa276-aaa7-470c-b883-6b16ebcc1bed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -67,6 +70,45 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\enPixelShader.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imGuiManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\enViewport.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\enWindow.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\enDeviceContext.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\imgui\imgui.cpp">
+      <Filter>include\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\imgui\imgui_demo.cpp">
+      <Filter>include\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\imgui\imgui_draw.cpp">
+      <Filter>include\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\imgui\imgui_impl_dx11.cpp">
+      <Filter>include\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\imgui\imgui_impl_win32.cpp">
+      <Filter>include\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\imgui\imgui_widgets.cpp">
+      <Filter>include\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\enShaderResourceView.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cApiComponent.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\enSwapChain.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -144,6 +186,51 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\enPixelShader.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imGuiManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enViewport.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enWindow.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enDeviceContext.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="dependencies\imgui\imconfig.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="dependencies\imgui\imgui.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="dependencies\imgui\imgui_impl_dx11.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="dependencies\imgui\imgui_impl_win32.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="dependencies\imgui\imgui_internal.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="dependencies\imgui\imstb_rectpack.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="dependencies\imgui\imstb_textedit.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="dependencies\imgui\imstb_truetype.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enShaderResourceView.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cApiComponent.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enSwapChain.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
