@@ -60,3 +60,39 @@ enSwapChain::getdxSawpChainDesc() const
   result.Windowed = m_descriptor.isWindowd;
   return  result;
 }
+
+bool 
+enSwapChain::ReciveBuckBuffer(enRenderTargetView& renderTargetView)
+{
+  
+#if DIRECTX
+  size_t currentTarget = renderTargetView.m_targetsCount;
+
+  HRESULT hr = m_interface->GetBuffer(0,
+                                      __uuidof(ID3D11Texture2D),
+                                      (LPVOID*)&renderTargetView.m_targets[currentTarget].m_interface);
+
+  if( FAILED(hr) )
+    return false;
+
+  else
+  {
+    renderTargetView.m_usedTargets[currentTarget] = true;
+    renderTargetView.m_targetsCount++;
+  }
+
+
+  return true;
+#elif OPENGL
+#endif // DIRECTX
+  return false;
+}
+
+void 
+enSwapChain::Present(int options)
+{
+#if DIRECTX
+  m_interface->Present(0,options);
+#elif OPENGL
+#endif // DIRECTX
+}

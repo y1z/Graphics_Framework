@@ -13,6 +13,8 @@
 #include "enViewport.h"
 #include "enSampler.h"
 #include "enSwapChain.h"
+#include "enShaderResourceView.h"
+#include "enWindow.h"
 
 #include <filesystem>
 #include <memory>
@@ -30,12 +32,12 @@ class enShaderResourceView;
   * @brief : takes care of all graphics related operation
   * @bug :
   */
-class appGraphcis :
+class appGraphics :
   public cBaseApp
 {
 public:
-  appGraphcis ();
-  ~appGraphcis() = default;
+  appGraphics() = default;
+  ~appGraphics() = default;
 
 
 public:
@@ -80,18 +82,18 @@ private:
   initModules();
   
   /**
-  * @brief : 
+  * @brief : starts the api. 
   * @bug :
   */
   enErrorCode
-  initDevice();
+  initApi();
 
   /**
-  * @brief :initializes all the classes i create
-  * @bug :
+  * @brief : creates all the classes .
+  * @bug : no known bugs.
   */
   bool 
-  initMyClasses();
+  createMyClasses();
 
   /**
   * @brief : prepares the app for rendering 
@@ -127,8 +129,9 @@ public:
   //ID3D11Device* p_d3dDevice = nullptr;
 
   //static ID3D11DeviceContext* p_ImmediateContext;
-  IDXGISwapChain* p_SwapChain = nullptr;
+  //IDXGISwapChain* p_SwapChain = nullptr;
   std::unique_ptr<enSwapChain> mySwapchain = nullptr;
+  std::unique_ptr<enWindow> myWindow = nullptr;
   //ID3D11RenderTargetView* p_RenderTargetView = nullptr;
   //ID3D11Texture2D* p_DepthStencil = nullptr;
   //ID3D11DepthStencilView* p_DepthStencilView = nullptr;
@@ -160,7 +163,6 @@ public:
   static enPerspectiveFreeCamera* myCamera;
   static enFirstPersonCamera* myFirstPersonCamera;
   static enCameraManager* myCameraManager;
-
 
 
   /**************************************************/

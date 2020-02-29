@@ -14,19 +14,20 @@
 #include "enDevice.h"
 #include "enDeviceContext.h"
 #include "enSwapChain.h"
+#include "enWindow.h"
 
 namespace helper
 {
   /*!converts radians to degrees*/
   static constexpr float
-  radiansToDegrees(float radians)
+    radiansToDegrees(float radians)
   {
     return radians *= (180.0f / 3.14159f);
   }
 
   /*!converts degrees to radians*/
   static constexpr float
-  degreesToRadians(float degrees)
+    degreesToRadians(float degrees)
   {
     return  degrees *= (3.14159f / 180.0f);
   }
@@ -36,7 +37,7 @@ namespace helper
   *@brief converts a wstring/const wchar_t* to it's string equivalent assuming it has any.
   */
   static std::string
-  convertWStringToString(std::wstring_view wideString)
+    convertWStringToString(std::wstring_view wideString)
   {
     std::string Result(wideString.length() + 1, '\0');
 
@@ -57,7 +58,7 @@ namespace helper
   *@brief converts a string/const char* to it's wstring equivalent
   */
   static std::wstring
-  convertStringToWString(std::string_view String)
+    convertStringToWString(std::string_view String)
   {
     std::wstring Result(String.length() + 1, '\0');
 
@@ -73,7 +74,7 @@ namespace helper
 
 
   static std::string
-  loadFileToString(std::string_view filePath)
+    loadFileToString(std::string_view filePath)
   {
     std::string Result{ "Error" };
     std::ifstream File(filePath.data());
@@ -95,7 +96,7 @@ namespace helper
   /*************/
 
   static std::string
-  loadFileToString(std::wstring_view filePath)
+    loadFileToString(std::wstring_view filePath)
   {
     std::string Result{ "Error" };
     std::wifstream File(filePath.data());
@@ -115,117 +116,110 @@ namespace helper
     return Result;
   }
 
-  /*************/
-#if 0
-  static void
-    makeMaze(ID3D11Buffer& cubeBuffer,
-             enMatrix4x4& cubeMatrix,
-             ID3D11DeviceContext& dContext)
-  {
-    static  std::vector<enVector3> translations =
-    {
-     {enVector3(0.0f,0.0f,2.0f)},{enVector3(0.0f,0.0f,2.0f)},
-     {enVector3(0.0f,0.0f,2.0f)},{enVector3(0.0f,0.0f,2.0f)},
-     {enVector3(0.0f,0.0f,2.0f)},
-
-     {enVector3(-2.0f,0.0f,0.0f)},{enVector3(-2.0f,0.0f,0.0f)},
-     {enVector3(-2.0f,0.0f,0.0f)},{enVector3(-2.0f,0.0f,0.0f)},
-     {enVector3(-2.0f,0.0f,0.0f)},{enVector3(-2.0f,0.0f,0.0f)},
-
-     {enVector3(0.0f,0.0f,2.0f)},{enVector3(0.0f,0.0f,2.0f)},
-     {enVector3(0.0f,0.0f,2.0f)},{enVector3(0.0f,0.0f,2.0f)},
-     {enVector3(0.0f,0.0f,2.0f)},{enVector3(0.0f,0.0f,2.0f)},
-     {enVector3(0.0f,0.0f,2.0f)},
-
-
-     {enVector3(2.0f,0.0f,0.0f)},{enVector3(2.0f,0.0f,0.0f)},
-     {enVector3(2.0f,0.0f,0.0f)},{enVector3(2.0f,0.0f,0.0f)},
-     {enVector3(2.0f,0.0f,0.0f)},
-
-
-     {enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},
-     {enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},
-
-
-     {enVector3(2.0f,0.0f,0.0f)},{enVector3(2.0f,0.0f,0.0f)},
-     {enVector3(2.0f,0.0f,0.0f)},{enVector3(2.0f,0.0f,0.0f)},
-     {enVector3(2.0f,0.0f,0.0f)},{enVector3(2.0f,0.0f,0.0f)},
-     {enVector3(2.0f,0.0f,0.0f)},{enVector3(2.0f,0.0f,0.0f)},
-
-
-     {enVector3(0.0f,0.0f,2.0f)},{enVector3(0.0f,0.0f,2.0f)},
-     {enVector3(0.0f,0.0f,2.0f)},{enVector3(0.0f,0.0f,2.0f)},
-     {enVector3(0.0f,0.0f,2.0f)},{enVector3(0.0f,0.0f,2.0f)},
-     {enVector3(0.0f,0.0f,2.0f)},{enVector3(0.0f,0.0f,2.0f)},
-     {enVector3(0.0f,0.0f,2.0f)},{enVector3(0.0f,0.0f,2.0f)},
-
-
-     {enVector3(0.0f,0.0f,2.0f * 4.0f)},
-
-
-     {enVector3(2.0f,0.0f,0.0f)},{enVector3(2.0f,0.0f,0.0f)},
-     {enVector3(2.0f,0.0f,0.0f)},{enVector3(2.0f,0.0f,0.0f)},
-     {enVector3(2.0f,0.0f,0.0f)},
-
-
-     {enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},
-     {enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},
-     {enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},
-     {enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},
-     {enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},
-     {enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},
-
-
-     {enVector3(-2.0f,0.0f,0.0f)},{enVector3(-2.0f,0.0f,0.0f)},
-     {enVector3(-2.0f,0.0f,0.0f)},{enVector3(-2.0f,0.0f,0.0f)},
-     {enVector3(-2.0f,0.0f,0.0f)},{enVector3(-2.0f,0.0f,0.0f)},
-
-
-     {enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},
-     {enVector3(0.0f,0.0f,-2.0f)},{enVector3(0.0f,0.0f,-2.0f)},
-
-    };
-
-
-    CBChangesEveryFrame EveryFrame;
-    EveryFrame.vMeshColor = enVector4(0.6f, 0.6f, 0.6f, 0.6f);
-
-    enMatrix4x4 scaleMatrixInY(1.0f);
-    scaleMatrixInY = glm::row(scaleMatrixInY, 1, enVector4(0.0f, 5.0f, 0.0f, 0.0f));
-    cubeMatrix *= scaleMatrixInY;
-    for( const enVector3& vector : translations )
-    {
-      cubeMatrix = glm::translate(cubeMatrix, vector);
-      EveryFrame.mWorld = glm::transpose(cubeMatrix);
-
-
-      dContext.UpdateSubresource(&cubeBuffer,
-                                 0,
-                                 NULL,
-                                 &EveryFrame,
-                                 0,
-                                 0);
-
-      dContext.DrawIndexed(36, 0, 0);
-    }
-
-    cubeMatrix = glm::identity<enMatrix4x4>();
-
-  }
-#endif 
-
-// TODO : add function to resource manager
-
-  static bool
-  CreateDeviceAndSwapchain(enSwapChain &swapchain,
+  // TODO : add function to resource manager
+  static enErrorCode
+  CreateDeviceAndSwapchain(enSwapChain& swapChain,
+                           enWindow& window,
                            sHardWareInfo& hardwareInfo)
   {
+    enDevice& device = enDevice::getInstance();
+    enDeviceContext& deviceContext = enDeviceContext::getInstance();
   #if DIRECTX
+    RECT rc;
+
+    HWND handleForWindow = window.getHandle();
+    GetClientRect(handleForWindow, &rc);
+    uint32 width = rc.right - rc.left;
+    uint32 height = rc.bottom - rc.top;
+
+    uint32 createDeviceFlags = 0;
+  #ifdef _DEBUG
+    createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+  #endif
+
+    D3D_DRIVER_TYPE driverTypes[] =
+    {
+        D3D_DRIVER_TYPE_HARDWARE,
+        D3D_DRIVER_TYPE_WARP,
+        D3D_DRIVER_TYPE_REFERENCE,
+    };
+    UINT numDriverTypes = ARRAYSIZE(driverTypes);
+
+    D3D_FEATURE_LEVEL featureLevels[] =
+    {
+        D3D_FEATURE_LEVEL_11_1,
+        D3D_FEATURE_LEVEL_11_0,
+        D3D_FEATURE_LEVEL_10_1,
+        D3D_FEATURE_LEVEL_10_0,
+    };
+    UINT numFeatureLevels = ARRAYSIZE(featureLevels);
 
 
+    sSwapDesc swapchainDescriptor;
+    swapchainDescriptor.buffCount = 1;
+    swapchainDescriptor.buffFormat = enFormats::R8G8B8A8_uniform_norm;
+    swapchainDescriptor.buffHeight = height;
+    swapchainDescriptor.buffWidth = width;
+    swapchainDescriptor.buffRefershDenominator = 1;
+    swapchainDescriptor.buffRefershNumaretor = 60;
+    swapchainDescriptor.buffUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    swapchainDescriptor.outputWindow = handleForWindow;
+    swapchainDescriptor.isWindowd = TRUE;
+    swapchainDescriptor.sampCount = 1;
+    swapchainDescriptor.sampQuality = 0;
+
+    swapChain.init(swapchainDescriptor);
+
+    DXGI_SWAP_CHAIN_DESC sd = swapChain.getdxSawpChainDesc();
+
+
+    HRESULT hr = S_OK;
+
+    for( UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++ )
+    {
+      hardwareInfo.m_dxHardwareInfo = driverTypes[driverTypeIndex];
+      hr = D3D11CreateDeviceAndSwapChain(NULL,
+                                         hardwareInfo.m_dxHardwareInfo,
+                                         NULL,
+                                         createDeviceFlags,
+                                         featureLevels,
+                                         numFeatureLevels,
+                                         D3D11_SDK_VERSION,
+                                         &sd,
+                                         &swapChain.m_interface,
+                                         device.getInterfaceRef(),
+                                         &hardwareInfo.m_dxApiversion,
+                                         deviceContext.getInterfaceRef());
+      if( SUCCEEDED(hr) )
+        break;
+    }
+
+    if( SUCCEEDED(hr) )
+      return enErrorCode::NoError;
+
+
+    return enErrorCode::FailedCreation;
 
   #endif // DIRECTX
-    return true;
+
+    return  enErrorCode::UnClassified;
+  }
+
+
+  static enVector2 
+  getWindowSize(enWindow& window)
+  {
+    int32 windowWidth = -1337;
+    int32 windowHeight = -1337;
+  #if DIRECTX
+    RECT widowDimensions;
+    GetClientRect(window.getHandle(), &widowDimensions);
+    windowWidth = widowDimensions.right - widowDimensions.left;
+    windowHeight = widowDimensions.bottom - widowDimensions.top;
+
+  #elif OPENGL
+  #endif // DIRECTX
+    return enVector2(windowWidth, windowHeight);
   }
 
 

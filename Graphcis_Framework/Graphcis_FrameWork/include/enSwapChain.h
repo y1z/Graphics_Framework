@@ -17,17 +17,35 @@ public:
   enSwapChain& operator=(const enSwapChain& other) = delete;
   enSwapChain& operator=(enSwapChain&& other)noexcept;
 public:
-
+  /**
+  * @brief : sets up the descriptor for the buffer.
+  * @bug : no known bugs.
+  */
   bool
   init(const sSwapDesc& descriptor);
 
+  /**
+  * @returns my descriptor for the swap-chain.
+  * @bug :
+  */
   sSwapDesc 
   getSwapChainDesc()const;
 
 #if DIRECTX
-
+  /**
+  * @return the descriptor for directX.
+  * @bug : no known bugs.
+  */
   DXGI_SWAP_CHAIN_DESC
   getdxSawpChainDesc()const;
+
+  
+  bool
+  ReciveBuckBuffer(enRenderTargetView& renderTargetView);
+
+  void 
+  Present(int options = 0);
+
 
 #endif // DIRECTX
 

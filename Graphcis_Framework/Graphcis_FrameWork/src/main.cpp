@@ -3,7 +3,7 @@
 int
 main()
 {
-  std::unique_ptr<cBaseApp> app = std::make_unique<appGraphcis>();
+  std::unique_ptr<cBaseApp> app = std::make_unique<appGraphics>();
   if( app->init() )
   {
     int result = app->run();

@@ -26,34 +26,25 @@ namespace dx = DirectX;
 using std::make_unique;
 
 
-enPerspectiveFreeCamera* appGraphcis::myCamera = nullptr;
-enFirstPersonCamera* appGraphcis::myFirstPersonCamera = nullptr;
-enCameraManager* appGraphcis::myCameraManager = nullptr;
+enPerspectiveFreeCamera* appGraphics::myCamera = nullptr;
+enFirstPersonCamera* appGraphics::myFirstPersonCamera = nullptr;
+enCameraManager* appGraphics::myCameraManager = nullptr;
 
-//ID3D11DeviceContext* appGraphcis::p_ImmediateContext = nullptr;
-//ID3D11Buffer* appGraphcis::p_CBNeverChanges = nullptr;
-//ID3D11Buffer* appGraphcis::p_CBChangeOnResize = nullptr;
-bool appGraphcis::my_initIsFinish = false;
+//ID3D11DeviceContext* appGraphics::p_ImmediateContext = nullptr;
+//ID3D11Buffer* appGraphics::p_CBNeverChanges = nullptr;
+//ID3D11Buffer* appGraphics::p_CBChangeOnResize = nullptr;
+bool appGraphics::my_initIsFinish = false;
 
-enConstBuffer* appGraphcis::myViewMatrixBuffer = nullptr;
-enConstBuffer* appGraphcis::myProjectionMatrixBuffer = nullptr;
+enConstBuffer* appGraphics::myViewMatrixBuffer = nullptr;
+enConstBuffer* appGraphics::myProjectionMatrixBuffer = nullptr;
 
-
-appGraphcis::appGraphcis()
-{}
 
 bool
-appGraphcis::init()
+appGraphics::init()
 {
   BOOL checkIfSucceeded = GetModuleHandleEx(0x00, NULL, &m_moduleInstance);
 
   if( checkIfSucceeded == FALSE )
-    return false;
-
-  if( !InitStatics() )
-    return false;
-
-  if( !initModules() )
     return false;
 
   /*Initializes the COM library
@@ -63,7 +54,13 @@ appGraphcis::init()
     return false;
   }
 
-  if( !initMyClasses() )
+  if( !InitStatics() )
+    return false;
+
+  if( !initModules() )
+    return false;
+
+  if( !createMyClasses() )
   {
     this->destroy();
     return false;
@@ -75,13 +72,13 @@ appGraphcis::init()
     return false;
   }
 
-  if( !EN_SUCCESS(initDevice()) )
+  if( !EN_SUCCESS(initApi()) )
   {
     this->destroy();
     return false;
   }
 
-  if( FAILED(InitForRender()) )
+  if( InitForRender() == S_FALSE )
   {
     this->destroy();
     return false;
@@ -93,7 +90,7 @@ appGraphcis::init()
 }
 
 int
-appGraphcis::run()
+appGraphics::run()
 {
   // Main message loop
   MSG msg = { 0 };
@@ -114,7 +111,7 @@ appGraphcis::run()
 }
 
 void
-appGraphcis::destroy()
+appGraphics::destroy()
 {
   CoUninitialize();
 
@@ -130,7 +127,7 @@ appGraphcis::destroy()
   //RELEASE_DX_PTR(p_CBChangeOnResize);
   //RELEASE_DX_PTR(p_CBChangesEveryFrame);
 
-  RELEASE_DX_PTR(p_SwapChain);
+  //RELEASE_DX_PTR(p_SwapChain);
 
 
   enDevice::ShutDown();
@@ -158,7 +155,7 @@ appGraphcis::destroy()
 
 
 bool
-appGraphcis::InitStatics()
+appGraphics::InitStatics()
 {
   try
   {
@@ -179,7 +176,7 @@ appGraphcis::InitStatics()
 }
 
 bool
-appGraphcis::initModules()
+appGraphics::initModules()
 {
   if( enDevice::StartUp(nullptr) == -1 )
     return false;
@@ -191,83 +188,18 @@ appGraphcis::initModules()
 }
 
 enErrorCode
-appGraphcis::initDevice()
+appGraphics::initApi()
 {
-  enDevice& device = enDevice::getInstance();
-  enDeviceContext& deviceContext = enDeviceContext::getInstance();
 
-  RECT rc;
-  GetClientRect(g_hWnd, &rc);
-  uint32 width = rc.right - rc.left;
-  uint32 height = rc.bottom - rc.top;
+  enErrorCode checkForError = helper::CreateDeviceAndSwapchain(*mySwapchain,
+                                                               *myWindow,
+                                                               m_hardwareInfo);
 
-  uint32 createDeviceFlags = 0;
-#ifdef _DEBUG
-  createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
-#endif
-
-  D3D_DRIVER_TYPE driverTypes[] =
-  {
-      D3D_DRIVER_TYPE_HARDWARE,
-      D3D_DRIVER_TYPE_WARP,
-      D3D_DRIVER_TYPE_REFERENCE,
-  };
-  UINT numDriverTypes = ARRAYSIZE(driverTypes);
-
-  D3D_FEATURE_LEVEL featureLevels[] =
-  {
-      D3D_FEATURE_LEVEL_11_0,
-      D3D_FEATURE_LEVEL_10_1,
-      D3D_FEATURE_LEVEL_10_0,
-  };
-  UINT numFeatureLevels = ARRAYSIZE(featureLevels);
-
-  DXGI_SWAP_CHAIN_DESC sd;
-  std::memset(&sd, 0, sizeof(sd));
-
-  sd.BufferCount = 1;
-  sd.BufferDesc.Width = width;
-  sd.BufferDesc.Height = height;
-  sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-  sd.BufferDesc.RefreshRate.Numerator = 60;
-  sd.BufferDesc.RefreshRate.Denominator = 1;
-  sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-  sd.OutputWindow = g_hWnd;
-  sd.SampleDesc.Count = 1;
-  sd.SampleDesc.Quality = 0;
-  sd.Windowed = TRUE;
-
-
-  HRESULT hr = S_OK;
-
-  for( UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++ )
-  {
-    g_driverType = driverTypes[driverTypeIndex];
-    hr = D3D11CreateDeviceAndSwapChain(NULL,
-                                       g_driverType,
-                                       NULL,
-                                       createDeviceFlags,
-                                       featureLevels,
-                                       numFeatureLevels,
-                                       D3D11_SDK_VERSION,
-                                       &sd,
-                                       &p_SwapChain,
-                                       device.getInterfaceRef(),
-                                       &g_featureLevel,
-                                       deviceContext.getInterfaceRef());
-    if( SUCCEEDED(hr) )
-      break;
-  }
-
-  if( SUCCEEDED(hr) )
-    return enErrorCode::NoError;
-
-
-  return enErrorCode::FailedCreation;
+  return checkForError;
 }
 
 bool
-appGraphcis::initMyClasses()
+appGraphics::createMyClasses()
 {
   try
   {
@@ -290,6 +222,7 @@ appGraphcis::initMyClasses()
     mySampler = make_unique<enSampler>();
 
     mySwapchain = make_unique<enSwapChain>();
+    myWindow = make_unique<enWindow>();
   }
   catch( const std::exception & e )
   {
@@ -300,7 +233,7 @@ appGraphcis::initMyClasses()
 }
 
 HRESULT
-appGraphcis::InitForRender()
+appGraphics::InitForRender()
 {
   enDevice& device = enDevice::getInstance();
   enDeviceContext& deviceContext = enDeviceContext::getInstance();
@@ -308,18 +241,17 @@ appGraphcis::InitForRender()
 
   HRESULT hr = S_FALSE;
 
-  RECT rc;
-  GetClientRect(g_hWnd, &rc);
-  UINT width = rc.right - rc.left;
-  UINT height = rc.bottom - rc.top;
+  enVector2 windowSize = helper::getWindowSize(*myWindow);
 
   // Create a render target view
   //ID3D11Texture2D* pBackBuffer = NULL;
-  hr = p_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&myRenderTargetView->m_targets[0].m_interface);
+  //hr = p_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&myRenderTargetView->m_targets[0].m_interface);
   if( FAILED(hr) )
     return hr;
 
-  isSuccessful = device.CreateRenderTargetView(*myRenderTargetView, myRenderTargetView->m_targetsCount);
+  mySwapchain->ReciveBuckBuffer(*myRenderTargetView);
+
+  isSuccessful = device.CreateRenderTargetView(*myRenderTargetView, 0);
   if( !isSuccessful )
   {
     EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
@@ -330,8 +262,8 @@ appGraphcis::InitForRender()
     return hr;
 
   sTextureDescriptor descriptoDepth;
-  descriptoDepth.texWidth = width;
-  descriptoDepth.texHeight = height;
+  descriptoDepth.texWidth = windowSize.x ;
+  descriptoDepth.texHeight =  windowSize.y;
   descriptoDepth.CpuAccess = 0;
   descriptoDepth.texFormat = static_cast<int>(enFormats::depthStencil_format);
   descriptoDepth.Usage = enBufferUse::Default;
@@ -364,16 +296,16 @@ appGraphcis::InitForRender()
                                    //deviceContext.OMSetRenderTargets()
                                    // Setup the viewport
   D3D11_VIEWPORT vp;
-  vp.Width = (FLOAT)width;
-  vp.Height = (FLOAT)height;
+  vp.Width = (FLOAT)windowSize.x;
+  vp.Height = (FLOAT)windowSize.y;
   vp.MinDepth = 0.0f;
   vp.MaxDepth = 1.0f;
   vp.TopLeftX = 0;
   vp.TopLeftY = 0;
 
   sViewportDesc viewDescriptor;
-  viewDescriptor.width = static_cast<float>(width);
-  viewDescriptor.height = static_cast<float>(height);
+  viewDescriptor.width = static_cast<float>(windowSize.x);
+  viewDescriptor.height = static_cast<float>(windowSize.y);
   viewDescriptor.maxDepth = 1.0f;
 
   myViewPort->init(viewDescriptor);
@@ -605,8 +537,6 @@ appGraphcis::InitForRender()
       return S_FALSE;
   }
 
-
-
   bd.ByteWidth = sizeof(CBChangesEveryFrame);
   sBufferDesc worldMatrixDescriptor;
   worldMatrixDescriptor.elementCount = 1;
@@ -666,8 +596,8 @@ appGraphcis::InitForRender()
   sPerspectiveCameraDesc descriptorCamera;
   descriptorCamera.upDir = enVector3(0.0f, 1.0f, 0.0f);
   descriptorCamera.lookAtPosition = enVector3(0.0f, 0.0f, -1.0f);
-  descriptorCamera.height = height;
-  descriptorCamera.width = width;
+  descriptorCamera.height = windowSize.y;
+  descriptorCamera.width =  windowSize.x;
 
   myCamera->init(descriptorCamera);
 
@@ -695,12 +625,9 @@ appGraphcis::InitForRender()
   deviceContext.getInterface()->UpdateSubresource(myViewMatrixBuffer->getInterface(), 0, NULL, &cbNeverChanges, 0, 0);
 
   // Initialize the projection matrix
-  float TempWidth = width;
-  float TempHeight = height;
-
   g_Projection = glm::perspectiveFovLH(glm::quarter_pi<float>(),
-                                       TempWidth,
-                                       TempHeight,
+                                       windowSize.x,
+                                       windowSize.y,
                                        0.01f,
                                        100.0f);
 
@@ -716,62 +643,74 @@ appGraphcis::InitForRender()
 
 
 HRESULT
-appGraphcis::InitWindow(HINSTANCE hInstance, int nCmdShow)
+appGraphics::InitWindow(HINSTANCE hInstance, int nCmdShow)
 {
-  // Register class
-  WNDCLASSEX wcex;
-  wcex.cbSize = sizeof(WNDCLASSEX);
-  wcex.style = CS_HREDRAW | CS_VREDRAW;
-  wcex.lpfnWndProc = WndProcRedirect;
-  wcex.cbClsExtra = 0;
-  wcex.cbWndExtra = 0;
-  wcex.hInstance = hInstance;
-  wcex.hIcon = LoadIcon(hInstance, (LPCTSTR)IDI_TUTORIAL1);
-  wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-  wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-  wcex.lpszMenuName = NULL;
-  wcex.lpszClassName = L"TutorialWindowClass";
-  wcex.hIconSm = LoadIcon(wcex.hInstance, (LPCTSTR)IDI_TUTORIAL1);
+  bool isSuccessful = myWindow->init(WndProcRedirect,
+                                     hInstance,
+                                     " Graphics window ");
 
-  if( !RegisterClassEx(&wcex) )
-    return E_FAIL;
-
-  // Create window
-  //g_hInst 
-  m_moduleInstance = hInstance;
-
-  RECT rc = { 0, 0, 640, 480 };
-
-  AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
-
-  g_hWnd = CreateWindow(L"TutorialWindowClass",
-                        L"Direct3D 11 Tutorial 7",
-                        WS_OVERLAPPEDWINDOW,
-                        100,
-                        100,
-                        rc.right - rc.left,
-                        rc.bottom - rc.top,
-                        NULL,
-                        NULL,
-                        hInstance,
-                        NULL);
-
-
-  if( !g_hWnd )
-    return E_FAIL;
-
-  if( g_hWnd != INVALID_HANDLE_VALUE )
+  if( isSuccessful )
   {
-    ShowWindow(g_hWnd, nCmdShow);
-    UpdateWindow(g_hWnd);
     return S_OK;
   }
+  else
+  {
+    return S_FALSE;
+  }
 
-  return S_FALSE;
+ //// Register class
+ // WNDCLASSEX wcex;
+ // wcex.cbSize = sizeof(WNDCLASSEX);
+ // wcex.style = CS_HREDRAW | CS_VREDRAW;
+ // wcex.lpfnWndProc = WndProcRedirect;
+ // wcex.cbClsExtra = 0;
+ // wcex.cbWndExtra = 0;
+ // wcex.hInstance = hInstance;
+ // wcex.hIcon = LoadIcon(hInstance, (LPCTSTR)IDI_TUTORIAL1);
+ // wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+ // wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+ // wcex.lpszMenuName = NULL;
+ // wcex.lpszClassName = L"TutorialWindowClass";
+ // wcex.hIconSm = LoadIcon(wcex.hInstance, (LPCTSTR)IDI_TUTORIAL1);
+
+ // if( !RegisterClassEx(&wcex) )
+ //   return E_FAIL;
+
+ // // Create window
+ // //g_hInst 
+ // m_moduleInstance = hInstance;
+
+ // RECT rc = { 0, 0, 640, 480 };
+
+ // AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
+
+ // g_hWnd = CreateWindow(L"TutorialWindowClass",
+ //                       L"Direct3D 11 Tutorial 7",
+ //                       WS_OVERLAPPEDWINDOW,
+ //                       100,
+ //                       100,
+ //                       rc.right - rc.left,
+ //                       rc.bottom - rc.top,
+ //                       NULL,
+ //                       NULL,
+ //                       hInstance,
+ //                       NULL);
+
+
+ // if( !g_hWnd )
+ //   return E_FAIL;
+
+ // if( g_hWnd != INVALID_HANDLE_VALUE )
+ // {
+ //   ShowWindow(g_hWnd, nCmdShow);
+ //   UpdateWindow(g_hWnd);
+ // }
+
+    return S_OK;
 }
 
 void
-appGraphcis::Render()
+appGraphics::Render()
 {
   // Update our time
   static float t = 0.0f;
@@ -838,11 +777,12 @@ appGraphcis::Render()
 
   // Present our back buffer to our front buffer
   //
-  p_SwapChain->Present(0, 0);
+  //p_SwapChain->Present(0, 0);
+  mySwapchain->Present();
 }
 
 LRESULT
-appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
   PAINTSTRUCT ps;
   HDC hdc;

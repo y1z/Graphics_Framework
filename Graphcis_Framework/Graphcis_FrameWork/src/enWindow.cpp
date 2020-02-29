@@ -82,6 +82,7 @@ enWindow::init(windProcType ptr_proc,
     return false;
 
   ShowWindow(m_handle, SW_SHOW);
+  UpdateWindow(m_handle);
 
   return true;
 #elif OPENGL
