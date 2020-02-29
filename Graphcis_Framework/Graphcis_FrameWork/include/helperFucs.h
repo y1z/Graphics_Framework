@@ -11,19 +11,22 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/matrix_access.hpp"
 
+#include "enDevice.h"
+#include "enDeviceContext.h"
+#include "enSwapChain.h"
 
 namespace helper
 {
   /*!converts radians to degrees*/
   static constexpr float
-    radiansToDegrees(float radians)
+  radiansToDegrees(float radians)
   {
     return radians *= (180.0f / 3.14159f);
   }
 
   /*!converts degrees to radians*/
   static constexpr float
-    degreesToRadians(float degrees)
+  degreesToRadians(float degrees)
   {
     return  degrees *= (3.14159f / 180.0f);
   }
@@ -33,7 +36,7 @@ namespace helper
   *@brief converts a wstring/const wchar_t* to it's string equivalent assuming it has any.
   */
   static std::string
-    convertWStringToString(std::wstring_view wideString)
+  convertWStringToString(std::wstring_view wideString)
   {
     std::string Result(wideString.length() + 1, '\0');
 
@@ -41,8 +44,7 @@ namespace helper
     std::size_t checkForError = std::wcstombs(Result.data(),
                                               wideString.data(),
                                               wideString.length());
-
-                                            // how to check for errors  https://en.cppreference.com/w/cpp/string/multibyte/wcstombs
+    // how to check for errors  https://en.cppreference.com/w/cpp/string/multibyte/wcstombs
     if( checkForError == static_cast<std::size_t>(-1) )
     {
       assert(checkForError != static_cast<std::size_t>(-1) && "invalid string conversion");
@@ -55,7 +57,7 @@ namespace helper
   *@brief converts a string/const char* to it's wstring equivalent
   */
   static std::wstring
-    convertStringToWString(std::string_view String)
+  convertStringToWString(std::string_view String)
   {
     std::wstring Result(String.length() + 1, '\0');
 
@@ -71,7 +73,7 @@ namespace helper
 
 
   static std::string
-    loadFileToString(std::string_view filePath)
+  loadFileToString(std::string_view filePath)
   {
     std::string Result{ "Error" };
     std::ifstream File(filePath.data());
@@ -93,7 +95,7 @@ namespace helper
   /*************/
 
   static std::string
-    loadFileToString(std::wstring_view filePath)
+  loadFileToString(std::wstring_view filePath)
   {
     std::string Result{ "Error" };
     std::wifstream File(filePath.data());
@@ -211,5 +213,21 @@ namespace helper
 
   }
 #endif 
+
+// TODO : add function to resource manager
+
+  static bool
+  CreateDeviceAndSwapchain(enSwapChain &swapchain,
+                           sHardWareInfo& hardwareInfo)
+  {
+  #if DIRECTX
+
+
+
+  #endif // DIRECTX
+    return true;
+  }
+
+
 }
 

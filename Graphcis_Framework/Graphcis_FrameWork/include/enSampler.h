@@ -27,20 +27,17 @@ public:
   ID3D11SamplerState** getInterfaceRef();
 #endif // DIRECTX
 
-    void
-    init(uint32_t filter,
-
-         uint32_t addressU,
-         uint32_t addressV,
-         uint32_t addressW,
-         int comparasionFunc,
-         uint32_t maxAnisotropy = 1,
-         float minLod = 0.0f,
-         float maxLod = std::numeric_limits<float>::max());
 
   void
-  setBorderColor(float red,
+  init(const sSamplerDesc& descriptor);
 
+
+  int32_t 
+  getIndex() const;
+
+  
+  void
+  setBorderColor(float red,
                  float green,
                  float blue,
                  float alpha = 1.0f);

@@ -69,11 +69,17 @@ enBaseBuffer::getDescriptor() const
 confInt
 enBaseBuffer::getStride() const
 {
-  return m_Desc.Stride;
+  return m_Desc.stride;
 }
 
 uint32
 enBaseBuffer::getBufferSize() const
 {
   return m_Desc.sizeOfBuffer;
+}
+
+uint32
+enBaseBuffer::getIndex() const
+{
+  return m_Desc.index;
 }

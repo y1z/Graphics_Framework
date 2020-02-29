@@ -18,6 +18,10 @@ public:
        uint32 miscFlags = 0,
        uint32 structured = 0) override;
 
+  void 
+  init(const sBufferDesc& descriptor);
+
+
 #if DIRECTX
 
   D3D11_BUFFER_DESC

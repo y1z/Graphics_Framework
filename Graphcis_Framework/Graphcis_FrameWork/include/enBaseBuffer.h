@@ -68,6 +68,10 @@ public: // functions
   uint32
   getBufferSize() const;
 
+  uint32
+  getIndex() const;
+  
+
 protected:
 
 #if DIRECTX

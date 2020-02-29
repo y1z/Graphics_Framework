@@ -3,14 +3,19 @@
 #include "enVertexBuffer.h"
 #include "enIndexBuffer.h"
 #include "enConstBuffer.h"
-
 #include "enSampler.h"
 #include "enInputLayout.h"
 #include "enVertexShader.h"
 #include "enPixelShader.h"
+#include "enShaderResourceView.h"
+
+#include "helperFucs.h"
+#include "DirectXTK/include/DDSTextureLoader.h"
+#include "DirectXTK/include/WICTextureLoader.h"
 
 #include <vector>
 
+namespace dx = DirectX;
 
 
 int
@@ -91,6 +96,39 @@ enDevice::CreateRenderTargetView(enRenderTargetView& renderTraget, uint32 target
   return false;
 }
 
+bool 
+enDevice::CreateShaderResourceFromFile(enShaderResourceView& shaderResourceView, std::string_view filePath)
+{
+#if DIRECTX
+
+  std::wstring wideFilePath = helper::convertStringToWString(filePath);
+  shaderResourceView.m_resourcePaths.push_back(std::string(filePath));
+
+  HRESULT hr = S_FALSE;
+  if( filePath.find(".dds") != filePath.npos )
+  {
+    hr = dx::CreateDDSTextureFromFile(m_interface, wideFilePath.c_str(), nullptr, &shaderResourceView.m_interface);
+    if(FAILED( hr)){
+      EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
+      return false;
+    }
+  }
+  else
+  {
+    hr = dx::CreateWICTextureFromFile(m_interface, wideFilePath.c_str(), nullptr, &shaderResourceView.m_interface);
+
+    if( FAILED(hr) )
+    {
+      EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
+      return false;
+    }
+  }
+
+#endif // DIRECTX
+
+  return true;
+}
+
 bool
 enDevice::CreateTexture2D(sTextureDescriptor& Description,
                           enTexture2D& Texture)
@@ -133,7 +171,9 @@ enDevice::CreateDepthStencilView(enDepthStencilView& DepthView)
   descDSV.ViewDimension = static_cast<D3D11_DSV_DIMENSION>(DepthView.m_desc.Dimension);
   descDSV.Texture2D.MipSlice = DepthView.m_desc.Mip;
 
-  hr = m_interface->CreateDepthStencilView(DepthView.m_texture.m_interface, &descDSV, &DepthView.m_interface);
+  hr = m_interface->CreateDepthStencilView(DepthView.m_texture.m_interface,
+                                           &descDSV,
+                                           &DepthView.m_interface);
 
   if( SUCCEEDED(hr) )
   {

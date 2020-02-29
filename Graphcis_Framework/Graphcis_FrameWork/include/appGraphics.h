@@ -4,10 +4,15 @@
 
 #include "enInputLayout.h"
 #include "enPixelShader.h"
+
 #include "enVertexShader.h"
 #include "enVertexBuffer.h"
+
 #include "enConstBuffer.h"
 #include "enIndexBuffer.h"
+#include "enViewport.h"
+#include "enSampler.h"
+#include "enSwapChain.h"
 
 #include <filesystem>
 #include <memory>
@@ -18,6 +23,7 @@
 class enPerspectiveFreeCamera;
 class enFirstPersonCamera;
 class enCameraManager;
+class enShaderResourceView;
 
 
   /**
@@ -59,11 +65,24 @@ private:
 
   static LRESULT CALLBACK 
   WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-
+  /**
+  * @brief : initializes all static classes. 
+  * @bug : no known bug
+  */
   bool 
   InitStatics();
 
+  /**
+  * @brief : initializes all modules classes.
+  * @bug :
+  */
+  bool 
+  initModules();
   
+  /**
+  * @brief : 
+  * @bug :
+  */
   enErrorCode
   initDevice();
 
@@ -74,22 +93,12 @@ private:
   bool 
   initMyClasses();
 
-  HRESULT
-  InitEverythingElse();
-
   /**
-  * @TODO : move this function to it's own class
-  * @brief : compiles the chosen shader
-  * @param[in] FilePath : the path to the current shader.
-  * @param[in] EntryPoint : the name of the main function for the shader
+  * @brief : prepares the app for rendering 
   * @bug : no known bugs
   */
   HRESULT
-  CompileShaderFromFile(const wchar_t* FilePath,
-                        LPCSTR EntryPoint,
-                        LPCSTR ShaderModel,
-                        ID3DBlob** ppBlobOut);
-
+  InitForRender();
 
  /**
  * @TODO : move this function to it's own class
@@ -97,7 +106,6 @@ private:
  **/
   HRESULT
   InitWindow(HINSTANCE hInstance, int nCmdShow);
-
 
   /**
   * @brief : takes care of rendering the image to the screen.
@@ -107,39 +115,51 @@ private:
   Render();
 public:
 
-  HINSTANCE                           g_hInst = nullptr;
   HWND                                g_hWnd = nullptr;
+
+  sHardWareInfo m_hardwareInfo;
+
   D3D_DRIVER_TYPE                     g_driverType = D3D_DRIVER_TYPE_NULL;
   D3D_FEATURE_LEVEL                   g_featureLevel = D3D_FEATURE_LEVEL_11_0;
 
 
+  HMODULE  m_moduleInstance = nullptr;
   //ID3D11Device* p_d3dDevice = nullptr;
 
-  static ID3D11DeviceContext* p_ImmediateContext;
+  //static ID3D11DeviceContext* p_ImmediateContext;
   IDXGISwapChain* p_SwapChain = nullptr;
+  std::unique_ptr<enSwapChain> mySwapchain = nullptr;
   //ID3D11RenderTargetView* p_RenderTargetView = nullptr;
   //ID3D11Texture2D* p_DepthStencil = nullptr;
-  ID3D11DepthStencilView* p_DepthStencilView = nullptr;
+  //ID3D11DepthStencilView* p_DepthStencilView = nullptr;
 
+  std::unique_ptr<enDepthStencilView> myDepthStencilView = nullptr;
   std::unique_ptr<enRenderTargetView> myRenderTargetView = nullptr; 
   std::unique_ptr<enTexture2D> myDepthStencil = nullptr;
+
   std::unique_ptr<enPixelShader> myPixelShader = nullptr;
   std::unique_ptr<enVertexShader> myVertexShader = nullptr;
+
   std::unique_ptr<enInputLayout> myInputLayout = nullptr;
 
-  ID3D11InputLayout* p_VertexLayout = nullptr;
-  ID3D11Buffer* p_VertexBuffer = nullptr;
-  ID3D11Buffer* p_IndexBuffer = nullptr;
-  static ID3D11Buffer* p_CBNeverChanges;
-  static ID3D11Buffer* p_CBChangeOnResize;
-  ID3D11Buffer* p_CBChangesEveryFrame = nullptr;
-  ID3D11ShaderResourceView* p_TextureRV = nullptr;
-  ID3D11SamplerState* p_SamplerLinear = nullptr;
+  std::unique_ptr<enViewport> myViewPort = nullptr;
+
+  std::unique_ptr<enVertexBuffer> myVertexBuffer = nullptr;
+  std::unique_ptr<enIndexBuffer> myIndexBuffer = nullptr;
+
+  static enConstBuffer * myViewMatrixBuffer;
+  static enConstBuffer * myProjectionMatrixBuffer;
+  std::unique_ptr<enConstBuffer> myWorldMatrix;
+  std::unique_ptr<enShaderResourceView> myResourceView  = nullptr;
+  std::unique_ptr<enSampler> mySampler = nullptr;
+
+  //ID3D11ShaderResourceView* p_TextureRV = nullptr;
+  //ID3D11SamplerState* p_SamplerLinear = nullptr;
 
   /**************************************************/
-  static enPerspectiveFreeCamera* my_camera;
-  static enFirstPersonCamera* my_firstPersonCamera;
-  static enCameraManager* my_manager;
+  static enPerspectiveFreeCamera* myCamera;
+  static enFirstPersonCamera* myFirstPersonCamera;
+  static enCameraManager* myCameraManager;
 
 
 

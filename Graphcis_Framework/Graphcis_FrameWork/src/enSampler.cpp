@@ -18,25 +18,17 @@ enSampler::getInterfaceRef()
 #endif // DIRECTX
 
 
-void
-enSampler::init(uint32_t filter,
-                uint32_t addressU,
-                uint32_t addressV,
-                uint32_t addressW,
-                int comparasionFunc,
-                uint32_t maxAnisotropy,
-                float minLod,
-                float maxLod)
-{
-  m_desc.filter = filter;
-  m_desc.addressU = addressU;
-  m_desc.addressV = addressV;
-  m_desc.addressW = addressW;
-  m_desc.comparingFunc = comparasionFunc;
-  m_desc.AnisotropicLevel = maxAnisotropy;
-  m_desc.minLod = minLod;
-  m_desc.maxLod = maxLod;
 
+void 
+enSampler::init(const sSamplerDesc& descriptor)
+{
+  m_desc = descriptor;
+}
+
+int32_t 
+enSampler::getIndex() const
+{
+  return m_desc.index;
 }
 
 void

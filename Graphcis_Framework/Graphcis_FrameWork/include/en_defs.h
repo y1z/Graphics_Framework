@@ -84,7 +84,7 @@ enum enBufferBind
   Const = 0b00'00'0000'0100,
   ShaderResource = 0b00'00'0000'1000,
   RenderTarget = 0b00'00'0010'0000,
-  DepthStencil  = 0b00'00'0100'0000,
+  DepthStencil = 0b00'00'0100'0000,
 #endif // DIRECTX
 };
 
@@ -94,7 +94,7 @@ enum enBufferUse
 #if DIRECTX
   Default = D3D11_USAGE_DEFAULT,
 #elif OPENGL
-  Default  = 0,
+  Default = 0,
 #endif//DIRECTX 
 };
 
@@ -160,6 +160,115 @@ depthStencil_format,
 #endif // DIRECTX
 };
 
+
+enum DepthStencilFormat
+{
+#if DIRECTX
+  two_dimention = D3D11_DSV_DIMENSION_TEXTURE2D,
+#elif OPENGL
+  two_dimention,
+#endif // DIRECTX
+};
+
+enum class enTopology
+{
+  UnDefined = 0,
+#if DIRECTX
+  TriList = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
+  PointList = D3D_PRIMITIVE_TOPOLOGY_POINTLIST,
+  LineList = D3D_PRIMITIVE_TOPOLOGY_LINELIST
+#elif OPENGL
+  TriList = GL_TRIANGLES,
+  PointList = GL_POINTS,
+  LineList = GL_LINES
+#endif // DIRECTX
+};
+
+
+
+enum class enFilter
+{
+#if DIRECTX
+  MinMagMip_Point = D3D11_FILTER_MIN_MAG_MIP_POINT,
+  MinMagMip_Point_Linear = D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR,
+  MinMagMip_Linear_Mip_Point = D3D11_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT,
+  MinMagMip_MagMip_Linear = D3D11_FILTER_MIN_POINT_MAG_MIP_LINEAR,
+  MinMagMip_Linear = D3D11_FILTER_MIN_MAG_MIP_LINEAR,
+  /**************************************/
+  Anisotropic = D3D11_FILTER_ANISOTROPIC,
+  Anisotropic_Comperasion = D3D11_FILTER_COMPARISON_ANISOTROPIC,
+  Anisotropic_Minimum = D3D11_FILTER_MINIMUM_ANISOTROPIC,
+  Anisotropic_Maximum = D3D11_FILTER_MAXIMUM_ANISOTROPIC
+#elif OPEN_GL
+  MinMagMip_Point,
+  MinMagMip_Point_Linear,
+  MinMagMip_Linear_Mip_Point,
+  MinMagMip_MagMip_Linear,
+  MinMagMip_Linear,
+  /**************************************/
+  Anisotropic,
+  Anisotropic_Comperasion,
+  Anisotropic_Minimum,
+  Anisotropic_Maximum
+#else
+  MinMagMip_Point,
+  MinMagMip_Point_Linear,
+  MinMagMip_Linear_Mip_Point,
+  MinMagMip_MagMip_Linear,
+  MinMagMip_Linear,
+    /**************************************/
+    Anisotropic,
+    Anisotropic_Comperasion,
+    Anisotropic_Minimum,
+    Anisotropic_Maximum,
+  #endif // DIRECTX
+};
+
+
+enum class enComparison
+{
+#if DIRECTX
+  Never = D3D11_COMPARISON_NEVER,
+  Less = D3D11_COMPARISON_LESS,
+  Equal = D3D11_COMPARISON_EQUAL,
+  Less_Equal = D3D11_COMPARISON_LESS_EQUAL,
+  Greater = D3D11_COMPARISON_GREATER,
+#elif OPEN_GL 
+  Never = GL_NEVER,
+  Less = GL_LESS,
+  Equal = GL_EQUAL,
+  Less_Equal = GL_LEQUAL
+#else 
+
+  Never,
+  Less,
+  Equal,
+  Less_Equal
+#endif // DIRECTX
+};
+
+enum class enAddress : int32_t
+{
+#if DIRECTX
+  Wrap = D3D11_TEXTURE_ADDRESS_WRAP,
+  Mirror = D3D11_TEXTURE_ADDRESS_MIRROR,
+  Clamp = D3D11_TEXTURE_ADDRESS_CLAMP,
+  Border = D3D11_TEXTURE_ADDRESS_BORDER,
+  Mirror_once = D3D11_TEXTURE_ADDRESS_MIRROR_ONCE
+#elif OPEN_GL
+  Wrap,
+  Mirror,
+  Clamp,
+  Border,
+  Mirror_once
+#else
+  Wrap,
+  Mirror,
+  Clamp,
+  Border,
+  Mirror_once
+#endif // DIRECTXe
+};
 
 /*++++++++++++++++++++++++++++++++++++*/
 /* Logger functions */
@@ -230,7 +339,7 @@ or if the setup wrong.)");
   }
 
   static bool//success
-  enCheckSuccess(enErrorCode code)
+    enCheckSuccess(enErrorCode code)
   {
     if( code == enErrorCode::NoError )
     {
@@ -293,6 +402,22 @@ happen */
 /* struct's */
 /*++++++++++++++++++++++++++++++++++++*/
 
+struct sColorf
+{
+  union
+  {
+    struct
+    {
+      float red;
+      float green;
+      float blue;
+      float alpha;
+    };
+    float allColor[4]{ 0.0f,0.0f,0.0f,1.0f };
+  };
+};
+
+
 struct sTextureDescriptor
 {
   uint32 texWidth{ 0 };
@@ -311,14 +436,14 @@ struct sBufferDesc
   void* ptr_data{ nullptr };
   confInt sizeOfBuffer{ 0u };
   confInt elementCount{ 0u };
-  confInt Stride{ 0u };
+  confInt stride{ 0u };
   enBufferBind bindFlags = enBufferBind::NONE;
 
   int32 usage{ 0 };
   uint32 cpuAccess{ 0 };
   uint32 miscFlags{ 0 };
   uint32 structured;
-  uint32 index =static_cast<uint32>(-1) ;
+  uint32 index = static_cast<uint32>(-1);
 };
 
 
@@ -351,11 +476,67 @@ struct sSamplerDesc
 
   int comparingFunc{ 0 };//<! how to compare 
   uint32_t AnisotropicLevel{ 1 };//<! controls the how anisotropic the texture is 
+  int32_t index = 0;
   float boderColor[4]{ 0.0f,0.0f,0.0f,0.0f }; //<! is only used in certain modes 
   float minLod{ 0.0f };//<! lowest level of detail 
   float maxLod{ 0.0f };//<! highest level of detail
 };
 
+//! intermediate for using it in multiple API's  
+struct sViewportDesc
+{
+  uint32 width{ 1u };
+  uint32 height{ 1u };
+  float minDepth{ 0.0f };
+  float maxDepth{ 0.0f };
+  float TopLeftX{ 0.0f };
+  float TopLeftY{ 0.0f };
+};
+
+struct sHardWareInfo
+{
+#if DIRECTX
+  D3D_FEATURE_LEVEL m_dxApiversion;
+  D3D_DRIVER_TYPE m_dxHardwareInfo;
+#elif OPENGL
+    
+    
+ union
+ {
+   struct
+   {
+      int majorVersion;
+      int minorVersion;
+   };
+   int m_glApiversion[2]{ 0 };
+ };
+
+#endif // DIRECTX
+
+
+
+};
+
+
+/*! controls the settings for the swap-chain*/
+struct sSwapDesc
+{
+#if DIRECTX
+  HWND outputWindow; //! used only in directX 
+#elif OPEN_GL
+#endif // DIRECTX
+  uint32 buffWidth = 1;
+  uint32 buffHeight = 1;
+  int buffUsage = 0;
+  int buffFormat = 0;
+//! controls the refresh rate  buffNumaretor / buffDenominator
+  uint16 buffRefershNumaretor = 60;
+  uint16 buffRefershDenominator = 1;
+  uint8 buffCount{ 0 };
+  uint8 sampCount{ 0 };
+  uint8 sampQuality{ 0 };
+  bool isWindowd = true;
+};
 
 // TODO : convert to class
 struct enTexture2D
@@ -365,7 +546,9 @@ struct enTexture2D
   enTexture2D(enTexture2D&& other) noexcept
     :m_interface(other.m_interface)
   {
+  #if DIRECTX
     other.m_interface = nullptr;
+  #endif // DIRECTX
   }
 
   ~enTexture2D()
@@ -420,8 +603,8 @@ struct enRenderTargetView
   static constexpr uint32 c_randerTargetMax = 8;
 
   uint32 m_targetsCount = 0U;
-  std::array<enTexture2D, c_randerTargetMax> m_targets;
-  std::array<bool, c_randerTargetMax > m_usedTargets;
+  std::array<enTexture2D, c_randerTargetMax> m_targets{};
+  std::array<bool, c_randerTargetMax > m_usedTargets{};
 };
 
 // TODO : convert to class
@@ -452,6 +635,8 @@ struct enDepthStencilView
   int32 m_interface = 0;
 #endif // DIRECTX
 };
+
+
 
 /*********/
 /*********/

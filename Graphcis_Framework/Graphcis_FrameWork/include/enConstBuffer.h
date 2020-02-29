@@ -11,7 +11,7 @@ public:
 
 public:
   //! for setting the values in the buffer 
-  virtual void
+  void
   init(uint32 singleElementSize,
        uint32 totalElements,
        uint32 index,
@@ -19,6 +19,9 @@ public:
        uint32 cpuAccess = 0,
        uint32 miscFlags = 0,
        uint32 structured = 0) override;
+
+  void
+  init(const sBufferDesc& descriptor);
 
 #if DIRECTX
 

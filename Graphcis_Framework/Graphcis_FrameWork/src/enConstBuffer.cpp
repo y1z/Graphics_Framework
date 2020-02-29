@@ -15,9 +15,9 @@ enConstBuffer::init(uint32 singleElementSize,
                     uint32 structured)
 {
 
-  m_Desc.Stride = singleElementSize;
+  m_Desc.stride = singleElementSize;
   m_Desc.elementCount = totalElements;
-  m_Desc.sizeOfBuffer = m_Desc.Stride * m_Desc.elementCount;
+  m_Desc.sizeOfBuffer = m_Desc.stride * m_Desc.elementCount;
 
   m_Desc.index = index;
   m_Desc.ptr_data = ptr_toData;
@@ -26,6 +26,18 @@ enConstBuffer::init(uint32 singleElementSize,
   m_Desc.structured = structured;
   m_Desc.usage = 0;
   m_Desc.bindFlags = enBufferBind::Const;
+#if DIRECTX
+  m_Desc.usage = static_cast<int32>(D3D11_USAGE_DEFAULT);
+#endif // DIRECTX
+}
+
+void 
+enConstBuffer::init(const sBufferDesc& descriptor)
+{
+  m_Desc = descriptor;
+
+  m_Desc.sizeOfBuffer = m_Desc.elementCount * m_Desc.stride;
+
 #if DIRECTX
   m_Desc.usage = static_cast<int32>(D3D11_USAGE_DEFAULT);
 #endif // DIRECTX

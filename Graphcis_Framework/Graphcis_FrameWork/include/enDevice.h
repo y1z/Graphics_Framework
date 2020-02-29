@@ -2,6 +2,8 @@
 #include "util/Header.h"
 #include "util/soModule.h"
 
+#include <string_view>
+
 class enVertexBuffer;
 class enIndexBuffer;
 class enConstBuffer;
@@ -11,6 +13,7 @@ class enPixelShader;
 
 class enSampler;
 class enInputLayout;
+class enShaderResourceView;
 
 
   /**
@@ -54,6 +57,10 @@ public:
   */
   bool
   CreateRenderTargetView(enRenderTargetView& renderTragetView, uint32 targetIndex = 0);
+
+  bool
+  CreateShaderResourceFromFile(enShaderResourceView &shaderResourceView,
+                               std::string_view filePath);
 
   bool
   CreateTexture2D(sTextureDescriptor& Description, enTexture2D& Texture);

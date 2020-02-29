@@ -4,13 +4,19 @@
 #include "..\include\appGraphics.h"
 #include "helperFucs.h"
 #include "Resource.h"
+
 #include "glm/gtc/matrix_transform.hpp"
+
 #include "DirectXTK/include/DDSTextureLoader.h"
 #include "DirectXTK/include/WICTextureLoader.h"
+
 #include "../include/enPerspectiveFreeCamera.h"
 #include "../include/enFirstPersonCamera.h"
+
 #include "enCameraManager.h"
 #include "enDevice.h"
+#include "enDeviceContext.h"
+#include "enShaderResourceView.h"
 
 //--------------------------------------------------------------------------------------
 // standard  includes 
@@ -20,14 +26,18 @@ namespace dx = DirectX;
 using std::make_unique;
 
 
-enPerspectiveFreeCamera* appGraphcis::my_camera = nullptr;
-enFirstPersonCamera* appGraphcis::my_firstPersonCamera = nullptr;
-enCameraManager* appGraphcis::my_manager = nullptr;
+enPerspectiveFreeCamera* appGraphcis::myCamera = nullptr;
+enFirstPersonCamera* appGraphcis::myFirstPersonCamera = nullptr;
+enCameraManager* appGraphcis::myCameraManager = nullptr;
 
-ID3D11DeviceContext* appGraphcis::p_ImmediateContext = nullptr;
-ID3D11Buffer* appGraphcis::p_CBNeverChanges = nullptr;
-ID3D11Buffer* appGraphcis::p_CBChangeOnResize = nullptr;
+//ID3D11DeviceContext* appGraphcis::p_ImmediateContext = nullptr;
+//ID3D11Buffer* appGraphcis::p_CBNeverChanges = nullptr;
+//ID3D11Buffer* appGraphcis::p_CBChangeOnResize = nullptr;
 bool appGraphcis::my_initIsFinish = false;
+
+enConstBuffer* appGraphcis::myViewMatrixBuffer = nullptr;
+enConstBuffer* appGraphcis::myProjectionMatrixBuffer = nullptr;
+
 
 appGraphcis::appGraphcis()
 {}
@@ -35,9 +45,7 @@ appGraphcis::appGraphcis()
 bool
 appGraphcis::init()
 {
-  HMODULE Hmodule;
-
-  BOOL checkIfSucceeded = GetModuleHandleEx(0x00, NULL, &Hmodule);
+  BOOL checkIfSucceeded = GetModuleHandleEx(0x00, NULL, &m_moduleInstance);
 
   if( checkIfSucceeded == FALSE )
     return false;
@@ -45,7 +53,7 @@ appGraphcis::init()
   if( !InitStatics() )
     return false;
 
-  if( FAILED(InitWindow(Hmodule, SW_SHOWDEFAULT)) )
+  if( !initModules() )
     return false;
 
   /*Initializes the COM library
@@ -55,19 +63,25 @@ appGraphcis::init()
     return false;
   }
 
-  if( !EN_SUCCESS(initDevice()) )
-  {
-    this->destroy();
-    return false;
-  }
-
   if( !initMyClasses() )
   {
     this->destroy();
     return false;
   }
 
-  if( FAILED(InitEverythingElse()) )
+  if( FAILED(InitWindow(m_moduleInstance, SW_SHOWDEFAULT)) )
+  {
+    this->destroy();
+    return false;
+  }
+
+  if( !EN_SUCCESS(initDevice()) )
+  {
+    this->destroy();
+    return false;
+  }
+
+  if( FAILED(InitForRender()) )
   {
     this->destroy();
     return false;
@@ -104,37 +118,23 @@ appGraphcis::destroy()
 {
   CoUninitialize();
 
-  if( p_ImmediateContext )
-  {
-    p_ImmediateContext->ClearState();
-  }
 
-  DELETE_PTR(my_camera);
-  DELETE_PTR(my_firstPersonCamera);
-  DELETE_PTR(my_manager);
+  DELETE_PTR(myCamera);
+  DELETE_PTR(myFirstPersonCamera);
+  DELETE_PTR(myCameraManager);
+  DELETE_PTR(myViewMatrixBuffer);
+  DELETE_PTR(myProjectionMatrixBuffer);
 
-  RELEASE_DX_PTR(p_SamplerLinear);
-  RELEASE_DX_PTR(p_TextureRV);
-  RELEASE_DX_PTR(p_CBNeverChanges);
-  RELEASE_DX_PTR(p_CBChangeOnResize);
-  RELEASE_DX_PTR(p_CBChangesEveryFrame);
-  RELEASE_DX_PTR(p_VertexBuffer);
-  RELEASE_DX_PTR(p_IndexBuffer);
-  RELEASE_DX_PTR(p_VertexLayout);
+  //RELEASE_DX_PTR(p_SamplerLinear);
+  //RELEASE_DX_PTR(p_TextureRV);
+  //RELEASE_DX_PTR(p_CBChangeOnResize);
+  //RELEASE_DX_PTR(p_CBChangesEveryFrame);
 
-  RELEASE_DX_PTR(p_DepthStencilView);
-//  RELEASE_DX_PTR(p_RenderTargetView);
   RELEASE_DX_PTR(p_SwapChain);
-  RELEASE_DX_PTR(p_ImmediateContext);
-//RELEASE_DX_PTR(p_d3dDevice);
-//RELEASE_DX_PTR(p_VertexShader)
-//RELEASE_DX_PTR(p_PixelShader)
-//RELEASE_DX_PTR(p_DepthStencil)
 
-
-  //myPixelShader.reset(nullptr);
 
   enDevice::ShutDown();
+  enDeviceContext::ShutDown();
   //if( p_d3dDevice ) p_d3dDevice->Release();
   /*
     if( p_CBChangeOnResize ) p_CBChangeOnResize->Release();
@@ -162,9 +162,11 @@ appGraphcis::InitStatics()
 {
   try
   {
-    my_camera = new  enPerspectiveFreeCamera();
-    my_firstPersonCamera = new enFirstPersonCamera();
-    my_manager = new enCameraManager();
+    myCamera = new enPerspectiveFreeCamera();
+    myFirstPersonCamera = new enFirstPersonCamera();
+    myCameraManager = new enCameraManager();
+    myViewMatrixBuffer = new enConstBuffer();
+    myProjectionMatrixBuffer = new enConstBuffer();
   }
   catch( const std::bad_alloc & allocError )
   {
@@ -176,21 +178,30 @@ appGraphcis::InitStatics()
   return true;
 }
 
+bool
+appGraphcis::initModules()
+{
+  if( enDevice::StartUp(nullptr) == -1 )
+    return false;
+
+  if( enDeviceContext::StartUp(nullptr) == -1 )
+    return false;
+
+  return true;
+}
+
 enErrorCode
 appGraphcis::initDevice()
 {
-  HRESULT hr = S_OK;
-
-  enDevice::StartUp(nullptr);
-
   enDevice& device = enDevice::getInstance();
+  enDeviceContext& deviceContext = enDeviceContext::getInstance();
 
   RECT rc;
   GetClientRect(g_hWnd, &rc);
-  UINT width = rc.right - rc.left;
-  UINT height = rc.bottom - rc.top;
+  uint32 width = rc.right - rc.left;
+  uint32 height = rc.bottom - rc.top;
 
-  UINT createDeviceFlags = 0;
+  uint32 createDeviceFlags = 0;
 #ifdef _DEBUG
   createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
@@ -226,6 +237,9 @@ appGraphcis::initDevice()
   sd.SampleDesc.Quality = 0;
   sd.Windowed = TRUE;
 
+
+  HRESULT hr = S_OK;
+
   for( UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++ )
   {
     g_driverType = driverTypes[driverTypeIndex];
@@ -240,15 +254,16 @@ appGraphcis::initDevice()
                                        &p_SwapChain,
                                        device.getInterfaceRef(),
                                        &g_featureLevel,
-                                       &p_ImmediateContext);
+                                       deviceContext.getInterfaceRef());
     if( SUCCEEDED(hr) )
       break;
   }
 
-  if( FAILED(hr) )
-    return enErrorCode::FailedCreation;
+  if( SUCCEEDED(hr) )
+    return enErrorCode::NoError;
 
-  return enErrorCode::NoError;
+
+  return enErrorCode::FailedCreation;
 }
 
 bool
@@ -258,9 +273,23 @@ appGraphcis::initMyClasses()
   {
     myVertexShader = make_unique<enVertexShader>();
     myPixelShader = make_unique<enPixelShader>();
+
+    myVertexBuffer = make_unique<enVertexBuffer>();
+    myIndexBuffer = make_unique<enIndexBuffer>();
+
     myDepthStencil = make_unique<enTexture2D>();
     myRenderTargetView = make_unique<enRenderTargetView>();
     myInputLayout = make_unique<enInputLayout>();
+
+    myDepthStencilView = make_unique<enDepthStencilView>();
+    myViewPort = make_unique<enViewport>();
+
+    myWorldMatrix = make_unique<enConstBuffer>();
+
+    myResourceView = make_unique<enShaderResourceView>();
+    mySampler = make_unique<enSampler>();
+
+    mySwapchain = make_unique<enSwapChain>();
   }
   catch( const std::exception & e )
   {
@@ -271,10 +300,10 @@ appGraphcis::initMyClasses()
 }
 
 HRESULT
-appGraphcis::InitEverythingElse()
+appGraphcis::InitForRender()
 {
   enDevice& device = enDevice::getInstance();
-
+  enDeviceContext& deviceContext = enDeviceContext::getInstance();
   bool isSuccessful = false;
 
   HRESULT hr = S_FALSE;
@@ -289,7 +318,6 @@ appGraphcis::InitEverythingElse()
   hr = p_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&myRenderTargetView->m_targets[0].m_interface);
   if( FAILED(hr) )
     return hr;
-  //hr = device.getInterface()->CreateRenderTargetView(pBackBuffer, NULL, &p_RenderTargetView);
 
   isSuccessful = device.CreateRenderTargetView(*myRenderTargetView, myRenderTargetView->m_targetsCount);
   if( !isSuccessful )
@@ -298,11 +326,9 @@ appGraphcis::InitEverythingElse()
     return S_FALSE;
   }
 
-  //pBackBuffer->Release();
   if( FAILED(hr) )
     return hr;
 
-  // Create depth stencil texture
   sTextureDescriptor descriptoDepth;
   descriptoDepth.texWidth = width;
   descriptoDepth.texHeight = height;
@@ -312,26 +338,31 @@ appGraphcis::InitEverythingElse()
   descriptoDepth.BindFlags = enBufferBind::DepthStencil;
   descriptoDepth.arraySize = 1;
 
-  isSuccessful = device.CreateTexture2D(descriptoDepth, *myDepthStencil);
+  isSuccessful = device.CreateTexture2D(descriptoDepth, myDepthStencilView->m_texture);
   if( !isSuccessful )
   {
     EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
     return S_FALSE;
   }
 
-  // Create the depth stencil view
-  D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
-  SecureZeroMemory(&descDSV, sizeof(descDSV));
-  descDSV.Format = static_cast<DXGI_FORMAT> (descriptoDepth.texFormat);
-  descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-  descDSV.Texture2D.MipSlice = 0;
-  hr = device.getInterface()->CreateDepthStencilView(myDepthStencil->m_interface, &descDSV, &p_DepthStencilView);
-  if( FAILED(hr) )
-    return hr;
+  sDepthStencilDescriptor DepthStencilDesc;
+  DepthStencilDesc.Format = descriptoDepth.texFormat;
+  DepthStencilDesc.Dimension = DepthStencilFormat::two_dimention;
+  DepthStencilDesc.Mip = 0;
 
-  p_ImmediateContext->OMSetRenderTargets(1, &myRenderTargetView->m_interface, p_DepthStencilView);
+  myDepthStencilView->m_desc = DepthStencilDesc;
+  isSuccessful = device.CreateDepthStencilView(*myDepthStencilView);
 
-  // Setup the viewport
+  if( !isSuccessful )
+  {
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
+    return S_FALSE;
+  }
+
+  deviceContext.OMSetRenderTargets(myRenderTargetView.get(),
+                                   *myDepthStencilView);
+                                   //deviceContext.OMSetRenderTargets()
+                                   // Setup the viewport
   D3D11_VIEWPORT vp;
   vp.Width = (FLOAT)width;
   vp.Height = (FLOAT)height;
@@ -339,13 +370,15 @@ appGraphcis::InitEverythingElse()
   vp.MaxDepth = 1.0f;
   vp.TopLeftX = 0;
   vp.TopLeftY = 0;
-  p_ImmediateContext->RSSetViewports(1, &vp);
 
-  // Compile the vertex shader
-  //hr = CompileShaderFromFile(L"GraphcisFramework.fx",
-  //                           "VS",
-  //                           "vs_4_0",
-  //                            myVertexShader->getShaderInfoRef());
+  sViewportDesc viewDescriptor;
+  viewDescriptor.width = static_cast<float>(width);
+  viewDescriptor.height = static_cast<float>(height);
+  viewDescriptor.maxDepth = 1.0f;
+
+  myViewPort->init(viewDescriptor);
+
+  deviceContext.RSSetViewports(myViewPort.get());
 
   enErrorCode errorCode = myVertexShader->compileShaderFromFile("GraphcisFramework.fx",
                                                                 "VS",
@@ -355,7 +388,9 @@ appGraphcis::InitEverythingElse()
   {
     EN_LOG_ERROR_WITH_CODE(errorCode);
     MessageBox(NULL,
-               L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
+               L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.",
+               L"Error",
+               MB_OK);
     return S_FALSE;
   }
 
@@ -379,33 +414,9 @@ appGraphcis::InitEverythingElse()
     EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
     return S_FALSE;
   }
-  //// Define the input layout
-  //D3D11_INPUT_ELEMENT_DESC layout[] =
-  //{
-  //    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-  //    { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-  //};
-  //UINT numElements = ARRAYSIZE(layout);
-
-  //// Create the input layout
-  //hr = device.getInterface()->CreateInputLayout(layout,
-  //                                              numElements,
-  //                                              myVertexShader->getShaderInfo()->GetBufferPointer(),
-  //                                              myVertexShader->getShaderInfo()->GetBufferSize(),
-  //                                              //pVSBlob->GetBufferSize(),
-  //                                              &p_VertexLayout);
-
-  //pVSBlob->Release();
-
-// Set the input layout
-  p_ImmediateContext->IASetInputLayout(myInputLayout->getInterface());
-
-  // Compile the pixel shader
-  //ID3DBlob* pPSBlob = NULL;
-  //hr = CompileShaderFromFile(L"GraphcisFramework.fx",
-  //                           "PS",
-  //                           "ps_4_0",
-  //                           myPixelShader->getShaderInfoRef());
+  // Set the input layout
+  //p_ImmediateContext->IASetInputLayout(myInputLayout->getInterface());
+  deviceContext.IASetInputLayout(*myInputLayout);
 
   isSuccessful = myPixelShader->compileShaderFromFile("GraphcisFramework.fx",
                                                       "PS",
@@ -413,7 +424,9 @@ appGraphcis::InitEverythingElse()
   if( FAILED(hr) )
   {
     MessageBox(NULL,
-               L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
+               L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.",
+               L"Error",
+               MB_OK);
     return hr;
   }
 
@@ -471,19 +484,29 @@ appGraphcis::InitEverythingElse()
   bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
   bd.CPUAccessFlags = 0;
 
-  D3D11_SUBRESOURCE_DATA InitData;
-  std::memset(&InitData, 0, sizeof(InitData));
-  InitData.pSysMem = vertices;
+  sBufferDesc VertexBuffdescriptor;
+  VertexBuffdescriptor.cpuAccess = 0;
+  VertexBuffdescriptor.bindFlags = enBufferBind::Vertex;
+  VertexBuffdescriptor.elementCount = ARRAYSIZE(vertices);
+  VertexBuffdescriptor.stride = sizeof(SimpleVertex);
+  VertexBuffdescriptor.ptr_data = vertices;
 
-  hr = device.getInterface()->CreateBuffer(&bd, &InitData, &p_VertexBuffer);
 
-  if( FAILED(hr) )
-    return hr;
+  myVertexBuffer->init(VertexBuffdescriptor);
+
+  isSuccessful = device.CreateVertexBuffer(*myVertexBuffer);
+
+  if( !isSuccessful )
+  {
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation)
+      return S_FALSE;
+  }
 
   // Set vertex buffer
   UINT stride = sizeof(SimpleVertex);
   UINT offset = 0;
-  p_ImmediateContext->IASetVertexBuffers(0, 1, &p_VertexBuffer, &stride, &offset);
+
+  deviceContext.IASetVertexBuffers(myVertexBuffer.get(), 1);
 
   // Create index buffer
   // Create vertex buffer
@@ -508,62 +531,136 @@ appGraphcis::InitEverythingElse()
       23,20,22
   };
 
-  bd.Usage = D3D11_USAGE_DEFAULT;
-  bd.ByteWidth = sizeof(WORD) * 36;
-  bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-  bd.CPUAccessFlags = 0;
-  InitData.pSysMem = indices;
-  hr = device.getInterface()->CreateBuffer(&bd, &InitData, &p_IndexBuffer);
-  if( FAILED(hr) )
-    return hr;
+
+  sBufferDesc IndexBufferDescriptor;
+  IndexBufferDescriptor.bindFlags = enBufferBind::Index;
+  IndexBufferDescriptor.cpuAccess = 0;
+  IndexBufferDescriptor.elementCount = ARRAYSIZE(indices);
+  IndexBufferDescriptor.stride = sizeof(WORD);
+  IndexBufferDescriptor.ptr_data = indices;
+
+  myIndexBuffer->init(IndexBufferDescriptor);
+
+  device.CreateIndexBuffer(*myIndexBuffer);
+
+  if( !isSuccessful )
+  {
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation)
+      return S_FALSE;
+  }
+
+  deviceContext.IASetIndexBuffer(*myIndexBuffer, enFormats::uR16);
+
+  deviceContext.IASetPrimitiveTopology(static_cast<int>(enTopology::TriList));
 
   // Set index buffer
-  p_ImmediateContext->IASetIndexBuffer(p_IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
-
+  //p_ImmediateContext->IASetIndexBuffer(p_IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
+  //deviceContext.getInterface()->IASetIndexBuffer(p_IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
   // Set primitive topology
-  p_ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+  //p_ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+//deviceContext.getInterface()-> IASetPrimitiveTopology(static_cast<D3D_PRIMITIVE_TOPOLOGY>( ); enTopology::TriList)
+
 
   // Create the constant buffers
   bd.Usage = D3D11_USAGE_DEFAULT;
   bd.ByteWidth = sizeof(CBNeverChanges);
   bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
   bd.CPUAccessFlags = 0;
-  hr = device.getInterface()->CreateBuffer(&bd, NULL, &p_CBNeverChanges);
-  if( FAILED(hr) )
-    return hr;
+
+  sBufferDesc viewBuffer;
+  viewBuffer.bindFlags = enBufferBind::Const;
+  viewBuffer.stride = sizeof(CBNeverChanges);
+  viewBuffer.elementCount = 1;
+  viewBuffer.cpuAccess = 0;
+  viewBuffer.index = 0;
+
+  myViewMatrixBuffer->init(viewBuffer);
+
+  device.CreateConstBuffer(*myViewMatrixBuffer);
+
+  if( !isSuccessful )
+  {
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation)
+      return S_FALSE;
+  }
+
 
   bd.ByteWidth = sizeof(CBChangeOnResize);
-  hr = device.getInterface()->CreateBuffer(&bd, NULL, &p_CBChangeOnResize);
-  if( FAILED(hr) )
-    return hr;
+
+  sBufferDesc ProjectionDescriptor;
+  ProjectionDescriptor.bindFlags = enBufferBind::Const;
+  ProjectionDescriptor.elementCount = 1;
+  ProjectionDescriptor.stride = sizeof(CBChangeOnResize);
+  ProjectionDescriptor.index = 1;
+
+  myProjectionMatrixBuffer->init(ProjectionDescriptor);
+
+
+  isSuccessful = device.CreateConstBuffer(*myProjectionMatrixBuffer);
+
+
+  if( !isSuccessful )
+  {
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation)
+      return S_FALSE;
+  }
+
+
 
   bd.ByteWidth = sizeof(CBChangesEveryFrame);
-  hr = device.getInterface()->CreateBuffer(&bd, NULL, &p_CBChangesEveryFrame);
-  if( FAILED(hr) )
-    return hr;
+  sBufferDesc worldMatrixDescriptor;
+  worldMatrixDescriptor.elementCount = 1;
+  worldMatrixDescriptor.stride = sizeof(CBChangesEveryFrame);
+  worldMatrixDescriptor.bindFlags = enBufferBind::Const;
+  worldMatrixDescriptor.usage = enBufferUse::Default;
+  worldMatrixDescriptor.index = 2;
+
+  myWorldMatrix->init(worldMatrixDescriptor);
+
+  isSuccessful = device.CreateConstBuffer(*myWorldMatrix);
+
+
+  if( !isSuccessful )
+  {
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation)
+      return S_FALSE;
+  }
 
   // Load the Texture
-  //hr = dx::CreateDDSTextureFromFile(p_d3dDevice, L"seafloor.dds", nullptr, &p_TextureRV);
-  hr = dx::CreateWICTextureFromFile(device.getInterface(), L"neon light.jpg", nullptr, &p_TextureRV);
+  myResourceView->init();
 
-  if( FAILED(hr) )
-    return hr;
+  isSuccessful = device.CreateShaderResourceFromFile(*myResourceView,
+                                                     "neon light.jpg");
 
-  // Create the sample state
-  D3D11_SAMPLER_DESC sampDesc;
-  ZeroMemory(&sampDesc, sizeof(sampDesc));
-  sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-  sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-  sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-  sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-  sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-  sampDesc.MinLOD = 0;
-  sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-  hr = device.getInterface()->CreateSamplerState(&sampDesc, &p_SamplerLinear);
-  if( FAILED(hr) )
-    return hr;
+  if( !isSuccessful )
+  {
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
+    return S_FALSE;
+  }
 
-//************************************//************************************//************************************/************************************/
+
+
+  {
+    sSamplerDesc samplerDescriptor;
+    samplerDescriptor.filter = static_cast<uint32_t>(enFilter::MinMagMip_Linear);
+    samplerDescriptor.addressU = static_cast<uint32_t>(enAddress::Wrap);
+    samplerDescriptor.addressV = static_cast<uint32_t>(enAddress::Wrap);
+    samplerDescriptor.addressW = static_cast<uint32_t>(enAddress::Wrap);
+    samplerDescriptor.comparingFunc = static_cast<int>(enComparison::Never);
+    samplerDescriptor.minLod = 0.0f;
+    samplerDescriptor.maxLod = std::numeric_limits<float>::max();
+    samplerDescriptor.AnisotropicLevel = 1u;
+    samplerDescriptor.index = 0;
+
+    mySampler->init(samplerDescriptor);
+    isSuccessful = device.CreateSamplerState(*mySampler);
+    if( !isSuccessful )
+    {
+      EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
+      return S_FALSE;
+    }
+  }
+
 //************************************//************************************//************************************/************************************/
 //************************************//************************************//************************************/************************************/
   sPerspectiveCameraDesc descriptorCamera;
@@ -572,15 +669,15 @@ appGraphcis::InitEverythingElse()
   descriptorCamera.height = height;
   descriptorCamera.width = width;
 
-  my_camera->init(descriptorCamera);
+  myCamera->init(descriptorCamera);
 
 
   sFirstPersonCameraDesc cameraDescriptor;
-  my_firstPersonCamera->init(cameraDescriptor);
+  myFirstPersonCamera->init(cameraDescriptor);
 
-  my_manager->addCamera(my_camera);
+  myCameraManager->addCamera(myCamera);
 
-  my_manager->addCamera(my_firstPersonCamera);
+  myCameraManager->addCamera(myFirstPersonCamera);
 
   // Initialize the world matrices
   g_World = glm::identity<glm::mat4x4>();
@@ -591,10 +688,11 @@ appGraphcis::InitEverythingElse()
   glm::vec3 Up(0.0f, 1.0f, 0.0f);
 
   CBNeverChanges cbNeverChanges;
-  cbNeverChanges.mView = glm::transpose(my_camera->getView() /* my_camera.getView()*/);
+  cbNeverChanges.mView = glm::transpose(myCamera->getView() /* myCamera.getView()*/);
 
 
-  p_ImmediateContext->UpdateSubresource(p_CBNeverChanges, 0, NULL, &cbNeverChanges, 0, 0);
+  //p_ImmediateContext->UpdateSubresource(p_CBNeverChanges, 0, NULL, &cbNeverChanges, 0, 0);
+  deviceContext.getInterface()->UpdateSubresource(myViewMatrixBuffer->getInterface(), 0, NULL, &cbNeverChanges, 0, 0);
 
   // Initialize the projection matrix
   float TempWidth = width;
@@ -607,50 +705,15 @@ appGraphcis::InitEverythingElse()
                                        100.0f);
 
   CBChangeOnResize cbChangesOnResize;
-  cbChangesOnResize.mProjection = glm::transpose(my_camera->getProjection() /*my_camera.getProjection()*/);
-  p_ImmediateContext->UpdateSubresource(p_CBChangeOnResize, 0, NULL, &cbChangesOnResize, 0, 0);
+  cbChangesOnResize.mProjection = glm::transpose(myCamera->getProjection() /*myCamera.getProjection()*/);
 
-  return S_OK;
-  return E_NOTIMPL;
-}
+  deviceContext.UpdateSubresource(myProjectionMatrixBuffer, &cbChangesOnResize);
 
-HRESULT
-appGraphcis::CompileShaderFromFile(const wchar_t* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut)
-{
-  HRESULT hr = S_OK;
-
-  DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
-#if defined( DEBUG ) || defined( _DEBUG )
-  // Set the D3DCOMPILE_DEBUG flag to embed debug information in the shaders.
-  // Setting this flag improves the shader debugging experience, but still allows 
-  // the shaders to be optimized and to run exactly the way they will run in 
-  // the release configuration of this program.
-  dwShaderFlags |= D3DCOMPILE_DEBUG;
-#endif
-  ID3DBlob* pErrorBlob = nullptr;
-
-  hr = D3DCompileFromFile(szFileName,
-                          nullptr,
-                          nullptr,
-                          szEntryPoint,
-                          szShaderModel,
-                          dwShaderFlags,
-                          0,
-                          ppBlobOut,
-                          &pErrorBlob);
-
-
-  if( FAILED(hr) )
-  {
-    if( pErrorBlob != NULL )
-      OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
-    if( pErrorBlob ) pErrorBlob->Release();
-    return hr;
-  }
-  if( pErrorBlob ) pErrorBlob->Release();
-
+  //p_ImmediateContext->UpdateSubresource(p_CBChangeOnResize, 0, NULL, &cbChangesOnResize, 0, 0);
+  //deviceContext.getInterface()->UpdateSubresource(p_CBChangeOnResize, 0, NULL, &cbChangesOnResize, 0, 0);
   return S_OK;
 }
+
 
 HRESULT
 appGraphcis::InitWindow(HINSTANCE hInstance, int nCmdShow)
@@ -674,7 +737,8 @@ appGraphcis::InitWindow(HINSTANCE hInstance, int nCmdShow)
     return E_FAIL;
 
   // Create window
-  g_hInst = hInstance;
+  //g_hInst 
+  m_moduleInstance = hInstance;
 
   RECT rc = { 0, 0, 640, 480 };
 
@@ -711,6 +775,7 @@ appGraphcis::Render()
 {
   // Update our time
   static float t = 0.0f;
+  enDeviceContext& deviceContext = enDeviceContext::getInstance();
   if( g_driverType == D3D_DRIVER_TYPE_REFERENCE )
   {
     t += (float)glm::pi<float>() * 0.0125f;
@@ -733,35 +798,41 @@ appGraphcis::Render()
   // Clear the back buffer
   //
   float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; // red, green, blue, alpha
-  p_ImmediateContext->ClearRenderTargetView(myRenderTargetView->m_interface, ClearColor);
+  deviceContext.ClearRenderTargetView(*myRenderTargetView);
 
   //
   // Clear the depth buffer to 1.0 (max depth)
   //
-  p_ImmediateContext->ClearDepthStencilView(p_DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+  deviceContext.ClearDepthStencilView(*myDepthStencilView);
 
   //
   // Render the cube
   //
-  p_ImmediateContext->VSSetShader(myVertexShader->getInterface(), NULL, 0);
-  p_ImmediateContext->VSSetConstantBuffers(0, 1, &p_CBNeverChanges);
-  p_ImmediateContext->VSSetConstantBuffers(1, 1, &p_CBChangeOnResize);
-  p_ImmediateContext->VSSetConstantBuffers(2, 1, &p_CBChangesEveryFrame);
-  p_ImmediateContext->PSSetShader(myPixelShader->getInterface(), NULL, 0);
-  p_ImmediateContext->PSSetConstantBuffers(2, 1, &p_CBChangesEveryFrame);
-  p_ImmediateContext->PSSetShaderResources(0, 1, &p_TextureRV);
-  p_ImmediateContext->PSSetSamplers(0, 1, &p_SamplerLinear);
+  deviceContext.getInterface()->VSSetShader(myVertexShader->getInterface(), NULL, 0);
+  deviceContext.getInterface()->VSSetConstantBuffers(0, 1, myViewMatrixBuffer->getInterfaceRef());
+
+  deviceContext.VSSetConstantBuffer(*myProjectionMatrixBuffer,
+                                    myProjectionMatrixBuffer->getIndex());
+
+  deviceContext.VSSetConstantBuffer(*myWorldMatrix,
+                                    myWorldMatrix->getIndex());
+
+  deviceContext.PSSetShader(*myPixelShader);
+
+  deviceContext.PSSetConstantBuffers(*myWorldMatrix, myWorldMatrix->getIndex());
+  deviceContext.PSSetShaderResources(myResourceView.get(), 1);
+  deviceContext.PSSetSampler(*mySampler);
 
   CBChangesEveryFrame cb;
   cb.vMeshColor = g_MeshColor;
   cb.mWorld = glm::transpose(g_World);
 
-  //EveryFrame.mWorld = (cubeMatrix);
+  //deviceContext.getInterface()->UpdateSubresource(p_CBChangesEveryFrame, 0, NULL, &cb, 0, 0);
+  deviceContext.UpdateSubresource(myWorldMatrix.get(), &cb);
 
-  p_ImmediateContext->UpdateSubresource(p_CBChangesEveryFrame, 0, NULL, &cb, 0, 0);
 
-
-  p_ImmediateContext->DrawIndexed(36, 0, 0);
+  deviceContext.DrawIndexed(36);
+  //deviceContext.getInterface()->DrawIndexed(36, 0, 0);
 
   g_World = glm::identity<glm::mat4x4>();
 
@@ -777,6 +848,7 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
   HDC hdc;
   static bool useFreeCamera = false;
 
+  enDeviceContext& deviceContext = enDeviceContext::getInstance();
   if( my_initIsFinish == false )
   {
     return DefWindowProc(hWnd, message, wParam, lParam);
@@ -785,11 +857,11 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
   BasePerspectiveCamera* cameraPtr = nullptr;
   if( useFreeCamera )
   {
-    cameraPtr = my_manager->getFirstPersonCamera();
+    cameraPtr = myCameraManager->getFirstPersonCamera();
   }
   else
   {
-    cameraPtr = my_manager->getFreeCamera();
+    cameraPtr = myCameraManager->getFreeCamera();
   }
 
 
@@ -837,7 +909,7 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
       if( wParam == (WPARAM)'S' )
       {
-        //my_firstPersonCamera.TranslateRelative(0.0f, 0.0f, -1.0f);
+        //myFirstPersonCamera.TranslateRelative(0.0f, 0.0f, -1.0f);
 
         if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
@@ -861,11 +933,11 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
         {
           FirstPersonCam->TranslateRelative(-1.0f, 0.0f, 0.0f);
         }
-        //my_firstPersonCamera.TranslateRelative(-1.0f, 0.0f, 0.0f);
+        //myFirstPersonCamera.TranslateRelative(-1.0f, 0.0f, 0.0f);
       }
       if( wParam == (WPARAM)'A' )
       {
-       // my_firstPersonCamera.TranslateRelative(1.0f, 0.0f, 0.0f);
+       // myFirstPersonCamera.TranslateRelative(1.0f, 0.0f, 0.0f);
 
         if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
@@ -879,7 +951,7 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
       }
       if( wParam == static_cast<WPARAM>('E') )
       {
-        //my_firstPersonCamera.TranslateRelative(0.0f, 1.0f, 0.0f);
+        //myFirstPersonCamera.TranslateRelative(0.0f, 1.0f, 0.0f);
 
         if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
@@ -894,7 +966,7 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
       if( wParam == static_cast<WPARAM>('Q') )
       {
-        //my_firstPersonCamera.TranslateRelative(0.0f, -1.0f, 0.0f);
+        //myFirstPersonCamera.TranslateRelative(0.0f, -1.0f, 0.0f);
 
         if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
@@ -909,7 +981,7 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
       if( wParam == VK_RIGHT )
       {
-    //        my_firstPersonCamera.rotateInYaw(-10.0f);
+    //        myFirstPersonCamera.rotateInYaw(-10.0f);
 
         if( auto* FreeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
@@ -933,7 +1005,7 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
         {
           FirstPersonCam->rotateInYaw(10.0f);
         }
-        ///my_firstPersonCamera.rotateInYaw(10.0f);
+        ///myFirstPersonCamera.rotateInYaw(10.0f);
       }
 
       if( wParam == VK_UP )
@@ -948,12 +1020,12 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
         {
           FirstPersonCam->rotateInPitch(-10.0f);
         }
-        //my_firstPersonCamera.rotateInPitch(-10.0f);
+        //myFirstPersonCamera.rotateInPitch(-10.0f);
       }
 
       if( wParam == VK_DOWN )
       {
-        //my_firstPersonCamera.rotateInPitch(10.0f);
+        //myFirstPersonCamera.rotateInPitch(10.0f);
 
         if( auto* FreeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
@@ -968,7 +1040,7 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
       if( wParam == static_cast<WPARAM>('I') )
       {
-        //my_firstPersonCamera.rotateInRoll(10.0f);
+        //myFirstPersonCamera.rotateInRoll(10.0f);
 
         if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
@@ -983,7 +1055,7 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
       if( wParam == static_cast<WPARAM>('O') )
       {
-        //my_firstPersonCamera.rotateInRoll(-10.0f);
+        //myFirstPersonCamera.rotateInRoll(-10.0f);
 
         if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
@@ -999,11 +1071,14 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
       CBNeverChanges cbNeverChanges;
       cbNeverChanges.mView = glm::transpose(cameraPtr->getView());
-      p_ImmediateContext->UpdateSubresource(p_CBNeverChanges, 0, NULL, &cbNeverChanges, 0, 0);
+      //deviceContext.getInterface()->UpdateSubresource(myViewMatrixBuffer->getInterface(), 0, NULL, &cbNeverChanges, 0, 0);
+      deviceContext.UpdateSubresource(myViewMatrixBuffer, &cbNeverChanges);
+
 
       CBChangeOnResize cbChangesOnResize;
       cbChangesOnResize.mProjection = glm::transpose(cameraPtr->getProjection());
-      p_ImmediateContext->UpdateSubresource(p_CBChangeOnResize, 0, NULL, &cbChangesOnResize, 0, 0);
+      deviceContext.UpdateSubresource(myProjectionMatrixBuffer, &cbChangesOnResize);
+      //deviceContext.getInterface()->UpdateSubresource(myProjectionMatrixBuffer, 0, NULL, &cbChangesOnResize, 0, 0);
     }
     break;
 
@@ -1030,8 +1105,6 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
         mouseDir.x = -mouseDir.x;
 
-       // my_camera.rotateVector(mouseDir);
-
         if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
           FirstPersonCam->rotateVector(mouseDir);
@@ -1044,11 +1117,12 @@ appGraphcis::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
         CBNeverChanges cbNeverChanges;
         cbNeverChanges.mView = glm::transpose(cameraPtr->getView());
-        p_ImmediateContext->UpdateSubresource(p_CBNeverChanges, 0, NULL, &cbNeverChanges, 0, 0);
+        deviceContext.getInterface()->UpdateSubresource(myViewMatrixBuffer->getInterface(), 0, NULL, &cbNeverChanges, 0, 0);
+
 
         CBChangeOnResize cbChangesOnResize;
         cbChangesOnResize.mProjection = glm::transpose(cameraPtr->getProjection());
-        p_ImmediateContext->UpdateSubresource(p_CBChangeOnResize, 0, NULL, &cbChangesOnResize, 0, 0);
+        deviceContext.getInterface()->UpdateSubresource(myProjectionMatrixBuffer->getInterface(), 0, NULL, &cbChangesOnResize, 0, 0);
       }
     }
     break;
