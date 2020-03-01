@@ -24,9 +24,6 @@
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\cTransform.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\BasePerspectiveCamera.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -111,6 +108,15 @@
     <ClCompile Include="src\enSwapChain.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\enMesh.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\enModel.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\enTransform.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\helperFucs.h">
@@ -123,9 +129,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\en_defs.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\cTransform.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\BasePerspectiveCamera.h">
@@ -231,6 +234,15 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\enSwapChain.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enMesh.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enModel.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enTransform.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

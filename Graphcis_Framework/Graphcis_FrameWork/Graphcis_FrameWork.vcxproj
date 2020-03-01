@@ -221,7 +221,7 @@
       <PreprocessorDefinitions>EN_DEBUG;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(DEVLIBS)glm;$(ProjectDir)dependencies</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(DEVLIBS)glm;$(ProjectDir)dependencies;$(ProjectDir)dependencies\Assimp</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -230,7 +230,7 @@
       <AdditionalLibraryDirectories>$(ProjectDir)dependencies\DirectXTK\lib\$(PlatformTarget);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LinkStatus>
       </LinkStatus>
-      <AdditionalDependencies>dxguid.lib;d3d11.lib;DirectXTK_D.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;d3d11.lib;DirectXTK_D.lib;d3dcompiler.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='directx_debug|x64'">
@@ -247,10 +247,10 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)dependencies\DirectXTK\lib\$(PlatformTarget);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)dependencies\DirectXTK\lib\$(PlatformTarget);$(ProjectDir)dependencies\Assimp\lib\$(PlatformTarget);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LinkStatus>
       </LinkStatus>
-      <AdditionalDependencies>dxguid.lib;d3d11.lib;DirectXTK_D.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;d3d11.lib;DirectXTK_D.lib;d3dcompiler.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -357,6 +357,8 @@
     <ClCompile Include="dependencies\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="dependencies\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\cApiComponent.cpp" />
+    <ClCompile Include="src\enMesh.cpp" />
+    <ClCompile Include="src\enModel.cpp" />
     <ClCompile Include="src\enShaderResourceView.cpp" />
     <ClCompile Include="src\enDeviceContext.cpp" />
     <ClCompile Include="src\enSwapChain.cpp" />
@@ -372,7 +374,7 @@
     <ClCompile Include="src\enBaseBuffer.cpp" />
     <ClCompile Include="src\enCameraManager.cpp" />
     <ClCompile Include="src\BasePerspectiveCamera.cpp" />
-    <ClCompile Include="src\cTransform.cpp" />
+    <ClCompile Include="src\enTransform.cpp" />
     <ClCompile Include="src\enDevice.cpp" />
     <ClCompile Include="src\enFirstPersonCamera.cpp" />
     <ClCompile Include="src\enPerspectiveFreeCamera.cpp" />
@@ -391,13 +393,15 @@
     <ClInclude Include="dependencies\imgui\imstb_textedit.h" />
     <ClInclude Include="dependencies\imgui\imstb_truetype.h" />
     <ClInclude Include="include\cApiComponent.h" />
+    <ClInclude Include="include\enMesh.h" />
+    <ClInclude Include="include\enModel.h" />
     <ClInclude Include="include\enShaderResourceView.h" />
     <ClInclude Include="include\appGraphics.h" />
     <ClInclude Include="include\enBaseBuffer.h" />
     <ClInclude Include="include\enBaseShader.h" />
     <ClInclude Include="include\enCameraManager.h" />
     <ClInclude Include="include\BasePerspectiveCamera.h" />
-    <ClInclude Include="include\cTransform.h" />
+    <ClInclude Include="include\enTransform.h" />
     <ClInclude Include="include\enConstBuffer.h" />
     <ClInclude Include="include\enDevice.h" />
     <ClInclude Include="include\enDeviceContext.h" />

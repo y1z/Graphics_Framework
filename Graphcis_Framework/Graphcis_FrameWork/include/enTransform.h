@@ -1,25 +1,22 @@
 #pragma once
-#include <vector>
 #include "enTypes.h"
 
-/*class cDevice;
-class cDeviceContext;
-class cConstBuffer;*/
 
-class cTransform 
+class enTransform 
 {
 public:
-  cTransform() = default;
-  cTransform(const cTransform &other) = default;
-  cTransform(cTransform &&other) = default;
+  enTransform();
+  enTransform(const enTransform &other) = default;
+  enTransform(enTransform &&other)noexcept = default;
 
-  ~cTransform() = default;
+  ~enTransform() = default;
 public:
-  cTransform& operator =(const cTransform& other);
+  enTransform& operator =(const enTransform& other);
+  enTransform& operator =(enTransform&& other)noexcept = default;
 public:
 
   void
-    Init() noexcept;
+  Init() noexcept;
 
   /*! this will move the current transform matrix in a direction */
   void

@@ -5,4 +5,4 @@
 
 //#define DIRECTX 1
 
-#define OPENGL 0 
+//#define OPENGL 0 

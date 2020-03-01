@@ -132,25 +132,6 @@ appGraphics::destroy()
 
   enDevice::ShutDown();
   enDeviceContext::ShutDown();
-  //if( p_d3dDevice ) p_d3dDevice->Release();
-  /*
-    if( p_CBChangeOnResize ) p_CBChangeOnResize->Release();
-    if( p_VertexLayout ) p_VertexLayout->Release();
-    if( p_IndexBuffer ) p_IndexBuffer->Release();
-    if( p_VertexBuffer ) p_VertexBuffer->Release();
-    if( p_CBChangesEveryFrame ) p_CBChangesEveryFrame->Release();
-    if( p_CBNeverChanges ) p_CBNeverChanges->Release();
-    if( p_TextureRV ) p_TextureRV->Release();
-    if( p_SamplerLinear ) p_SamplerLinear->Release();
-    if( p_VertexShader ) p_VertexShader->Release();
-    if( p_PixelShader ) p_PixelShader->Release();
-    if( p_DepthStencil ) p_DepthStencil->Release();
-    if( p_SwapChain ) p_SwapChain->Release();
-    if( p_DepthStencilView ) p_DepthStencilView->Release();
-    if( p_RenderTargetView ) p_RenderTargetView->Release();
-    if( p_SwapChain ) p_SwapChain->Release();
-    if( p_ImmediateContext ) p_ImmediateContext->Release();
-  */
 }
 
 
@@ -244,11 +225,6 @@ appGraphics::InitForRender()
   enVector2 windowSize = helper::getWindowSize(*myWindow);
 
   // Create a render target view
-  //ID3D11Texture2D* pBackBuffer = NULL;
-  //hr = p_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&myRenderTargetView->m_targets[0].m_interface);
-  if( FAILED(hr) )
-    return hr;
-
   mySwapchain->ReciveBuckBuffer(*myRenderTargetView);
 
   isSuccessful = device.CreateRenderTargetView(*myRenderTargetView, 0);
@@ -364,10 +340,6 @@ appGraphics::InitForRender()
 
   // Create the pixel shader
   isSuccessful = device.CreatePixelShader(*myPixelShader);
-  //hr = device.getInterface()->CreatePixelShader( myPixelShader->m_desc.m_infoOfShader->GetBufferPointer(),
-  //                                               myPixelShader->m_desc.m_infoOfShader->GetBufferSize(),
-  //                                              NULL,
-  //                                              &myPixelShader->m_interface);
 
   if( !isSuccessful )
   {
@@ -409,12 +381,6 @@ appGraphics::InitForRender()
       { glm::vec4(-1.0f, 1.0f, 1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
   };
 
-  D3D11_BUFFER_DESC bd;
-  std::memset(&bd, 0, sizeof(bd));
-  bd.Usage = D3D11_USAGE_DEFAULT;
-  bd.ByteWidth = sizeof(SimpleVertex) * 24;
-  bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-  bd.CPUAccessFlags = 0;
 
   sBufferDesc VertexBuffdescriptor;
   VertexBuffdescriptor.cpuAccess = 0;
@@ -485,20 +451,7 @@ appGraphics::InitForRender()
 
   deviceContext.IASetPrimitiveTopology(static_cast<int>(enTopology::TriList));
 
-  // Set index buffer
-  //p_ImmediateContext->IASetIndexBuffer(p_IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
-  //deviceContext.getInterface()->IASetIndexBuffer(p_IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
-  // Set primitive topology
-  //p_ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-//deviceContext.getInterface()-> IASetPrimitiveTopology(static_cast<D3D_PRIMITIVE_TOPOLOGY>( ); enTopology::TriList)
-
-
   // Create the constant buffers
-  bd.Usage = D3D11_USAGE_DEFAULT;
-  bd.ByteWidth = sizeof(CBNeverChanges);
-  bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-  bd.CPUAccessFlags = 0;
-
   sBufferDesc viewBuffer;
   viewBuffer.bindFlags = enBufferBind::Const;
   viewBuffer.stride = sizeof(CBNeverChanges);
@@ -516,8 +469,6 @@ appGraphics::InitForRender()
       return S_FALSE;
   }
 
-
-  bd.ByteWidth = sizeof(CBChangeOnResize);
 
   sBufferDesc ProjectionDescriptor;
   ProjectionDescriptor.bindFlags = enBufferBind::Const;
@@ -537,7 +488,6 @@ appGraphics::InitForRender()
       return S_FALSE;
   }
 
-  bd.ByteWidth = sizeof(CBChangesEveryFrame);
   sBufferDesc worldMatrixDescriptor;
   worldMatrixDescriptor.elementCount = 1;
   worldMatrixDescriptor.stride = sizeof(CBChangesEveryFrame);
@@ -567,7 +517,6 @@ appGraphics::InitForRender()
     EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
     return S_FALSE;
   }
-
 
 
   {
