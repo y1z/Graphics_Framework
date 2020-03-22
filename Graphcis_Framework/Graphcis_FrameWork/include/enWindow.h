@@ -12,7 +12,7 @@ public:
   enWindow();
   ~enWindow();
 
-public:
+ public:
   /*! this starts the window
   \param ptr_proc [in] a pointer to the wndProc function
   \param instance [in] a variable used to get an HWND
@@ -28,14 +28,15 @@ public:
   HWND
   getHandle()const;
 #elif OPENGL 
-
+  GLFWwindow*
+  getHandle()const;
 #else
   void*
   getHandle();
 #endif // DIRECTX
 
    /*! returns the current HMODULE of the window */
-  HMODULE
+  HMODULE 
   getInstance() const;
 
   uint32
@@ -66,6 +67,8 @@ private:
 #if !OPENGL 
   HWND m_handle;
 #elif OPENGL
+  GLFWwindow* m_handle;
+
 #endif // DIRECTX
   HINSTANCE m_instance;
 

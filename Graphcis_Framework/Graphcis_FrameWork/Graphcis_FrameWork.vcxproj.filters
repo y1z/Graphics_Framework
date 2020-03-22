@@ -117,6 +117,15 @@
     <ClCompile Include="src\enTransform.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="dependencies\imgui\imgui_impl_glfw.cpp">
+      <Filter>include\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="dependencies\imgui\imgui_impl_opengl3.cpp">
+      <Filter>include\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\enMultiviewTexture.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\helperFucs.h">
@@ -243,6 +252,15 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\enTransform.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="dependencies\imgui\imgui_impl_glfw.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="dependencies\imgui\imgui_impl_opengl3.h">
+      <Filter>include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enMultiviewTexture.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

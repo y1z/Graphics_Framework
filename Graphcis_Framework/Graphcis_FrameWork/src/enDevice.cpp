@@ -10,8 +10,13 @@
 #include "enShaderResourceView.h"
 
 #include "helperFucs.h"
+
+#if DIRECTX
 #include "DirectXTK/include/DDSTextureLoader.h"
 #include "DirectXTK/include/WICTextureLoader.h"
+#elif OPENGL
+
+#endif // DIRECTX
 
 #include <vector>
 
@@ -23,7 +28,8 @@ enDevice::OnStartUp(void* _Descriptor)
 {
 #if DIRECTX
   m_interface = nullptr;
-#elif
+#elif OPENGL
+  m_interface = 0;
 #endif // DIRECTX
   return 0;
 }
@@ -32,7 +38,7 @@ void
 enDevice::OnShutDown()
 {
 #if DIRECTX
-  RELEASE_DX_PTR(m_interface)
+  RELEASE_DX_PTR(m_interface);
 #elif OPENGL
 #endif // DIRECTX
 }
@@ -68,21 +74,25 @@ enDevice::CreateRenderTargetView(enTexture2D& texture,
   return false;
 }
 
-bool 
+bool
 enDevice::CreateRenderTargetView(enRenderTargetView& renderTraget, uint32 targetIndex)
 {
 
-  if(renderTraget.c_randerTargetMax - 1 < targetIndex )
+  if( renderTraget.s_renderTargetMax - 1 < targetIndex )
   {
     EN_LOG_DB("target index going out of bounds");
     return false;
   }
 #if DIRECTX
   HRESULT hr = S_FALSE;
+  if( renderTraget.m_targets[targetIndex].m_interface )
+  {
+    hr = m_interface->CreateRenderTargetView(renderTraget.m_targets[targetIndex].m_interface,
+                                             NULL,
+                                             &renderTraget.m_interface);
 
-  hr = m_interface->CreateRenderTargetView(renderTraget.m_targets[targetIndex].m_interface,
-                                           NULL,
-                                           &renderTraget.m_interface);
+  }
+
   if( SUCCEEDED(hr) )
   {
     renderTraget.m_usedTargets[targetIndex] = true;
@@ -97,6 +107,28 @@ enDevice::CreateRenderTargetView(enRenderTargetView& renderTraget, uint32 target
 }
 
 bool 
+enDevice::CreateRenderTargetView(enRenderTargetView& renderTragetView,
+                                 enTexture2D& texture)
+{
+
+#if DIRECTX
+  HRESULT hr = S_FALSE;
+  hr = m_interface->CreateRenderTargetView(texture.m_interface,
+                                           NULL,
+                                           &renderTragetView.m_interface);
+
+
+  if( SUCCEEDED(hr) )
+  {
+    return true;
+  }
+#elif OPENGL
+
+#endif // DIRECTX
+  return false;
+}
+
+bool
 enDevice::CreateShaderResourceFromFile(enShaderResourceView& shaderResourceView, std::string_view filePath)
 {
 #if DIRECTX
@@ -108,7 +140,8 @@ enDevice::CreateShaderResourceFromFile(enShaderResourceView& shaderResourceView,
   if( filePath.find(".dds") != filePath.npos )
   {
     hr = dx::CreateDDSTextureFromFile(m_interface, wideFilePath.c_str(), nullptr, &shaderResourceView.m_interface);
-    if(FAILED( hr)){
+    if( FAILED(hr) )
+    {
       EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
       return false;
     }
@@ -157,7 +190,7 @@ enDevice::CreateTexture2D(sTextureDescriptor& Description,
   }
 #elif OPENGL
 #endif // DIRECTX
-return false;
+  return false;
 }
 
 bool
@@ -186,6 +219,32 @@ enDevice::CreateDepthStencilView(enDepthStencilView& DepthView)
 }
 
 bool
+enDevice::CreateDepthStencilView(enDepthStencilView& DepthView,
+                                 enTexture2D& Texture)
+{
+#if DIRECTX
+  HRESULT hr;
+  D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
+  SecureZeroMemory(&descDSV, sizeof(descDSV));
+  descDSV.Format = static_cast<DXGI_FORMAT>(DepthView.m_desc.Format);
+  descDSV.ViewDimension = static_cast<D3D11_DSV_DIMENSION>(DepthView.m_desc.Dimension);
+  descDSV.Texture2D.MipSlice = DepthView.m_desc.Mip;
+
+  hr = m_interface->CreateDepthStencilView(Texture.m_interface,
+                                           &descDSV,
+                                           &DepthView.m_interface);
+
+  if( SUCCEEDED(hr) )
+  {
+    return true;
+  }
+
+#elif OPENGL
+#endif // DIRECTX
+  return false;
+}
+
+bool
 enDevice::CreateVertexShader(enVertexShader& vertexShader)
 {
 #if DIRECTX
@@ -200,7 +259,7 @@ enDevice::CreateVertexShader(enVertexShader& vertexShader)
     return true;
   }
 
-#elif
+#elif OPENGL
 #endif // DIRECTX
   return false;
 }
@@ -224,7 +283,7 @@ enDevice::CreatePixelShader(enPixelShader& pixelShader)
   return false;
 }
 
-bool 
+bool
 enDevice::CreateInputLayout(enInputLayout& inputLayout,
                             enVertexShader& vertexShaderPath)
 {
@@ -283,6 +342,7 @@ enDevice::CreateIndexBuffer(enIndexBuffer& indexBuffer)
 #elif OPENGL 
 #endif// DIRECTX
 
+  return false;
 }
 
 bool
@@ -308,7 +368,7 @@ enDevice::CreateVertexBuffer(enVertexBuffer& vertexBuffer)
   return false;
 }
 
-bool 
+bool
 enDevice::CreateConstBuffer(enConstBuffer& constBuffer)
 {
 #if DIRECTX

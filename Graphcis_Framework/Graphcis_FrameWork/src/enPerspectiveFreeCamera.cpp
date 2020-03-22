@@ -74,6 +74,14 @@ enPerspectiveFreeCamera::rotateVector(const enVector2& rotationDir,
   updateMatrixes();
 }
 
+void 
+enPerspectiveFreeCamera::updateDimensions(float newWidth, float newHeight)
+{
+  m_width = newWidth;
+  m_height = newHeight;
+  this->updateMatrixes();
+}
+
 bool
 enPerspectiveFreeCamera::initDefault()
 {

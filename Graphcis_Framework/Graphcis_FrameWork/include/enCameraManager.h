@@ -30,6 +30,8 @@ public:
   enPerspectiveFreeCamera*
   getFreeCamera();
 
+  void 
+  updateCameras(uint32c newWidth, uint32c newHeight);
 
   void
   addCamera(BasePerspectiveCamera *ptrToCamera);
@@ -39,5 +41,7 @@ private:
   * @brief : contains the cameras used by the manager
   */
   std::deque<BasePerspectiveCamera* > m_cameras;
+
+  std::size_t m_currentCamIndex = 0u;
 
  };

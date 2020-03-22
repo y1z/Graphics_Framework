@@ -1,5 +1,6 @@
 #include "..\include\enWindow.h"
 #include "Resource.h"
+#include "helperFucs.h"
 
 #if UNICODE
 constexpr static const wchar_t* defualName = L"nameless window";
@@ -12,7 +13,7 @@ constexpr static const char* defualClassName = "entropy window";
 enWindow::enWindow()
   : m_descriptor{ 0 },
   mptr_proc(nullptr),
-  m_handle(nullptr),
+  m_handle(0),
   m_width(1u),
   m_height(1u)
 {
@@ -86,12 +87,40 @@ enWindow::init(windProcType ptr_proc,
 
   return true;
 #elif OPENGL
+  #ifdef UNICODE
+
+  std::string convertedName = helper::convertWStringToString(m_name);
+
+  m_handle = glfwCreateWindow(m_width, m_height, convertedName.c_str(), NULL, NULL);
+  #else
+
+  m_handle = glfwCreateWindow(m_width, m_height, m_name.c_str(), NULL, NULL);
+  #endif // UNICODE
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); // We want OpenGL 4.3
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL 
+    /* Create a windowed mode window and its OpenGL context */
+  if( !m_handle )
+  {
+    glfwTerminate();
+    return false;
+  }
+  /* Make the window's context current */
+  glfwMakeContextCurrent(m_handle);
+  return true;
 #endif
   return false;
 }
 
 #if DIRECTX
 HWND
+enWindow::getHandle() const
+{
+  return m_handle;
+}
+#elif OPENGL
+GLFWwindow*
 enWindow::getHandle() const
 {
   return m_handle;
@@ -124,7 +153,6 @@ enWindow::update()
   GetClientRect(m_handle, &currentRect);
   m_width = currentRect.right - currentRect.left;
   m_height = currentRect.bottom - currentRect.top;
-
-
+#elif OPENGL
 #endif // DIRECTX
 }

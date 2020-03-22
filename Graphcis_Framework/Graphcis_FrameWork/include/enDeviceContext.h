@@ -59,17 +59,17 @@ public:// functions
     \param  depthStencilView [out] the set depth-stencil view(note there can only be 1)
   */
   void
-  OMSetrenderTargets(std::vector<enRenderTargetView>& renderTragetsViews,
+  OMSetRenderTargets(std::vector<enRenderTargetView>& renderTragetsViews,
                      enDepthStencilView& depthStencilView);
 
 
-  /*!set the view port/s */
+  /*!set the view port */
   void
-    RSSetViewports(enViewport viewports[],
-                   uint8_t numViewports = 1u);
+  RSSetViewports(enViewport viewports[],
+                 uint8_t numViewports = 1u);
 
   void //! set's how to interpret the data from the shaders 
-    IASetInputLayout(enInputLayout& inputLayout);
+  IASetInputLayout(enInputLayout& inputLayout);
 
   void //! set's the vertex-buffers (can set multiple at a time )
   IASetVertexBuffers(enVertexBuffer vertexBuffer[],

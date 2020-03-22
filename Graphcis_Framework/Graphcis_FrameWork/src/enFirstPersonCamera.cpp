@@ -133,3 +133,11 @@ enFirstPersonCamera::initDefault()
   this->updateMatrixes();
   return true;
 }
+
+void 
+enFirstPersonCamera::updateDimensions(float newWidth, float newHeight)
+{
+  m_height = newHeight;
+  m_width = newWidth;
+  this->updateMatrixes();
+}

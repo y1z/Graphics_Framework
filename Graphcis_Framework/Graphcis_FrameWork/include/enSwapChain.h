@@ -2,6 +2,9 @@
 #include "util/Header.h"
 #include "util/soModule.h"
 
+class enWindow;
+class enViewport;
+
   /**
   * @brief : takes care of switching the front-buffers and back-buffer each frame.
   * @bug : no known bugs.
@@ -26,7 +29,7 @@ public:
 
   /**
   * @returns my descriptor for the swap-chain.
-  * @bug :
+  * @bug : no known bugs.
   */
   sSwapDesc 
   getSwapChainDesc()const;
@@ -39,16 +42,34 @@ public:
   DXGI_SWAP_CHAIN_DESC
   getdxSawpChainDesc()const;
 
-  
+#endif // DIRECTX
+
+  /**
+  * @brief : changes the size of the swap chain.
+  * @bug : requires that enDevice and enDeviceContext already
+  * be initialized
+  */
+  bool
+  ResizeSwapChain(enWindow &currentWindow,
+                  enRenderTargetView& renderTargetView,
+                  enDepthStencilView& DepthStencilView,
+                  enVector2 const& newSize,
+                  enViewport& viewport);
+
+
+  /**
+  * @brief : give the swap-chain a back buffer.
+  * @bug :no known bugs
+  */
   bool
   ReciveBuckBuffer(enRenderTargetView& renderTargetView);
 
+  /**
+  * @brief : presents what the back-buffer currently has.
+  * @bug : no known bugs
+  */
   void 
   Present(int options = 0);
-
-
-#endif // DIRECTX
-
 
 public:
 #if DIRECTX

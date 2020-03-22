@@ -49,7 +49,7 @@ enDeviceContext::ClearState()
 {
 #if DIRECTX
   m_interface->ClearState();
-#elif OPEN_GL
+#elif OPENGL
 
 #endif // DIRECTX
 }
@@ -77,14 +77,14 @@ enDeviceContext::OMSetRenderTargets(enRenderTargetView renderTargetsViews[],
   {
     assert(("Error two many render targets", numRenderTargets <= c_MaxRenderTargets));
   }
-#elif OPEN_GL
+#elif OPENGL
 #endif // DIRECTX
 
 }
 
 
 void
-enDeviceContext::OMSetrenderTargets(std::vector<enRenderTargetView>& renderTragetsViews,
+enDeviceContext::OMSetRenderTargets(std::vector<enRenderTargetView>& renderTragetsViews,
                                     enDepthStencilView& depthStencilView)
 {
 #if DIRECTX
@@ -105,7 +105,7 @@ enDeviceContext::OMSetrenderTargets(std::vector<enRenderTargetView>& renderTrage
   {
     assert(("Error two many render targets", totalElements <= c_MaxRenderTargets));
   }
-#elif OPEN_GL
+#elif OPENGL
 #endif // DIRECTX
 }
 
@@ -126,7 +126,7 @@ enDeviceContext::RSSetViewports(enViewport viewports[], uint8_t numViewports)
   {
     assert(("Error too many view-ports" && numViewports <= c_MaxViewPorts));
   }
-#elif OPEN_GL 
+#elif OPENGL 
   //TODO : make this have the ability to address multiple view-ports
   glViewport(0, 0, viewports[0].getWidth(), viewports[0].getHeight());
 
@@ -139,7 +139,7 @@ enDeviceContext::IASetInputLayout(enInputLayout& inputLayout)
 {
 #if DIRECTX
   m_interface->IASetInputLayout(inputLayout.getInterface());
-#elif OPEN_GL
+#elif OPENGL
 #endif // DIRECTX
 }
 
@@ -172,7 +172,7 @@ enDeviceContext::IASetVertexBuffers(enVertexBuffer vertexBuffer[], uint32_t numB
     assert(("Error too many vertex buffer ", numBuffers <= c_MaxVertexBuffers));
   }
 
-#elif OPEN_GL
+#elif OPENGL
   m_drawingData.currentVertexBuffer = vertexBuffer[0].getID();
 #endif // DIRECTX
 }
@@ -182,7 +182,7 @@ enDeviceContext::IASetIndexBuffer(enIndexBuffer& indexBuffer, int Format, int of
 {
 #if DIRECTX
   m_interface->IASetIndexBuffer(indexBuffer.getInterface(), static_cast<DXGI_FORMAT>(Format), offSet);
-#elif OPEN_GL
+#elif OPENGL
   m_drawingData.currentIndexBuffer = indexBuffer.getID();
   m_drawingData.currentFormat = Format;
 #endif // DIRECTX

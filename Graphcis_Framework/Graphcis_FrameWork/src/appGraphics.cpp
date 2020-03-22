@@ -6,6 +6,7 @@
 #include "Resource.h"
 
 #include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/matrix_access.hpp"
 
 #include "DirectXTK/include/DDSTextureLoader.h"
 #include "DirectXTK/include/WICTextureLoader.h"
@@ -17,6 +18,7 @@
 #include "enDevice.h"
 #include "enDeviceContext.h"
 #include "enShaderResourceView.h"
+#include "enModel.h"
 
 //--------------------------------------------------------------------------------------
 // standard  includes 
@@ -24,20 +26,24 @@
 #include <iostream>
 namespace dx = DirectX;
 using std::make_unique;
+using std::make_shared;
 
 
-enPerspectiveFreeCamera* appGraphics::myCamera = nullptr;
-enFirstPersonCamera* appGraphics::myFirstPersonCamera = nullptr;
-enCameraManager* appGraphics::myCameraManager = nullptr;
+enPerspectiveFreeCamera* appGraphics::s_Camera = nullptr;
+enFirstPersonCamera* appGraphics::s_FirstPersonCamera = nullptr;
+enCameraManager* appGraphics::s_CameraManager = nullptr;
 
 //ID3D11DeviceContext* appGraphics::p_ImmediateContext = nullptr;
 //ID3D11Buffer* appGraphics::p_CBNeverChanges = nullptr;
 //ID3D11Buffer* appGraphics::p_CBChangeOnResize = nullptr;
-bool appGraphics::my_initIsFinish = false;
+bool appGraphics::s_initIsFinish = false;
+bool appGraphics::s_useFreeCam = true;
 
-enConstBuffer* appGraphics::myViewMatrixBuffer = nullptr;
-enConstBuffer* appGraphics::myProjectionMatrixBuffer = nullptr;
+enConstBuffer* appGraphics::s_ViewMatrixBuffer = nullptr;
+enConstBuffer* appGraphics::s_ProjectionMatrixBuffer = nullptr;
+std::shared_ptr<enShaderResourceView>appGraphics::s_viewIntoOtherCam = nullptr;
 
+std::unique_ptr<imGuiManager> appGraphics::m_gui = make_unique<imGuiManager>();
 
 bool
 appGraphics::init()
@@ -72,19 +78,33 @@ appGraphics::init()
     return false;
   }
 
+  if( initContainers() == false )
+  {
+    this->destroy();
+    return false;
+  }
+
   if( !EN_SUCCESS(initApi()) )
   {
     this->destroy();
     return false;
   }
 
-  if( InitForRender() == S_FALSE )
+  if( initForRender() == S_FALSE )
   {
     this->destroy();
     return false;
   }
+  //enVector2 newSize = enVector2(2000, 2000);
+  //bool isSuccessful = this->m_swapchain->ResizeSwapChain(*m_window,
+  //                                                       *m_renderTargetView,
+  //                                                       *m_depthStencilView,
+  //                                                       newSize,
+  //                                                       *m_viewport);
 
-  my_initIsFinish = true;
+  //assert(isSuccessful);
+
+  s_initIsFinish = true;
 
   return true;
 }
@@ -94,8 +114,10 @@ appGraphics::run()
 {
   // Main message loop
   MSG msg = { 0 };
+  static glm::vec2 windowSize = helper::getWindowSize(*m_window);
   while( WM_QUIT != msg.message )
   {
+    //glm::vec2 currentWindowSize = helper::getWindowSize(*m_window);
     if( PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) )
     {
       TranslateMessage(&msg);
@@ -103,7 +125,8 @@ appGraphics::run()
     }
     else
     {
-      Render();
+      this->Render();
+      this->Update();
     }
   }
 
@@ -116,19 +139,13 @@ appGraphics::destroy()
   CoUninitialize();
 
 
-  DELETE_PTR(myCamera);
-  DELETE_PTR(myFirstPersonCamera);
-  DELETE_PTR(myCameraManager);
-  DELETE_PTR(myViewMatrixBuffer);
-  DELETE_PTR(myProjectionMatrixBuffer);
+  DELETE_PTR(s_Camera);
+  DELETE_PTR(s_FirstPersonCamera);
+  DELETE_PTR(s_CameraManager);
+  DELETE_PTR(s_ViewMatrixBuffer);
+  DELETE_PTR(s_ProjectionMatrixBuffer);
 
-  //RELEASE_DX_PTR(p_SamplerLinear);
-  //RELEASE_DX_PTR(p_TextureRV);
-  //RELEASE_DX_PTR(p_CBChangeOnResize);
-  //RELEASE_DX_PTR(p_CBChangesEveryFrame);
-
-  //RELEASE_DX_PTR(p_SwapChain);
-
+  m_ConstBufferContainer.clear();
 
   enDevice::ShutDown();
   enDeviceContext::ShutDown();
@@ -140,11 +157,12 @@ appGraphics::InitStatics()
 {
   try
   {
-    myCamera = new enPerspectiveFreeCamera();
-    myFirstPersonCamera = new enFirstPersonCamera();
-    myCameraManager = new enCameraManager();
-    myViewMatrixBuffer = new enConstBuffer();
-    myProjectionMatrixBuffer = new enConstBuffer();
+    s_Camera = new enPerspectiveFreeCamera();
+    s_FirstPersonCamera = new enFirstPersonCamera();
+    s_CameraManager = new enCameraManager();
+    s_ViewMatrixBuffer = new enConstBuffer();
+    s_ProjectionMatrixBuffer = new enConstBuffer();
+    s_viewIntoOtherCam = make_shared<enShaderResourceView>();
   }
   catch( const std::bad_alloc & allocError )
   {
@@ -172,9 +190,14 @@ enErrorCode
 appGraphics::initApi()
 {
 
-  enErrorCode checkForError = helper::CreateDeviceAndSwapchain(*mySwapchain,
-                                                               *myWindow,
+  enErrorCode checkForError = helper::CreateDeviceAndSwapchain(*m_swapchain,
+                                                               *m_window,
                                                                m_hardwareInfo);
+
+  if( !m_gui->is_initialized )
+  {
+    m_gui->Init(*m_window);
+  }
 
   return checkForError;
 }
@@ -184,26 +207,28 @@ appGraphics::createMyClasses()
 {
   try
   {
-    myVertexShader = make_unique<enVertexShader>();
-    myPixelShader = make_unique<enPixelShader>();
+    m_vertexShader = make_unique<enVertexShader>();
+    m_pixelShader = make_unique<enPixelShader>();
 
-    myVertexBuffer = make_unique<enVertexBuffer>();
-    myIndexBuffer = make_unique<enIndexBuffer>();
+    m_vertexBuffer = make_unique<enVertexBuffer>();
+    m_indexBuffer = make_unique<enIndexBuffer>();
 
-    myDepthStencil = make_unique<enTexture2D>();
-    myRenderTargetView = make_unique<enRenderTargetView>();
-    myInputLayout = make_unique<enInputLayout>();
+    m_renderTargetView = make_unique<enRenderTargetView>();
+    m_inputLayout = make_unique<enInputLayout>();
 
-    myDepthStencilView = make_unique<enDepthStencilView>();
-    myViewPort = make_unique<enViewport>();
+    m_depthStencilView = make_unique<enDepthStencilView>();
+    m_viewport = make_unique<enViewport>();
 
-    myWorldMatrix = make_unique<enConstBuffer>();
+    m_worldMatrix = make_unique<enConstBuffer>();
 
-    myResourceView = make_unique<enShaderResourceView>();
-    mySampler = make_unique<enSampler>();
+    m_resourceView = make_shared<enShaderResourceView>();
+    m_sampler = make_unique<enSampler>();
 
-    mySwapchain = make_unique<enSwapChain>();
-    myWindow = make_unique<enWindow>();
+    m_swapchain = make_unique<enSwapChain>();
+    m_window = make_unique<enWindow>();
+
+    m_model = make_unique<enModel>();
+    m_multiTexture = make_unique<enMultiviewTexture>();
   }
   catch( const std::exception & e )
   {
@@ -213,8 +238,17 @@ appGraphics::createMyClasses()
   return true;
 }
 
+bool
+appGraphics::initContainers()
+{
+  m_ConstBufferContainer.push_back(s_ViewMatrixBuffer);
+  m_ConstBufferContainer.push_back(s_ProjectionMatrixBuffer);
+
+  return true;
+}
+
 HRESULT
-appGraphics::InitForRender()
+appGraphics::initForRender()
 {
   enDevice& device = enDevice::getInstance();
   enDeviceContext& deviceContext = enDeviceContext::getInstance();
@@ -222,31 +256,37 @@ appGraphics::InitForRender()
 
   HRESULT hr = S_FALSE;
 
-  enVector2 windowSize = helper::getWindowSize(*myWindow);
+  enVector2 windowSize = helper::getWindowSize(*m_window);
 
   // Create a render target view
-  mySwapchain->ReciveBuckBuffer(*myRenderTargetView);
+  m_swapchain->ReciveBuckBuffer(*m_renderTargetView);
 
-  isSuccessful = device.CreateRenderTargetView(*myRenderTargetView, 0);
+  isSuccessful = device.CreateRenderTargetView(*m_renderTargetView, 0);
   if( !isSuccessful )
   {
     EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
     return S_FALSE;
   }
 
-  if( FAILED(hr) )
-    return hr;
+
+  isSuccessful = device.CreateRenderTargetView(*m_renderTargetView, 1);
+
+  if( !isSuccessful )
+  {
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
+    return S_FALSE;
+  }
 
   sTextureDescriptor descriptoDepth;
-  descriptoDepth.texWidth = windowSize.x ;
-  descriptoDepth.texHeight =  windowSize.y;
+  descriptoDepth.texWidth = windowSize.x;
+  descriptoDepth.texHeight = windowSize.y;
   descriptoDepth.CpuAccess = 0;
   descriptoDepth.texFormat = static_cast<int>(enFormats::depthStencil_format);
   descriptoDepth.Usage = enBufferUse::Default;
   descriptoDepth.BindFlags = enBufferBind::DepthStencil;
   descriptoDepth.arraySize = 1;
 
-  isSuccessful = device.CreateTexture2D(descriptoDepth, myDepthStencilView->m_texture);
+  isSuccessful = device.CreateTexture2D(descriptoDepth, m_depthStencilView->m_texture);
   if( !isSuccessful )
   {
     EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
@@ -258,8 +298,8 @@ appGraphics::InitForRender()
   DepthStencilDesc.Dimension = DepthStencilFormat::two_dimention;
   DepthStencilDesc.Mip = 0;
 
-  myDepthStencilView->m_desc = DepthStencilDesc;
-  isSuccessful = device.CreateDepthStencilView(*myDepthStencilView);
+  m_depthStencilView->m_desc = DepthStencilDesc;
+  isSuccessful = device.CreateDepthStencilView(*m_depthStencilView);
 
   if( !isSuccessful )
   {
@@ -267,8 +307,8 @@ appGraphics::InitForRender()
     return S_FALSE;
   }
 
-  deviceContext.OMSetRenderTargets(myRenderTargetView.get(),
-                                   *myDepthStencilView);
+  deviceContext.OMSetRenderTargets(m_renderTargetView.get(),
+                                   *m_depthStencilView);
                                    //deviceContext.OMSetRenderTargets()
                                    // Setup the viewport
   D3D11_VIEWPORT vp;
@@ -284,11 +324,11 @@ appGraphics::InitForRender()
   viewDescriptor.height = static_cast<float>(windowSize.y);
   viewDescriptor.maxDepth = 1.0f;
 
-  myViewPort->init(viewDescriptor);
+  m_viewport->init(viewDescriptor);
 
-  deviceContext.RSSetViewports(myViewPort.get());
+  deviceContext.RSSetViewports(m_viewport.get());
 
-  enErrorCode errorCode = myVertexShader->compileShaderFromFile("GraphcisFramework.fx",
+  enErrorCode errorCode = m_vertexShader->compileShaderFromFile("GraphcisFramework.fx",
                                                                 "VS",
                                                                 "vs_4_0");
 
@@ -304,18 +344,18 @@ appGraphics::InitForRender()
 
 
   // Create the vertex shader
-  //hr = device.getInterface()->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), NULL, &myVertexShader->m_interface);
-  isSuccessful = device.CreateVertexShader(*myVertexShader);
+  //hr = device.getInterface()->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), NULL, &m_vertexShader->m_interface);
+  isSuccessful = device.CreateVertexShader(*m_vertexShader);
   if( !isSuccessful )
   {
     EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
     return S_FALSE;
   }
 
-  myInputLayout->ReadShaderData(*myVertexShader);
+  m_inputLayout->ReadShaderData(*m_vertexShader);
 
 
-  isSuccessful = device.CreateInputLayout(*myInputLayout, *myVertexShader);
+  isSuccessful = device.CreateInputLayout(*m_inputLayout, *m_vertexShader);
 
   if( !isSuccessful )
   {
@@ -323,10 +363,10 @@ appGraphics::InitForRender()
     return S_FALSE;
   }
   // Set the input layout
-  //p_ImmediateContext->IASetInputLayout(myInputLayout->getInterface());
-  deviceContext.IASetInputLayout(*myInputLayout);
+  //p_ImmediateContext->IASetInputLayout(m_inputLayout->getInterface());
+  deviceContext.IASetInputLayout(*m_inputLayout);
 
-  isSuccessful = myPixelShader->compileShaderFromFile("GraphcisFramework.fx",
+  isSuccessful = m_pixelShader->compileShaderFromFile("GraphcisFramework.fx",
                                                       "PS",
                                                       "ps_4_0");
   if( FAILED(hr) )
@@ -339,7 +379,7 @@ appGraphics::InitForRender()
   }
 
   // Create the pixel shader
-  isSuccessful = device.CreatePixelShader(*myPixelShader);
+  isSuccessful = device.CreatePixelShader(*m_pixelShader);
 
   if( !isSuccessful )
   {
@@ -390,9 +430,16 @@ appGraphics::InitForRender()
   VertexBuffdescriptor.ptr_data = vertices;
 
 
-  myVertexBuffer->init(VertexBuffdescriptor);
+  if( m_model->LoadModelFromFile("ryuko.fbx") == false )
+  {
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation)
+      return S_FALSE;
+  }
 
-  isSuccessful = device.CreateVertexBuffer(*myVertexBuffer);
+
+  m_vertexBuffer->init(VertexBuffdescriptor);
+
+  isSuccessful = device.CreateVertexBuffer(*m_vertexBuffer);
 
   if( !isSuccessful )
   {
@@ -404,7 +451,7 @@ appGraphics::InitForRender()
   UINT stride = sizeof(SimpleVertex);
   UINT offset = 0;
 
-  deviceContext.IASetVertexBuffers(myVertexBuffer.get(), 1);
+  deviceContext.IASetVertexBuffers(m_vertexBuffer.get(), 1);
 
   // Create index buffer
   // Create vertex buffer
@@ -437,9 +484,9 @@ appGraphics::InitForRender()
   IndexBufferDescriptor.stride = sizeof(WORD);
   IndexBufferDescriptor.ptr_data = indices;
 
-  myIndexBuffer->init(IndexBufferDescriptor);
+  m_indexBuffer->init(IndexBufferDescriptor);
 
-  device.CreateIndexBuffer(*myIndexBuffer);
+  device.CreateIndexBuffer(*m_indexBuffer);
 
   if( !isSuccessful )
   {
@@ -447,21 +494,21 @@ appGraphics::InitForRender()
       return S_FALSE;
   }
 
-  deviceContext.IASetIndexBuffer(*myIndexBuffer, enFormats::uR16);
+  deviceContext.IASetIndexBuffer(*m_indexBuffer, enFormats::uR16);
 
   deviceContext.IASetPrimitiveTopology(static_cast<int>(enTopology::TriList));
 
   // Create the constant buffers
   sBufferDesc viewBuffer;
   viewBuffer.bindFlags = enBufferBind::Const;
-  viewBuffer.stride = sizeof(CBNeverChanges);
+  viewBuffer.stride = sizeof(viewMatrix);
   viewBuffer.elementCount = 1;
   viewBuffer.cpuAccess = 0;
   viewBuffer.index = 0;
 
-  myViewMatrixBuffer->init(viewBuffer);
+  s_ViewMatrixBuffer->init(viewBuffer);
 
-  device.CreateConstBuffer(*myViewMatrixBuffer);
+  device.CreateConstBuffer(*s_ViewMatrixBuffer);
 
   if( !isSuccessful )
   {
@@ -473,13 +520,13 @@ appGraphics::InitForRender()
   sBufferDesc ProjectionDescriptor;
   ProjectionDescriptor.bindFlags = enBufferBind::Const;
   ProjectionDescriptor.elementCount = 1;
-  ProjectionDescriptor.stride = sizeof(CBChangeOnResize);
+  ProjectionDescriptor.stride = sizeof(projectionMatrix);
   ProjectionDescriptor.index = 1;
 
-  myProjectionMatrixBuffer->init(ProjectionDescriptor);
+  s_ProjectionMatrixBuffer->init(ProjectionDescriptor);
 
 
-  isSuccessful = device.CreateConstBuffer(*myProjectionMatrixBuffer);
+  isSuccessful = device.CreateConstBuffer(*s_ProjectionMatrixBuffer);
 
 
   if( !isSuccessful )
@@ -490,14 +537,14 @@ appGraphics::InitForRender()
 
   sBufferDesc worldMatrixDescriptor;
   worldMatrixDescriptor.elementCount = 1;
-  worldMatrixDescriptor.stride = sizeof(CBChangesEveryFrame);
+  worldMatrixDescriptor.stride = sizeof(ConstBufferWorldColor);
   worldMatrixDescriptor.bindFlags = enBufferBind::Const;
   worldMatrixDescriptor.usage = enBufferUse::Default;
   worldMatrixDescriptor.index = 2;
 
-  myWorldMatrix->init(worldMatrixDescriptor);
+  m_worldMatrix->init(worldMatrixDescriptor);
 
-  isSuccessful = device.CreateConstBuffer(*myWorldMatrix);
+  isSuccessful = device.CreateConstBuffer(*m_worldMatrix);
 
 
   if( !isSuccessful )
@@ -507,9 +554,9 @@ appGraphics::InitForRender()
   }
 
   // Load the Texture
-  myResourceView->init();
+  m_resourceView->init();
 
-  isSuccessful = device.CreateShaderResourceFromFile(*myResourceView,
+  isSuccessful = device.CreateShaderResourceFromFile(*m_resourceView,
                                                      "neon light.jpg");
 
   if( !isSuccessful )
@@ -531,8 +578,8 @@ appGraphics::InitForRender()
     samplerDescriptor.AnisotropicLevel = 1u;
     samplerDescriptor.index = 0;
 
-    mySampler->init(samplerDescriptor);
-    isSuccessful = device.CreateSamplerState(*mySampler);
+    m_sampler->init(samplerDescriptor);
+    isSuccessful = device.CreateSamplerState(*m_sampler);
     if( !isSuccessful )
     {
       EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
@@ -546,47 +593,59 @@ appGraphics::InitForRender()
   descriptorCamera.upDir = enVector3(0.0f, 1.0f, 0.0f);
   descriptorCamera.lookAtPosition = enVector3(0.0f, 0.0f, -1.0f);
   descriptorCamera.height = windowSize.y;
-  descriptorCamera.width =  windowSize.x;
+  descriptorCamera.width = windowSize.x;
 
-  myCamera->init(descriptorCamera);
+  s_Camera->init(descriptorCamera);
 
 
   sFirstPersonCameraDesc cameraDescriptor;
-  myFirstPersonCamera->init(cameraDescriptor);
+  s_FirstPersonCamera->init(cameraDescriptor);
 
-  myCameraManager->addCamera(myCamera);
+  s_CameraManager->addCamera(s_Camera);
 
-  myCameraManager->addCamera(myFirstPersonCamera);
+  s_CameraManager->addCamera(s_FirstPersonCamera);
 
   // Initialize the world matrices
-  g_World = glm::identity<glm::mat4x4>();
+  m_World = glm::identity<glm::mat4x4>();
 
   // Initialize the view matrix
   glm::vec3 Eye(0.0f, 3.0f, -6.0f);
   glm::vec3 At(0.0f, 0.0f, -1.0f);
   glm::vec3 Up(0.0f, 1.0f, 0.0f);
 
-  CBNeverChanges cbNeverChanges;
-  cbNeverChanges.mView = glm::transpose(myCamera->getView() /* myCamera.getView()*/);
+  viewMatrix cbNeverChanges;
+  cbNeverChanges.mView = glm::transpose(s_Camera->getView() /* s_Camera.getView()*/);
 
 
   //p_ImmediateContext->UpdateSubresource(p_CBNeverChanges, 0, NULL, &cbNeverChanges, 0, 0);
-  deviceContext.getInterface()->UpdateSubresource(myViewMatrixBuffer->getInterface(), 0, NULL, &cbNeverChanges, 0, 0);
+#if DIRECTX
+  //deviceContext.getInterface()->UpdateSubresource(s_ViewMatrixBuffer->getInterface(), 0, NULL, &cbNeverChanges, 0, 0);
+
+#endif // DIRECTX
+
+  deviceContext.UpdateSubresource(s_ViewMatrixBuffer, &cbNeverChanges);
+
 
   // Initialize the projection matrix
-  g_Projection = glm::perspectiveFovLH(glm::quarter_pi<float>(),
+  m_Projection = glm::perspectiveFovLH(glm::quarter_pi<float>(),
                                        windowSize.x,
                                        windowSize.y,
                                        0.01f,
                                        100.0f);
 
-  CBChangeOnResize cbChangesOnResize;
-  cbChangesOnResize.mProjection = glm::transpose(myCamera->getProjection() /*myCamera.getProjection()*/);
+  projectionMatrix cbChangesOnResize;
+  cbChangesOnResize.mProjection = glm::transpose(s_Camera->getProjection() /*s_Camera.getProjection()*/);
 
-  deviceContext.UpdateSubresource(myProjectionMatrixBuffer, &cbChangesOnResize);
+  deviceContext.UpdateSubresource(s_ProjectionMatrixBuffer, &cbChangesOnResize);
 
-  //p_ImmediateContext->UpdateSubresource(p_CBChangeOnResize, 0, NULL, &cbChangesOnResize, 0, 0);
-  //deviceContext.getInterface()->UpdateSubresource(p_CBChangeOnResize, 0, NULL, &cbChangesOnResize, 0, 0);
+
+  for( auto& mesh : m_model->m_meshes )
+  {
+    mesh.mptr_resource = m_resourceView;
+  }
+
+  //p_ImmediateContext->UpdateSubresource(p_CBChangeOnResize, 0, NULL, &projMatrixData, 0, 0);
+  //deviceContext.getInterface()->UpdateSubresource(p_CBChangeOnResize, 0, NULL, &projMatrixData, 0, 0);
   return S_OK;
 }
 
@@ -594,7 +653,7 @@ appGraphics::InitForRender()
 HRESULT
 appGraphics::InitWindow(HINSTANCE hInstance, int nCmdShow)
 {
-  bool isSuccessful = myWindow->init(WndProcRedirect,
+  bool isSuccessful = m_window->init(WndProcRedirect,
                                      hInstance,
                                      " Graphics window ");
 
@@ -607,68 +666,15 @@ appGraphics::InitWindow(HINSTANCE hInstance, int nCmdShow)
     return S_FALSE;
   }
 
- //// Register class
- // WNDCLASSEX wcex;
- // wcex.cbSize = sizeof(WNDCLASSEX);
- // wcex.style = CS_HREDRAW | CS_VREDRAW;
- // wcex.lpfnWndProc = WndProcRedirect;
- // wcex.cbClsExtra = 0;
- // wcex.cbWndExtra = 0;
- // wcex.hInstance = hInstance;
- // wcex.hIcon = LoadIcon(hInstance, (LPCTSTR)IDI_TUTORIAL1);
- // wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
- // wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
- // wcex.lpszMenuName = NULL;
- // wcex.lpszClassName = L"TutorialWindowClass";
- // wcex.hIconSm = LoadIcon(wcex.hInstance, (LPCTSTR)IDI_TUTORIAL1);
-
- // if( !RegisterClassEx(&wcex) )
- //   return E_FAIL;
-
- // // Create window
- // //g_hInst 
- // m_moduleInstance = hInstance;
-
- // RECT rc = { 0, 0, 640, 480 };
-
- // AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
-
- // g_hWnd = CreateWindow(L"TutorialWindowClass",
- //                       L"Direct3D 11 Tutorial 7",
- //                       WS_OVERLAPPEDWINDOW,
- //                       100,
- //                       100,
- //                       rc.right - rc.left,
- //                       rc.bottom - rc.top,
- //                       NULL,
- //                       NULL,
- //                       hInstance,
- //                       NULL);
-
-
- // if( !g_hWnd )
- //   return E_FAIL;
-
- // if( g_hWnd != INVALID_HANDLE_VALUE )
- // {
- //   ShowWindow(g_hWnd, nCmdShow);
- //   UpdateWindow(g_hWnd);
- // }
-
-    return S_OK;
+  return S_OK;
 }
 
 void
 appGraphics::Render()
 {
-  // Update our time
+
   static float t = 0.0f;
   enDeviceContext& deviceContext = enDeviceContext::getInstance();
-  if( g_driverType == D3D_DRIVER_TYPE_REFERENCE )
-  {
-    t += (float)glm::pi<float>() * 0.0125f;
-  }
-  else
   {
     static DWORD dwTimeStart = 0;
     DWORD dwTimeCur = GetTickCount();
@@ -678,79 +684,136 @@ appGraphics::Render()
   }
 
   // Modify the color
-  g_MeshColor.x = (sinf(t * 1.0f) + 1.0f) * 0.5f;
-  g_MeshColor.y = (cosf(t * 3.0f) + 1.0f) * 0.5f;
-  g_MeshColor.z = (sinf(t * 5.0f) + 1.0f) * 0.5f;
+  m_MeshColor.x = (sinf(t * 1.0f) + 1.0f) * 0.5f;
+  m_MeshColor.y = (cosf(t * 3.0f) + 1.0f) * 0.5f;
+  m_MeshColor.z = (sinf(t * 5.0f) + 1.0f) * 0.5f;
 
   //
   // Clear the back buffer
   //
   float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; // red, green, blue, alpha
-  deviceContext.ClearRenderTargetView(*myRenderTargetView);
+  deviceContext.ClearRenderTargetView(*m_renderTargetView);
 
   //
   // Clear the depth buffer to 1.0 (max depth)
   //
-  deviceContext.ClearDepthStencilView(*myDepthStencilView);
+  deviceContext.ClearDepthStencilView(*m_depthStencilView);
 
   //
   // Render the cube
   //
-  deviceContext.getInterface()->VSSetShader(myVertexShader->getInterface(), NULL, 0);
-  deviceContext.getInterface()->VSSetConstantBuffers(0, 1, myViewMatrixBuffer->getInterfaceRef());
+  //deviceContext.getInterface()->VSSetShader(m_vertexShader->getInterface(), NULL, 0);
+  //deviceContext.getInterface()->VSSetConstantBuffers(0, 1, s_ViewMatrixBuffer->getInterfaceRef());
 
-  deviceContext.VSSetConstantBuffer(*myProjectionMatrixBuffer,
-                                    myProjectionMatrixBuffer->getIndex());
+  deviceContext.VSSetShader(*m_vertexShader);
+  deviceContext.VSSetConstantBuffer(*s_ViewMatrixBuffer, s_ViewMatrixBuffer->getIndex());
 
-  deviceContext.VSSetConstantBuffer(*myWorldMatrix,
-                                    myWorldMatrix->getIndex());
+  deviceContext.VSSetConstantBuffer(*s_ProjectionMatrixBuffer,
+                                    s_ProjectionMatrixBuffer->getIndex());
 
-  deviceContext.PSSetShader(*myPixelShader);
+  deviceContext.VSSetConstantBuffer(*m_worldMatrix,
+                                    m_worldMatrix->getIndex());
 
-  deviceContext.PSSetConstantBuffers(*myWorldMatrix, myWorldMatrix->getIndex());
-  deviceContext.PSSetShaderResources(myResourceView.get(), 1);
-  deviceContext.PSSetSampler(*mySampler);
+  deviceContext.PSSetShader(*m_pixelShader);
 
-  CBChangesEveryFrame cb;
-  cb.vMeshColor = g_MeshColor;
-  cb.mWorld = glm::transpose(g_World);
+  deviceContext.PSSetConstantBuffers(*m_worldMatrix, m_worldMatrix->getIndex());
+  deviceContext.PSSetShaderResources(m_resourceView.get(), 1);
+  deviceContext.PSSetSampler(*m_sampler);
+
+  ConstBufferWorldColor cb;
+  cb.vMeshColor = m_MeshColor;
+  cb.mWorld = glm::transpose(m_World);
 
   //deviceContext.getInterface()->UpdateSubresource(p_CBChangesEveryFrame, 0, NULL, &cb, 0, 0);
-  deviceContext.UpdateSubresource(myWorldMatrix.get(), &cb);
+  deviceContext.UpdateSubresource(m_worldMatrix.get(), &cb);
+ // deviceContext.DrawIndexed(36);
 
 
-  deviceContext.DrawIndexed(36);
-  //deviceContext.getInterface()->DrawIndexed(36, 0, 0);
 
-  g_World = glm::identity<glm::mat4x4>();
+ //deviceContext.getInterface()->DrawIndexed(36, 0, 0);
 
+  m_model->DrawMeshes(m_ConstBufferContainer);
+  m_World = glm::identity<glm::mat4x4>();
+
+
+
+  m_gui->beginFrame("camera view");
+  m_gui->addImage(*m_resourceView);
+  m_gui->addButton("switch Cam", s_useFreeCam);
+
+  m_gui->endFrame();
   // Present our back buffer to our front buffer
   //
   //p_SwapChain->Present(0, 0);
-  mySwapchain->Present();
+  m_swapchain->Present();
 }
+
+void
+appGraphics::Update()
+{
+  uint32c heightBeforeUpdate = m_window->getHeight();
+  uint32c widthBeforeUpdate = m_window->getWidth();
+  m_window->update();
+
+  if( heightBeforeUpdate != m_window->getHeight() ||
+     widthBeforeUpdate != m_window->getWidth() )
+  {
+    uint32c newWidth = m_window->getWidth();
+    uint32c newHeight = m_window->getHeight();
+
+    enVector2 const NewSize(newWidth, newHeight);
+
+    m_swapchain->ResizeSwapChain(*m_window,
+                                 *m_renderTargetView,
+                                 *m_depthStencilView,
+                                 NewSize,
+                                 *m_viewport);
+
+    enDeviceContext& deviceContext = enDeviceContext::getInstance();
+
+
+    s_CameraManager->updateCameras(newWidth, newHeight);
+
+    enPerspectiveFreeCamera* ptr_freeCam = s_CameraManager->getFreeCamera();
+    viewMatrix ViewMatrixData;
+    ViewMatrixData.mView = ptr_freeCam->getView();
+    helper::arrangeForApi(ViewMatrixData.mView);
+    deviceContext.UpdateSubresource(s_ViewMatrixBuffer, &ViewMatrixData.mView);
+
+
+    projectionMatrix  projMatrixData;
+    projMatrixData.mProjection = ptr_freeCam->getProjection();
+    helper::arrangeForApi(projMatrixData.mProjection);
+    deviceContext.UpdateSubresource(s_ProjectionMatrixBuffer, &projMatrixData.mProjection);
+  }
+
+}
+
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT
 appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
   PAINTSTRUCT ps;
   HDC hdc;
-  static bool useFreeCamera = false;
+
+  if( ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam) )
+    return true;
 
   enDeviceContext& deviceContext = enDeviceContext::getInstance();
-  if( my_initIsFinish == false )
+  if( s_initIsFinish == false )
   {
     return DefWindowProc(hWnd, message, wParam, lParam);
   }
 
   BasePerspectiveCamera* cameraPtr = nullptr;
-  if( useFreeCamera )
+  if( s_useFreeCam )
   {
-    cameraPtr = myCameraManager->getFirstPersonCamera();
+    cameraPtr = s_CameraManager->getFirstPersonCamera();
   }
   else
   {
-    cameraPtr = myCameraManager->getFreeCamera();
+    cameraPtr = s_CameraManager->getFreeCamera();
   }
 
 
@@ -770,14 +833,14 @@ appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
       if( wParam == (WPARAM)'1' )
       {
-        if( useFreeCamera )
+        if( s_useFreeCam )
         {
-          useFreeCamera = false;
+          s_useFreeCam = false;
           std::cout << "false\n";
         }
         else
         {
-          useFreeCamera = true;
+          s_useFreeCam = true;
           std::cout << "true\n";
         }
       }
@@ -798,7 +861,7 @@ appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
       if( wParam == (WPARAM)'S' )
       {
-        //myFirstPersonCamera.TranslateRelative(0.0f, 0.0f, -1.0f);
+        //s_FirstPersonCamera.TranslateRelative(0.0f, 0.0f, -1.0f);
 
         if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
@@ -822,11 +885,11 @@ appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
         {
           FirstPersonCam->TranslateRelative(-1.0f, 0.0f, 0.0f);
         }
-        //myFirstPersonCamera.TranslateRelative(-1.0f, 0.0f, 0.0f);
+        //s_FirstPersonCamera.TranslateRelative(-1.0f, 0.0f, 0.0f);
       }
       if( wParam == (WPARAM)'A' )
       {
-       // myFirstPersonCamera.TranslateRelative(1.0f, 0.0f, 0.0f);
+       // s_FirstPersonCamera.TranslateRelative(1.0f, 0.0f, 0.0f);
 
         if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
@@ -840,7 +903,7 @@ appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
       }
       if( wParam == static_cast<WPARAM>('E') )
       {
-        //myFirstPersonCamera.TranslateRelative(0.0f, 1.0f, 0.0f);
+        //s_FirstPersonCamera.TranslateRelative(0.0f, 1.0f, 0.0f);
 
         if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
@@ -855,7 +918,7 @@ appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
       if( wParam == static_cast<WPARAM>('Q') )
       {
-        //myFirstPersonCamera.TranslateRelative(0.0f, -1.0f, 0.0f);
+        //s_FirstPersonCamera.TranslateRelative(0.0f, -1.0f, 0.0f);
 
         if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
@@ -870,7 +933,6 @@ appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
       if( wParam == VK_RIGHT )
       {
-    //        myFirstPersonCamera.rotateInYaw(-10.0f);
 
         if( auto* FreeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
@@ -894,7 +956,7 @@ appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
         {
           FirstPersonCam->rotateInYaw(10.0f);
         }
-        ///myFirstPersonCamera.rotateInYaw(10.0f);
+        ///s_FirstPersonCamera.rotateInYaw(10.0f);
       }
 
       if( wParam == VK_UP )
@@ -909,12 +971,12 @@ appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
         {
           FirstPersonCam->rotateInPitch(-10.0f);
         }
-        //myFirstPersonCamera.rotateInPitch(-10.0f);
+        //s_FirstPersonCamera.rotateInPitch(-10.0f);
       }
 
       if( wParam == VK_DOWN )
       {
-        //myFirstPersonCamera.rotateInPitch(10.0f);
+        //s_FirstPersonCamera.rotateInPitch(10.0f);
 
         if( auto* FreeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
@@ -929,7 +991,7 @@ appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
       if( wParam == static_cast<WPARAM>('I') )
       {
-        //myFirstPersonCamera.rotateInRoll(10.0f);
+        //s_FirstPersonCamera.rotateInRoll(10.0f);
 
         if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
@@ -944,7 +1006,7 @@ appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
       if( wParam == static_cast<WPARAM>('O') )
       {
-        //myFirstPersonCamera.rotateInRoll(-10.0f);
+        //s_FirstPersonCamera.rotateInRoll(-10.0f);
 
         if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
@@ -958,16 +1020,14 @@ appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
       }
 
 
-      CBNeverChanges cbNeverChanges;
+      viewMatrix cbNeverChanges;
       cbNeverChanges.mView = glm::transpose(cameraPtr->getView());
-      //deviceContext.getInterface()->UpdateSubresource(myViewMatrixBuffer->getInterface(), 0, NULL, &cbNeverChanges, 0, 0);
-      deviceContext.UpdateSubresource(myViewMatrixBuffer, &cbNeverChanges);
+      deviceContext.UpdateSubresource(s_ViewMatrixBuffer, &cbNeverChanges);
 
 
-      CBChangeOnResize cbChangesOnResize;
+      projectionMatrix cbChangesOnResize;
       cbChangesOnResize.mProjection = glm::transpose(cameraPtr->getProjection());
-      deviceContext.UpdateSubresource(myProjectionMatrixBuffer, &cbChangesOnResize);
-      //deviceContext.getInterface()->UpdateSubresource(myProjectionMatrixBuffer, 0, NULL, &cbChangesOnResize, 0, 0);
+      deviceContext.UpdateSubresource(s_ProjectionMatrixBuffer, &cbChangesOnResize);
     }
     break;
 
@@ -1004,14 +1064,15 @@ appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
           freeCam->rotateVector(mouseDir);
         }
 
-        CBNeverChanges cbNeverChanges;
-        cbNeverChanges.mView = glm::transpose(cameraPtr->getView());
-        deviceContext.getInterface()->UpdateSubresource(myViewMatrixBuffer->getInterface(), 0, NULL, &cbNeverChanges, 0, 0);
+        viewMatrix cbNeverChanges;
+        cbNeverChanges.mView = cameraPtr->getView();
+        helper::arrangeForApi(cbNeverChanges.mView);
+        deviceContext.UpdateSubresource(s_ViewMatrixBuffer, &cbNeverChanges);
 
-
-        CBChangeOnResize cbChangesOnResize;
-        cbChangesOnResize.mProjection = glm::transpose(cameraPtr->getProjection());
-        deviceContext.getInterface()->UpdateSubresource(myProjectionMatrixBuffer->getInterface(), 0, NULL, &cbChangesOnResize, 0, 0);
+        projectionMatrix cbChangesOnResize;
+        cbChangesOnResize.mProjection = cameraPtr->getProjection();
+        helper::arrangeForApi(cbChangesOnResize.mProjection);
+        deviceContext.UpdateSubresource(s_ProjectionMatrixBuffer, &cbChangesOnResize);
       }
     }
     break;

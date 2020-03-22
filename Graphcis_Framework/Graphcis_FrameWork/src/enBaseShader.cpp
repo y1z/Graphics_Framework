@@ -12,7 +12,7 @@ m_shaderModel(std::move(other.m_shaderModel))
   other.m_infoOfShader = nullptr;
 #elif OPENGL
   this->m_infoOfShader = other.m_infoOfShader;
-  other.m_inforOfShader = -1;
+  other.m_infoOfShader = 0;
 #endif // DIRECTX
 }
 

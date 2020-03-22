@@ -1,4 +1,8 @@
 #include "enSwapChain.h"
+#include "enWindow.h"
+#include "helperFucs.h"
+#include "enViewport.h"
+
 
 enSwapChain::enSwapChain(enSwapChain&& other) noexcept
 {
@@ -41,6 +45,7 @@ enSwapChain::getSwapChainDesc() const
 {
   return m_descriptor;
 }
+#if DIRECTX
 
 DXGI_SWAP_CHAIN_DESC
 enSwapChain::getdxSawpChainDesc() const
@@ -61,23 +66,84 @@ enSwapChain::getdxSawpChainDesc() const
   return  result;
 }
 
+
+#endif // DIRECTX
+
 bool 
+enSwapChain::ResizeSwapChain(enWindow& currentWindow,
+                             enRenderTargetView& renderTargetView,
+                             enDepthStencilView& DepthStencilView,
+                             enVector2 const &newSize,
+                             enViewport& viewport)
+{
+  enVector2 const sizeOfWindow = helper::getWindowSize(currentWindow);
+  bool isSuccessful = false;
+  enDevice& device = enDevice::getInstance();
+  enDeviceContext& deviceContext = enDeviceContext::getInstance();
+
+  isSuccessful = renderTargetView.ReleaseAllInterfaces();
+
+  assert(isSuccessful && " Error when Releasing all render-targets and renderTargetView");
+
+  isSuccessful = DepthStencilView.ReleaseAllInterfaces();
+
+  assert(isSuccessful && " Error when Releasing all DepthStencilView interfaces ");
+  
+  this->m_descriptor.buffWidth = newSize.x;
+  this->m_descriptor.buffHeight = newSize.y;
+
+  sTextureDescriptor const DepthDesc = helper::generateDepthStencilDesc(newSize.x,
+                                                                        newSize.y);
+
+  DepthStencilView.m_texture.m_desc = DepthDesc;
+
+#if DIRECTX
+  HRESULT hr = m_interface->ResizeBuffers(0, newSize.x, newSize.y, DXGI_FORMAT_UNKNOWN, 0);
+  assert(!FAILED(hr) && " Error when Resizing the swap chain");
+#elif OPENGL
+#endif // DIRECTX
+  isSuccessful = this->ReciveBuckBuffer(renderTargetView);
+
+  assert(isSuccessful && " Error with getting a backBuffer for SwapChain");
+
+  isSuccessful = device.CreateRenderTargetView(renderTargetView, 0);
+
+  assert(isSuccessful && " Error with creating a renderTarget");
+
+  isSuccessful = device.CreateTexture2D(DepthStencilView.m_texture.m_desc, DepthStencilView.m_texture);
+
+  assert(isSuccessful && " Error with creating a Stencil");
+
+  isSuccessful = device.CreateDepthStencilView(DepthStencilView);
+
+  assert(isSuccessful && " Error with creating a Depth-Stencil-View ");
+
+  deviceContext.OMSetRenderTargets(&renderTargetView,DepthStencilView);
+
+  viewport.m_descriptor.width = newSize.x;
+  viewport.m_descriptor.height= newSize.y;
+  
+  deviceContext.RSSetViewports(&viewport);
+
+  return  isSuccessful;
+}
+
+bool
 enSwapChain::ReciveBuckBuffer(enRenderTargetView& renderTargetView)
 {
   
 #if DIRECTX
-  size_t currentTarget = renderTargetView.m_targetsCount;
 
   HRESULT hr = m_interface->GetBuffer(0,
                                       __uuidof(ID3D11Texture2D),
-                                      (LPVOID*)&renderTargetView.m_targets[currentTarget].m_interface);
+                                      (LPVOID*)&renderTargetView.m_targets[0].m_interface);
 
   if( FAILED(hr) )
     return false;
 
   else
   {
-    renderTargetView.m_usedTargets[currentTarget] = true;
+    renderTargetView.m_usedTargets[0] = true;
     renderTargetView.m_targetsCount++;
   }
 

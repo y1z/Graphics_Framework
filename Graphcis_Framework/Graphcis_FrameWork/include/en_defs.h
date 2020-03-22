@@ -1,10 +1,16 @@
 #pragma once
+
+#ifndef  __glew_h__
+#include "GL/glew.h"
+#endif //__glew_h__
+
 #include <cstdint>
 #include <cstddef>
 #include <iostream>
 #include <cassert>
 #include <array>
 #include "util/GraphicsDefines.h"
+
 
 
 #if DIRECTX
@@ -26,13 +32,24 @@ using int16 = int16_t;//<! this is a 16-bit integer
 using int32 = int32_t;//<! this is a 32-bit integer 
 using int64 = int64_t;//<! this is a 64-bit integer 
 
+using int8c = int8_t const; /*!<this is a 8-bit constant integer */
+using int16c = int16_t const;//<! this is a 16-bit constant integer 
+using int32c = int32_t const;//<! this is a 32-bit constant integer 
+using int64c = int64_t const;//<! this is a 64-bit constant integer 
 // unsigned int type's 
 using uint8 = uint8_t;//<! this is a 8-bit unsigned integer 
 using uint16 = uint16_t;//<! this is a 16-bit unsigned integer 
 using uint32 = uint32_t;//<! this is a 32-bit unsigned integer 
 using uint64 = uint64_t;//<! this is a 64-bit unsigned integer 
 
+// unsigned int type's 
+using uint8c = uint8_t const;//<! this is a 8-bit unsigned constant integer 
+using uint16c = uint16_t const;//<! this is a 16-bit unsigned constant integer 
+using uint32c = uint32_t const;//<! this is a 32-bit unsigned constant integer 
+using uint64c = uint64_t const;//<! this is a 64-bit unsigned constant integer 
+
 using confInt = std::size_t;//<! this is a int that changes size in bytes depending on the configuration
+using confIntc = std::size_t const;//<! this is a constant int that changes size in bytes depending on the configuration
 
 // signed int type's that tell you how much memory they use 
 using Byte = int_least8_t;//<! a single byte 
@@ -40,11 +57,21 @@ using Byte2 = int_least16_t;//<! 2 bytes per instance
 using Byte4 = int_least32_t;//<! 4 bytes per instance 
 using Byte8 = int_least64_t;//<! 8 bytes per instance 
 
+using Bytec = int_least8_t const;//<! a single byte 
+using Byte2c = int_least16_t const;//<! 2 bytes per instance
+using Byte4c = int_least32_t const;//<! 4 bytes per instance 
+using Byte8c = int_least64_t const;//<! 8 bytes per instance 
+
 // unsigned int type's that tell you how much memory they use 
 using uByte = uint_least8_t;//<! a single byte 
 using uByte2 = uint_least16_t;//<! 2 bytes per instance
 using uByte4 = uint_least32_t;//<! 4 bytes per instance 
 using uByte8 = uint_least64_t;//<! 8 bytes per instance 
+
+using uBytec = uint_least8_t const;//<! a single byte 
+using uByte2c = uint_least16_t const;//<! 2 bytes per instance
+using uByte4c = uint_least32_t const;//<! 4 bytes per instance 
+using uByte8c = uint_least64_t const;//<! 8 bytes per instance 
 
 /*++++++++++++++++++++++++++++++++++++*/
 /* ENUMS */
@@ -95,6 +122,8 @@ enum enBufferUse
   Default = D3D11_USAGE_DEFAULT,
 #elif OPENGL
   Default = 0,
+#else 
+Default,  
 #endif//DIRECTX 
 };
 
@@ -122,7 +151,7 @@ enum enFormats
   fR32G32B32A32 = DXGI_FORMAT_R32G32B32A32_FLOAT,
   /* other */
   depthStencil_format = DXGI_FORMAT_D24_UNORM_S8_UINT
-#elif OPEN_GL//TODO : GL
+#elif OPENGL
   /* one channel */
   uR8 = GL_UNSIGNED_BYTE, //GL_R8
   uR16 = GL_UNSIGNED_SHORT,
@@ -167,6 +196,8 @@ enum DepthStencilFormat
   two_dimention = D3D11_DSV_DIMENSION_TEXTURE2D,
 #elif OPENGL
   two_dimention,
+  #else
+  two_dimention,
 #endif // DIRECTX
 };
 
@@ -181,6 +212,10 @@ enum class enTopology
   TriList = GL_TRIANGLES,
   PointList = GL_POINTS,
   LineList = GL_LINES
+  #else
+  TriList,
+  PointList,
+  LineList
 #endif // DIRECTX
 };
 
@@ -199,7 +234,7 @@ enum class enFilter
   Anisotropic_Comperasion = D3D11_FILTER_COMPARISON_ANISOTROPIC,
   Anisotropic_Minimum = D3D11_FILTER_MINIMUM_ANISOTROPIC,
   Anisotropic_Maximum = D3D11_FILTER_MAXIMUM_ANISOTROPIC
-#elif OPEN_GL
+#elif OPENGL
   MinMagMip_Point,
   MinMagMip_Point_Linear,
   MinMagMip_Linear_Mip_Point,
@@ -233,7 +268,7 @@ enum class enComparison
   Equal = D3D11_COMPARISON_EQUAL,
   Less_Equal = D3D11_COMPARISON_LESS_EQUAL,
   Greater = D3D11_COMPARISON_GREATER,
-#elif OPEN_GL 
+#elif OPENGL 
   Never = GL_NEVER,
   Less = GL_LESS,
   Equal = GL_EQUAL,
@@ -255,7 +290,7 @@ enum class enAddress : int32_t
   Clamp = D3D11_TEXTURE_ADDRESS_CLAMP,
   Border = D3D11_TEXTURE_ADDRESS_BORDER,
   Mirror_once = D3D11_TEXTURE_ADDRESS_MIRROR_ONCE
-#elif OPEN_GL
+#elif OPENGL
   Wrap,
   Mirror,
   Clamp,
@@ -285,6 +320,7 @@ namespace enError
       << "On line [" << LineNumber << "]\n"
       << "In File \"" << FileName << '\"' << '\n';
   }
+
 
   static void ENTROPY_log_error_code(const char* FunctionName,
                                      std::size_t LineNumber,
@@ -338,8 +374,9 @@ or if the setup wrong.)");
 
   }
 
+
   static bool//success
-    enCheckSuccess(enErrorCode code)
+  enCheckSuccess(enErrorCode code)
   {
     if( code == enErrorCode::NoError )
     {
@@ -391,12 +428,13 @@ happen */
 
 #define DELETE_PTR(ptr) if(ptr != nullptr) {delete ptr; ptr= nullptr;}
 #define RELEASE_DX_PTR(dx_ptr) if(dx_ptr){dx_ptr->Release(); dx_ptr = nullptr;}
+
   /**
   * @retuns : true when the ErrorCode is `NoError` anything else returns false
   * @bug : no known bugs
   */
 #define EN_SUCCESS(errorCode) enError::enCheckSuccess(errorCode)
-
+#define EN_NODISCARD _NODISCARD
 
 /*++++++++++++++++++++++++++++++++++++*/
 /* struct's */
@@ -523,7 +561,7 @@ struct sSwapDesc
 {
 #if DIRECTX
   HWND outputWindow; //! used only in directX 
-#elif OPEN_GL
+#elif OPENGL
 #endif // DIRECTX
   uint32 buffWidth = 1;
   uint32 buffHeight = 1;
@@ -541,12 +579,23 @@ struct sSwapDesc
 // TODO : convert to class
 struct enTexture2D
 {
-  enTexture2D() = default;
+  enTexture2D(){
+  
+    sTextureDescriptor descriptoDepth;
+    descriptoDepth.texWidth = 600;
+    descriptoDepth.texHeight = 600;
+    descriptoDepth.CpuAccess = 0;
+    descriptoDepth.texFormat = static_cast<int>(enFormats::R8G8B8A8_uniform_norm);
+    descriptoDepth.Usage = enBufferUse::Default;
+    descriptoDepth.BindFlags = enBufferBind::RenderTarget;
+    descriptoDepth.arraySize = 1;
+    m_desc = descriptoDepth;
+  }
   enTexture2D(const enTexture2D& other) = delete;
   enTexture2D(enTexture2D&& other) noexcept
-    :m_interface(other.m_interface)
   {
   #if DIRECTX
+    m_interface = (other.m_interface);
     other.m_interface = nullptr;
   #endif // DIRECTX
   }
@@ -560,6 +609,26 @@ struct enTexture2D
   #endif // DIRECTX
   }
 
+  bool
+  Release()
+  {
+  #if DIRECTX
+    if( m_interface != nullptr )
+    {
+
+      RELEASE_DX_PTR(m_interface);
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  #elif OPENGL
+  #endif // DIRECTX
+  return false;
+  }
+
+  sTextureDescriptor m_desc;
 #if DIRECTX
   ID3D11Texture2D* m_interface = nullptr;
 
@@ -580,7 +649,9 @@ struct enRenderTargetView
   #if DIRECTX
     other.m_interface = nullptr;
   #elif OPENGL
-
+  #else
+    other.m_interface = nullptr;
+    
   #endif // DIRECTX
   }
 
@@ -593,18 +664,63 @@ struct enRenderTargetView
   #endif // DIRECTX
   }
 
+  /**
+  * @brief : releases a specific render-target.
+  * @bug :no known bugs
+  */
+  bool 
+  ReleaseRenderTarget(size_t index)
+  {
+  #if DIRECTX
+    if( index <= m_targets.size() - 1 )
+    {
+      this->m_targets[index].Release();
+      this->m_usedTargets[index] = false;
+      return true;
+    }
+    else 
+    { return false; }
+  #endif // DIRECTX
+return false;
+  }
+
+  /**
+  * @brief : release every single renderTarget and the renderTargetView it self.
+  * @bug : no known bugs
+  */
+  bool 
+  ReleaseAllInterfaces()
+  {
+    for(enTexture2D& target : m_targets )
+    {
+      target.Release();
+    }
+
+  #if DIRECTX
+    if( m_interface )
+    {
+      RELEASE_DX_PTR(m_interface);
+      return true;
+    }
+    else{ return false;}
+  #endif // DIRECTX
+    return false;
+  }
+
 
 #if DIRECTX
   ID3D11RenderTargetView* m_interface = nullptr;
 #elif OPENGL
   int32 m_interface;
+  #else
+  void*m_interface = nullptr;
 #endif // DIRECTX
 
-  static constexpr uint32 c_randerTargetMax = 8;
+  static constexpr uint32 s_renderTargetMax = 8;
 
   uint32 m_targetsCount = 0U;
-  std::array<enTexture2D, c_randerTargetMax> m_targets{};
-  std::array<bool, c_randerTargetMax > m_usedTargets{};
+  std::array<enTexture2D, s_renderTargetMax> m_targets{};
+  std::array<bool, s_renderTargetMax > m_usedTargets{};
 };
 
 // TODO : convert to class
@@ -627,12 +743,41 @@ struct enDepthStencilView
   #elif OPENGL
   #endif // DIRECTX
   };
-#if DIRECTX
-  ID3D11DepthStencilView* m_interface = nullptr;
+
+  bool
+  ReleaseStencil()
+  {
+    bool isSuccessful = m_texture.Release();
+    return isSuccessful;
+  }
+
+  bool
+  ReleaseAllInterfaces()
+  {
+    bool ReleasedStencil = ReleaseStencil();
+    bool ReleasedDepth = false;
+  #if DIRECTX
+
+    if( m_interface != nullptr )
+    {
+      RELEASE_DX_PTR(m_interface );
+      ReleasedDepth = true;
+    }
+    else { EN_LOG_DB("depth Stencil is not initialized/ created "); }
+      
+  #endif // DIRECTX
+
+    return (ReleasedStencil && ReleasedDepth);
+  }
+
   sDepthStencilDescriptor m_desc;
   enTexture2D m_texture;
+#if DIRECTX
+  ID3D11DepthStencilView* m_interface = nullptr;
 #elif OPENGL
   int32 m_interface = 0;
+  #else 
+  void* m_interface = nullptr;
 #endif // DIRECTX
 };
 

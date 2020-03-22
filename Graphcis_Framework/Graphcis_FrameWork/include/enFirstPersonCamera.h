@@ -91,6 +91,9 @@ public: // virtual functions
   virtual bool 
   initDefault() override;
 
+  void
+  updateDimensions(float newWidth,float newHeight) override;
+
 public:
   /**
   * @brief : the internal descriptor for the class, controls (rotation limits, and movement orientation)

@@ -75,7 +75,7 @@ public: // get and set functions
   enMatrix4x4 
     getMatrix()const;
 
-private:
+public:
 
   //!this is the variable that contains all transform related operation
    enMatrix4x4 m_transformMatrix;

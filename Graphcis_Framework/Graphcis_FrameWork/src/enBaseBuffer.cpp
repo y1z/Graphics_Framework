@@ -7,6 +7,8 @@ enBaseBuffer::enBaseBuffer(enBaseBuffer&& other)
 #if DIRECTX
   other.m_interface = nullptr;
 #elif OPENGL
+#else
+  other.m_interface = nullptr;
 #endif // DIRECTX
 
 }

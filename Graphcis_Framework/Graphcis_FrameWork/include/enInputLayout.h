@@ -15,7 +15,12 @@ public:
   enInputLayout(enInputLayout && other)noexcept 
     :m_interface(other.m_interface)
   {
+  #if DIRECTX 
     other.m_interface = nullptr;
+    #elif OPENGL
+    #else
+    other.m_interface = nullptr;
+  #endif // DIRECTX
   }
   ~enInputLayout()
   {
@@ -48,6 +53,8 @@ private:
   ID3D11InputLayout* m_interface = nullptr;
 #elif OPENGL
   int32 m_interface = 0;
+  #else
+  void* m_interface = nullptr;
 #endif // DIRECTX
   std::vector<sInputDescriptor> m_InputLayouts;
 };

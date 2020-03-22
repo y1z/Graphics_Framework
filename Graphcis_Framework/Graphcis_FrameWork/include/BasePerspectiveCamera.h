@@ -1,10 +1,10 @@
 #pragma once
 #include "enTypes.h"
+#include <cstdint>
 
 /**
 * @brief : this is a base class for any future camera classes.
 */
-
 class BasePerspectiveCamera
 {
 public:
@@ -287,9 +287,19 @@ public:
   void
     setSpeed(float newSpeed);
 public: //virtual functions 
-
+  /**
+  * @brief : give the camera some default settings
+  * @bug : no known bugs.
+  */
   virtual bool
   initDefault() = 0;
+
+  /**
+  * @brief : updates the matrices of the cameras 
+  * @bug : no known bugs.
+  */
+  virtual void //dimensions
+  updateDimensions(float newWidth, float newHeight) = 0;
 
 protected: // variables 
   /**

@@ -2,7 +2,6 @@
 #include "enDevice.h"
 #include "enWindow.h"
 #include "enShaderResourceView.h"
-//#include "cDeviceContext.h"
 
 #include <cstdint>
 #include <string_view>
@@ -12,18 +11,18 @@
 #include "imgui/imgui_impl_dx11.h"
 #include "imgui/imgui_impl_win32.h"
 #elif OPENGL
-#include "imgui/imgui_impl_opengl3.h"
 #include "imgui/imgui_impl_glfw.h" 
+#include "imgui/imgui_impl_opengl3.h"
 #endif // USING_DIRECTX
 /*****************************/
 
 namespace ig = ImGui;
 using namespace std::string_literals;
 
-static constexpr uint32_t c_fpsSamplesCount = 360;
-static constexpr uint32_t c_buttonCount = 0;
+static constexpr uint32_t s_fpsSamplesCount = 360;
+static constexpr uint32_t s_buttonCount = 0;
 //! this variable is for ImGui_ImplOpenGL3_Init
-static constexpr const char *GlslVersion = "#version 430 core";
+static constexpr const char *s_GlslVersion = "#version 430 core";
 //----------------------------------------
 // OpenGL    GLSL      GLSL
 // version   version   string
@@ -58,7 +57,7 @@ imGuiManager::~imGuiManager()
   #if DIRECTX
     ImGui_ImplDX11_Shutdown();
     ImGui_ImplWin32_Shutdown();
-  #elif OPEN_GL
+  #elif OPENGL
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
   #endif // USING_DIRECTX
@@ -82,10 +81,10 @@ imGuiManager::Init(enWindow& window)
   #if DIRECTX
     isSuccesful = ImGui_ImplWin32_Init(window.getHandle());
     isSuccesful = ImGui_ImplDX11_Init(device.getInterface(), deviceContext.m_interface);
-  #elif OPEN_GL == 1
+  #elif OPENGL
     // TODO: REMOVE COMMIT WHEN READY 
     isSuccesful = ImGui_ImplGlfw_InitForOpenGL(window.getHandle(), true);
-    isSuccesful = ImGui_ImplOpenGL3_Init(GlslVersion);
+    isSuccesful = ImGui_ImplOpenGL3_Init(s_GlslVersion);
   #endif // USING_DIRECTX
   }
 
@@ -95,7 +94,7 @@ imGuiManager::Init(enWindow& window)
   }
   return is_initialized;
 }
-//
+
 //void
 //imGuiManager::setOpenFileFunction(ptr_FileOpenFunc openFileFunc)
 //{
@@ -108,7 +107,7 @@ imGuiManager::beginChildWithFpsCount(float DeltaTime)
 {
   m_childCount++;
   float averageFps = this->calculateAverageFPS(DeltaTime);
-  static const std::string fpsMassage("Average FPS :%f ");
+  static const std::string fpsMassage("Average FPS %f");
    //fpsMassage += std::to_string(averageFps);
 
   ImGui::BeginChild("FPS", ImVec2(420, 130));
@@ -120,23 +119,23 @@ float
 imGuiManager::calculateAverageFPS(float deltaTime)
 {
   // gets the fps 
-  float fps = 1 / deltaTime;
+  float const fps = 1.0f / deltaTime;
   // contains the results for later to average them out 
-  static float fpsTimes[c_fpsSamplesCount] = { 0 };
+  static float fpsTimes[s_fpsSamplesCount] = { 0 };
   static uint32_t  currenFpsIndex = 0;
 
-  if (currenFpsIndex > c_fpsSamplesCount - 1)
+  if (currenFpsIndex > s_fpsSamplesCount - 1)
   { currenFpsIndex = 0; }
 
   fpsTimes[currenFpsIndex] = fps;
   currenFpsIndex++;
 
   float averageFps = 0.0f;
-  for (size_t i = 0; i < c_fpsSamplesCount; ++i)
+  for (size_t i = 0; i < s_fpsSamplesCount; ++i)
   {
     averageFps += fpsTimes[i];
   }
-  return averageFps = averageFps / c_fpsSamplesCount;
+  return averageFps = averageFps / s_fpsSamplesCount;
 }
 
 //void
@@ -162,7 +161,7 @@ imGuiManager::beginFrame(const char * windowName)
 #if DIRECTX
   ImGui_ImplDX11_NewFrame();
   ImGui_ImplWin32_NewFrame();
-#elif OPEN_GL 
+#elif OPENGL 
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
 #endif// DIRECTX
@@ -232,8 +231,8 @@ void imGuiManager::addImage(enShaderResourceView& ResourceView, uint32 SizeInX, 
 {
 #if DIRECTX
   ig::Image(( void* )ResourceView.m_interface, ImVec2(SizeInX, SizeInY));
-#elif OPEN_GL
-  ig::Image(( void* )Resource.getResourceID(), ImVec2(SizeInX, SizeInY));
+#elif OPENGL
+  ig::Image((void*)ResourceView.m_interface, ImVec2(SizeInX, SizeInY));
 #endif // DIRECTX
 }
 
@@ -373,7 +372,7 @@ imGuiManager::endFrame()
 
 #if DIRECTX
   ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-#elif OPEN_GL
+#elif OPENGL
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 #endif // USING_DIRECTX
 }

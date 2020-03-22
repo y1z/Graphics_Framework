@@ -150,6 +150,7 @@ enInputLayout::ReadShaderData(enVertexShader& ShaderData, bool isPerVertex)
   ReflectorShader->Release();
   return true;
 #endif // DIRECTX
+return true;
 }
 
 std::vector<sInputDescriptor>

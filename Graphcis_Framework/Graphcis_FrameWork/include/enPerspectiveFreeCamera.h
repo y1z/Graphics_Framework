@@ -75,11 +75,17 @@ public:// functions
   void
   rotateVector(const enVector2 &rotationDir,
                float deltaTime = 0.01666f);
+
+
+
 public:// virtual functions
 
   virtual  bool
   initDefault()  override;
 
+  void
+  updateDimensions(float newWidth,
+                   float newHeight) override;
 private:// 
 
   /**
@@ -87,7 +93,7 @@ private://
   * @bug : no know bugs
   */
   void
-    updateMatrixes();
+  updateMatrixes();
 private: //variable
 
 };

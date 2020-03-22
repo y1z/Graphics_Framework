@@ -117,7 +117,7 @@ namespace helper
   }
 
   // TODO : add function to resource manager
-  static enErrorCode
+  EN_NODISCARD static enErrorCode
   CreateDeviceAndSwapchain(enSwapChain& swapChain,
                            enWindow& window,
                            sHardWareInfo& hardwareInfo)
@@ -206,7 +206,7 @@ namespace helper
   }
 
 
-  static enVector2 
+  EN_NODISCARD static enVector2 
   getWindowSize(enWindow& window)
   {
     int32 windowWidth = -1337;
@@ -222,6 +222,29 @@ namespace helper
     return enVector2(windowWidth, windowHeight);
   }
 
+  static void 
+  arrangeForApi(enMatrix4x4& mat)
+  {
+  #if DIRECTX
+     mat = glm::transpose(mat);
+  #elif OPENGL
+  #endif // DIRECTX
+  }
+
+  EN_NODISCARD static sTextureDescriptor
+  generateDepthStencilDesc(float const Width,
+                           float const Height)
+  {
+    sTextureDescriptor result;
+    result.texWidth = Width;
+    result.texHeight = Height;
+    result.CpuAccess = 0;
+    result.texFormat = static_cast<int>(enFormats::depthStencil_format);
+    result.Usage = enBufferUse::Default;
+    result.BindFlags = enBufferBind::DepthStencil;
+    result.arraySize = 1;
+    return result;
+  }
 
 }
 

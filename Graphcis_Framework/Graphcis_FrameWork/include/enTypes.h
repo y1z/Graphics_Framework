@@ -41,17 +41,17 @@ struct SimpleVertex
   glm::vec2 Tex;
 };
 
-struct CBNeverChanges
+struct viewMatrix
 {
   glm::mat4x4 mView;
 };
 
-struct CBChangeOnResize
+struct projectionMatrix
 {
   glm::mat4x4 mProjection;
 };
 
-struct CBChangesEveryFrame
+struct ConstBufferWorldColor
 {
   glm::mat4x4 mWorld;
   glm::vec4 vMeshColor;

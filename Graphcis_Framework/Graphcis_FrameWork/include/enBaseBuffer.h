@@ -79,6 +79,8 @@ protected:
   ID3D11Buffer* m_interface = nullptr;
 #elif OPENGL
   int32 m_interface = 0;
+  #else
+  void* m_interface = nullptr;
 #endif 
   //! to keep track of the stats of the buffer 
   sBufferDesc m_Desc;

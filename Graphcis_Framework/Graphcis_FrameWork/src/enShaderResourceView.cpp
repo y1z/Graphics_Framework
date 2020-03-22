@@ -8,9 +8,13 @@
 namespace dx = DirectX;
 
 enShaderResourceView::enShaderResourceView(enShaderResourceView&& other) noexcept
+  :m_interface(other.m_interface)
 {
-  this->m_interface = other.m_interface;
 #if DIRECTX
+  other.m_interface = nullptr;
+#elif OPENGL
+
+#else
   other.m_interface = nullptr;
 #endif // DIRECTX
 }

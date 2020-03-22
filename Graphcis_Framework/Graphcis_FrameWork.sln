@@ -13,6 +13,8 @@ Global
 		directx_debug|x86 = directx_debug|x86
 		directx_release|x64 = directx_release|x64
 		directx_release|x86 = directx_release|x86
+		openGL_debug|x64 = openGL_debug|x64
+		openGL_debug|x86 = openGL_debug|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
@@ -21,14 +23,18 @@ Global
 		{39AF9E2F-1025-4CD4-A6A4-CF4565614CD4}.Debug|x64.Build.0 = Debug|x64
 		{39AF9E2F-1025-4CD4-A6A4-CF4565614CD4}.Debug|x86.ActiveCfg = Debug|Win32
 		{39AF9E2F-1025-4CD4-A6A4-CF4565614CD4}.Debug|x86.Build.0 = Debug|Win32
-		{39AF9E2F-1025-4CD4-A6A4-CF4565614CD4}.directx_debug|x64.ActiveCfg = directx_debug|x64
-		{39AF9E2F-1025-4CD4-A6A4-CF4565614CD4}.directx_debug|x64.Build.0 = directx_debug|x64
+		{39AF9E2F-1025-4CD4-A6A4-CF4565614CD4}.directx_debug|x64.ActiveCfg = directx_release|x64
+		{39AF9E2F-1025-4CD4-A6A4-CF4565614CD4}.directx_debug|x64.Build.0 = directx_release|x64
 		{39AF9E2F-1025-4CD4-A6A4-CF4565614CD4}.directx_debug|x86.ActiveCfg = directx_debug|Win32
 		{39AF9E2F-1025-4CD4-A6A4-CF4565614CD4}.directx_debug|x86.Build.0 = directx_debug|Win32
 		{39AF9E2F-1025-4CD4-A6A4-CF4565614CD4}.directx_release|x64.ActiveCfg = directx_release|x64
 		{39AF9E2F-1025-4CD4-A6A4-CF4565614CD4}.directx_release|x64.Build.0 = directx_release|x64
 		{39AF9E2F-1025-4CD4-A6A4-CF4565614CD4}.directx_release|x86.ActiveCfg = directx_release|Win32
 		{39AF9E2F-1025-4CD4-A6A4-CF4565614CD4}.directx_release|x86.Build.0 = directx_release|Win32
+		{39AF9E2F-1025-4CD4-A6A4-CF4565614CD4}.openGL_debug|x64.ActiveCfg = openGL_debug|x64
+		{39AF9E2F-1025-4CD4-A6A4-CF4565614CD4}.openGL_debug|x64.Build.0 = openGL_debug|x64
+		{39AF9E2F-1025-4CD4-A6A4-CF4565614CD4}.openGL_debug|x86.ActiveCfg = openGL_debug|Win32
+		{39AF9E2F-1025-4CD4-A6A4-CF4565614CD4}.openGL_debug|x86.Build.0 = openGL_debug|Win32
 		{39AF9E2F-1025-4CD4-A6A4-CF4565614CD4}.Release|x64.ActiveCfg = Release|x64
 		{39AF9E2F-1025-4CD4-A6A4-CF4565614CD4}.Release|x64.Build.0 = Release|x64
 		{39AF9E2F-1025-4CD4-A6A4-CF4565614CD4}.Release|x86.ActiveCfg = Release|Win32
