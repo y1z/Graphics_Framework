@@ -14,6 +14,7 @@ class enPixelShader;
 class enSampler;
 class enInputLayout;
 class enShaderResourceView;
+class enRenderTargetView;
 
 
   /**

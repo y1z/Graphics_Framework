@@ -4,6 +4,7 @@
 
 class enWindow;
 class enViewport;
+class enRenderTargetView;
 
   /**
   * @brief : takes care of switching the front-buffers and back-buffer each frame.

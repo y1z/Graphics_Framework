@@ -13,6 +13,7 @@
 #include "enSampler.h"
 
 class enShaderResourceView;
+class enRenderTargetView; 
 
 
 class enDeviceContext : public soModule<enDeviceContext>

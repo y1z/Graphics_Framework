@@ -2,6 +2,7 @@
 #include "enWindow.h"
 #include "helperFucs.h"
 #include "enViewport.h"
+#include "enRenderTargetView.h"
 
 
 enSwapChain::enSwapChain(enSwapChain&& other) noexcept

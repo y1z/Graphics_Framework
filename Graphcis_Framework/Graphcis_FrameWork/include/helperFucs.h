@@ -246,5 +246,19 @@ namespace helper
     return result;
   }
 
+  EN_NODISCARD static sTextureDescriptor
+  generateRenderTargetDesc(float const Width,
+                           float const Height)
+  {
+    sTextureDescriptor result;
+    result.texWidth = Width;
+    result.texHeight = Height;
+    result.CpuAccess = 0;
+    result.BindFlags = enBufferBind::RenderTarget;
+    result.texFormat = static_cast<int>(enFormats::renderTarget_format);
+    result.Usage = enBufferUse::Default;
+    result.arraySize = 1;
+    return result;
+  }
 }
 

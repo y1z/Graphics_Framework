@@ -150,7 +150,8 @@ enum enFormats
   fR16G16B16A16 = DXGI_FORMAT_R16G16B16A16_FLOAT,
   fR32G32B32A32 = DXGI_FORMAT_R32G32B32A32_FLOAT,
   /* other */
-  depthStencil_format = DXGI_FORMAT_D24_UNORM_S8_UINT
+  depthStencil_format = DXGI_FORMAT_D24_UNORM_S8_UINT,
+  renderTarget_format = DXGI_FORMAT_R32G32B32A32_TYPELESS,
 #elif OPENGL
   /* one channel */
   uR8 = GL_UNSIGNED_BYTE, //GL_R8
@@ -169,6 +170,7 @@ fR16G16B16A16 = GL_RGBA16F,
 fR32G32B32A32 = GL_RGBA32F,
 /* other */
 depthStencil_format = GL_DEPTH24_STENCIL8,
+renderTarget_format, 
 #else
 
   uR8,
@@ -186,6 +188,7 @@ fR16G16B16A16,
 fR32G32B32A32,
 /* other */
 depthStencil_format,
+renderTarget_format, 
 #endif // DIRECTX
 };
 
@@ -484,6 +487,15 @@ struct sBufferDesc
   uint32 index = static_cast<uint32>(-1);
 };
 
+  /**
+  * @brief : a descriptor for a 2d render-target.
+  */
+struct sRenderTargetDesc2D
+{
+  int format = -1337;
+  int ViewDimension = 0;
+  int mip = 0;
+};
 
 struct sDepthStencilDescriptor
 {
@@ -638,90 +650,6 @@ struct enTexture2D
 
 };
 
-// TODO : convert to class
-struct enRenderTargetView
-{
-  enRenderTargetView() = default;
-  enRenderTargetView(const enRenderTargetView& other) = delete;
-  enRenderTargetView(enRenderTargetView&& other) noexcept
-    :m_interface(other.m_interface)
-  {
-  #if DIRECTX
-    other.m_interface = nullptr;
-  #elif OPENGL
-  #else
-    other.m_interface = nullptr;
-    
-  #endif // DIRECTX
-  }
-
-  ~enRenderTargetView()
-  {
-  #if DIRECTX
-    RELEASE_DX_PTR(m_interface);
-  #elif OPENGL
-    m_interface = 0;
-  #endif // DIRECTX
-  }
-
-  /**
-  * @brief : releases a specific render-target.
-  * @bug :no known bugs
-  */
-  bool 
-  ReleaseRenderTarget(size_t index)
-  {
-  #if DIRECTX
-    if( index <= m_targets.size() - 1 )
-    {
-      this->m_targets[index].Release();
-      this->m_usedTargets[index] = false;
-      return true;
-    }
-    else 
-    { return false; }
-  #endif // DIRECTX
-return false;
-  }
-
-  /**
-  * @brief : release every single renderTarget and the renderTargetView it self.
-  * @bug : no known bugs
-  */
-  bool 
-  ReleaseAllInterfaces()
-  {
-    for(enTexture2D& target : m_targets )
-    {
-      target.Release();
-    }
-
-  #if DIRECTX
-    if( m_interface )
-    {
-      RELEASE_DX_PTR(m_interface);
-      return true;
-    }
-    else{ return false;}
-  #endif // DIRECTX
-    return false;
-  }
-
-
-#if DIRECTX
-  ID3D11RenderTargetView* m_interface = nullptr;
-#elif OPENGL
-  int32 m_interface;
-  #else
-  void*m_interface = nullptr;
-#endif // DIRECTX
-
-  static constexpr uint32 s_renderTargetMax = 8;
-
-  uint32 m_targetsCount = 0U;
-  std::array<enTexture2D, s_renderTargetMax> m_targets{};
-  std::array<bool, s_renderTargetMax > m_usedTargets{};
-};
 
 // TODO : convert to class
 struct enDepthStencilView

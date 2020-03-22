@@ -10,6 +10,7 @@
 
 #include "enConstBuffer.h"
 #include "enIndexBuffer.h"
+#include "enRenderTargetView.h"
 
 #include "enViewport.h"
 #include "enSampler.h"

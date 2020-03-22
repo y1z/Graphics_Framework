@@ -5,7 +5,8 @@
 
 
 enErrorCode
-enMultiviewTexture::CreateDepthStancil(float width, float height)
+enMultiviewTexture::CreateDepthStancil(float width,
+                                       float height)
 {
   sTextureDescriptor textureForDepthStencil = helper::generateDepthStencilDesc(width, height);
   enDevice& device = enDevice::getInstance();
@@ -30,6 +31,27 @@ enMultiviewTexture::CreateDepthStancil(float width, float height)
     EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
     return enErrorCode::FailedCreation;
   }
+
+  return enErrorCode::NoError;
+}
+
+enErrorCode 
+enMultiviewTexture::CreateRenderTarget(float width,
+                                       float height)
+{
+  sTextureDescriptor textureForRenderTarget = helper::generateRenderTargetDesc(width, height);
+  enDevice& device = enDevice::getInstance();
+
+  bool isSuccessful = device.CreateTexture2D(textureForRenderTarget, m_sharedTexture);
+  if( !isSuccessful )
+  {
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
+    return enErrorCode::FailedCreation;
+  }
+
+  sRenderTargetDesc2D renderTargetDesc;
+  renderTargetDesc.format = textureForRenderTarget.texFormat;
+
 
   return enErrorCode::NoError;
 }

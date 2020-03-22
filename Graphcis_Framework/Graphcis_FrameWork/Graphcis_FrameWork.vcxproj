@@ -440,6 +440,7 @@
     <ClCompile Include="src\enMesh.cpp" />
     <ClCompile Include="src\enModel.cpp" />
     <ClCompile Include="src\enMultiviewTexture.cpp" />
+    <ClCompile Include="src\enRenderTargetView.cpp" />
     <ClCompile Include="src\enShaderResourceView.cpp" />
     <ClCompile Include="src\enDeviceContext.cpp" />
     <ClCompile Include="src\enSwapChain.cpp" />

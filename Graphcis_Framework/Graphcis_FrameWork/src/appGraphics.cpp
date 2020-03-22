@@ -194,6 +194,8 @@ appGraphics::initApi()
                                                                *m_window,
                                                                m_hardwareInfo);
 
+  m_multiTexture->CreateRenderTarget(300.0f, 300.0f);
+
   if( !m_gui->is_initialized )
   {
     m_gui->Init(*m_window);
@@ -666,7 +668,6 @@ appGraphics::InitWindow(HINSTANCE hInstance, int nCmdShow)
     return S_FALSE;
   }
 
-  return S_OK;
 }
 
 void
