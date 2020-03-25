@@ -15,6 +15,8 @@ class enSampler;
 class enInputLayout;
 class enShaderResourceView;
 class enRenderTargetView;
+class enDepthStencilView;
+class enTexture2D;
 
 
   /**

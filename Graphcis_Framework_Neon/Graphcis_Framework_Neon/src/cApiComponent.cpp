@@ -1,6 +1,10 @@
-#include "cApiComponent.h"
 #include "..\include\cApiComponent.h"
 #include "enDevice.h"
+
+#if OPENGL
+uint32 cApiComponents::GlShaderProgram = 0;
+uint32 cApiComponents::vertexArrayObject = 0;
+#endif//OPEN_GL
 
 std::string
 cApiComponents::getHardwareInfo() const
@@ -36,3 +40,29 @@ cApiComponents::getHardwareInfo() const
 
   return  result;
 }
+
+
+
+
+#if OPENGL
+
+uint32*
+cApiComponents::getShaderProgram()
+{
+  return &cApiComponents::GlShaderProgram;
+}
+
+void
+cApiComponents::setCurrentProgram(uint32& currentProgram)
+{
+  GlShaderProgram = currentProgram;
+}
+
+
+uint32*
+cApiComponents::getvertexArrayObject()
+{
+  return &cApiComponents::vertexArrayObject;
+}
+
+#endif // OPEN_GL

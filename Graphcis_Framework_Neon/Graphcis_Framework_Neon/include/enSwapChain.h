@@ -5,6 +5,7 @@
 class enWindow;
 class enViewport;
 class enRenderTargetView;
+class enDepthStencilView;
 
   /**
   * @brief : takes care of switching the front-buffers and back-buffer each frame.
@@ -71,6 +72,10 @@ public:
   */
   void 
   Present(int options = 0);
+
+
+  void
+  setWindow(enWindow& window);
 
 public:
 #if DIRECTX

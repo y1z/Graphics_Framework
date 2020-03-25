@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <cstddef>
 #include <iostream>
+#include <sstream>
 #include <cassert>
 #include "util/GraphicsDefines.h"
 
@@ -14,6 +15,8 @@
 
 #if DIRECTX
 #include <d3d11.h>
+#elif OPENGL
+#include "GLFW/glfw3.h"
 #endif//DIRECTX
 
 /**
@@ -418,9 +421,10 @@ namespace enError
     }
     return false;
   }
+
+
+
 }
-
-
 
 
 /*++++++++++++++++++++++++++++++++++++*/
@@ -455,6 +459,64 @@ happen */
 #define EN_CHAR(Message) GENERIC_CHAR(Message)
 
 #endif// _UNICODE
+
+/*++++++++++++++++++++++++++++++++++++*/
+/* define's  openGl debug */
+/*++++++++++++++++++++++++++++++++++++*/
+
+#if OPENGL
+  /**
+  * @brief : remove all previously logged errors
+  * @bug : no known bug 
+  */
+static void 
+GlRemoveAllErrors()
+{
+  while( glGetError() != GL_NO_ERROR )
+  {
+  }
+}
+
+
+  /**
+  * @brief : find out which error did openGl produce
+  * @returns : true if there was an error, false otherwise.
+  * @bug : no known bug 
+  */
+static bool 
+GlCheckForError()
+{
+  bool IsErrorResult = false;
+  while( GLenum Error = glGetError() )
+  {
+    IsErrorResult = true;
+    std::stringstream ConvertToHex;
+
+    ConvertToHex << std::hex << (unsigned int)Error;
+
+    std::string Message = "\n ---- ERROR HAS OCURRED :< ";
+
+    Message += ConvertToHex.str();
+    Message += "> \n";
+
+    std::cout << Message.c_str();
+    if( Error == GL_INVALID_ENUM )
+    {
+      std::cout << "invalid Enum \n";
+    }
+    if( Error == GL_INVALID_OPERATION )
+    {
+
+      std::cout << "invalid operation \n";
+    }
+
+
+  }
+  return IsErrorResult;
+}
+
+
+#endif // OPENGL
 
 /*++++++++++++++++++++++++++++++++++++*/
 /* define's  utility*/
@@ -614,6 +676,9 @@ struct sSwapDesc
 #if DIRECTX
   HWND outputWindow; //! used only in directX 
 #elif OPENGL
+  GLFWwindow* outputWindow = nullptr;//!< used only in open_gl 
+#else
+  void outputWindow = nullptr;
 #endif // DIRECTX
   uint32 buffWidth = 1;
   uint32 buffHeight = 1;
@@ -646,129 +711,6 @@ struct sDrawData
   uint32 currentFormat = 0u;
 #endif // DIRECTX
 };
-
-// TODO : convert to class
-struct enTexture2D
-{
-  enTexture2D(){
-  
-    sTextureDescriptor descriptoDepth;
-    descriptoDepth.texWidth = 600;
-    descriptoDepth.texHeight = 600;
-    descriptoDepth.CpuAccess = 0;
-    descriptoDepth.texFormat = static_cast<int>(enFormats::R8G8B8A8_uniform_norm);
-    descriptoDepth.Usage = enBufferUse::Default;
-    descriptoDepth.BindFlags = enBufferBind::RenderTarget;
-    descriptoDepth.arraySize = 1;
-    m_desc = descriptoDepth;
-  }
-  enTexture2D(const enTexture2D& other) = delete;
-  enTexture2D(enTexture2D&& other) noexcept
-  {
-  #if DIRECTX
-    m_interface = (other.m_interface);
-    other.m_interface = nullptr;
-  #endif // DIRECTX
-  }
-
-  ~enTexture2D()
-  {
-  #if DIRECTX
-    RELEASE_DX_PTR(m_interface);
-  #elif OPENGL
-    m_interface = 0;
-  #endif // DIRECTX
-  }
-
-  bool
-  Release()
-  {
-  #if DIRECTX
-    if( m_interface != nullptr )
-    {
-
-      RELEASE_DX_PTR(m_interface);
-      return true;
-    }
-    else
-    {
-      return false;
-    }
-  #elif OPENGL
-  #endif // DIRECTX
-  return false;
-  }
-
-  sTextureDescriptor m_desc;
-#if DIRECTX
-  ID3D11Texture2D* m_interface = nullptr;
-
-#elif OPENGL
-  int32 m_interface = 0;
-#endif // DIRECTX
-
-};
-
-
-// TODO : convert to class
-struct enDepthStencilView
-{
-  enDepthStencilView() = default;
-  enDepthStencilView(const enDepthStencilView& other) = delete;
-  enDepthStencilView(enDepthStencilView&& other) noexcept
-    :m_interface(other.m_interface)
-  {
-  #if DIRECTX
-    other.m_interface = nullptr;
-  #endif // DIRECTX
-  }
-
-  ~enDepthStencilView()
-  {
-  #if DIRECTX
-    RELEASE_DX_PTR(m_interface);
-  #elif OPENGL
-  #endif // DIRECTX
-  };
-
-  bool
-  ReleaseStencil()
-  {
-    bool isSuccessful = m_texture.Release();
-    return isSuccessful;
-  }
-
-  bool
-  ReleaseAllInterfaces()
-  {
-    bool ReleasedStencil = ReleaseStencil();
-    bool ReleasedDepth = false;
-  #if DIRECTX
-
-    if( m_interface != nullptr )
-    {
-      RELEASE_DX_PTR(m_interface );
-      ReleasedDepth = true;
-    }
-    else { EN_LOG_DB("depth Stencil is not initialized/ created "); }
-      
-  #endif // DIRECTX
-
-    return (ReleasedStencil && ReleasedDepth);
-  }
-
-  sDepthStencilDescriptor m_desc;
-  enTexture2D m_texture;
-#if DIRECTX
-  ID3D11DepthStencilView* m_interface = nullptr;
-#elif OPENGL
-  int32 m_interface = 0;
-  #else 
-  void* m_interface = nullptr;
-#endif // DIRECTX
-};
-
-
 
 /*+++++++++++++++++++++++++++++++++++*/
 

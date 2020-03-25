@@ -9,6 +9,8 @@
 #include "enPixelShader.h"
 #include "enShaderResourceView.h"
 #include "enRenderTargetView.h"
+#include "enDepthStencilView.h"
+#include "enTexture2D.h"
 #include "helperFucs.h"
 
 #if DIRECTX

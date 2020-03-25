@@ -1,6 +1,7 @@
 #pragma once
 #include "util/Header.h"
 #include "enShaderResourceView.h"
+#include "enTexture2D.h"
 #include <memory>
 #include <vector>
 

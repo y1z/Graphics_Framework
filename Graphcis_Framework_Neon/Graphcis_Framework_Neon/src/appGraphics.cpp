@@ -184,10 +184,20 @@ appGraphics::initModules()
 enErrorCode
 appGraphics::initApi()
 {
+#if OPENGL
+  glewExperimental = true;
+  if( glewInit() != GLEW_OK ) {
+    assert((true == false) && " failed to start glew");
+  }
+
+  //SetCallBackFunctions(my_window);
+
+#endif // OPENGL
+
+
   enErrorCode checkForError = helper::CreateDeviceAndSwapchain(*m_swapchain,
                                                                *m_window,
                                                                m_hardwareInfo);
-
 
 
   if( !m_gui->is_initialized )
@@ -627,6 +637,16 @@ appGraphics::initForRender()
 HRESULT
 appGraphics::InitWindow(HINSTANCE hInstance, int nCmdShow)
 {
+
+#if OPENGL
+  if( glfwInit() != GLFW_TRUE )
+  {
+    OutputDebugStringA("Error initializing glfw");
+    return S_FALSE;
+  }
+
+#endif // OPENGL
+
   bool isSuccessful = m_window->init(WndProcRedirect,
                                      hInstance,
                                      " Graphics window ");

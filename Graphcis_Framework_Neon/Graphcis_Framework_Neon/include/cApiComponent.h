@@ -1,16 +1,14 @@
 #pragma once
 #include "util/Header.h"
 
-
-
-
-class cApiComponents
+  /**
+  * @brief : contains elements that don't clearly fit in the current structurer of api.
+  * @bug : no known bugs.
+  */
+class cApiComponents 
 {
 public:
 
-
-  bool
-  init();
   /**
   * @returns a string that give information about the hardware:
   * @bug :
@@ -18,25 +16,47 @@ public:
   std::string 
   getHardwareInfo() const;
 
-  /*! set the version of the api used
-  \param [in] majorVersion keeps track of the bigger version changes of the api
-  \param [in] minorVersion */
-  void
-  setSupportedVersion(int majorVersion, int minorVersion = 0);
+#if OPENGL
 
-  /*! set the hardware being used
-  by the api */
-  void
-  setHardwareVersion(int HardwareVersion);
+/*! returns a reference to the shader program
+for open_gl */
+  /**
+  * @returns :  the current shader program.
+  * @bug : no known bugs.
+  */
+  static uint32*
+  getShaderProgram();
 
+
+  static void
+  setCurrentProgram(uint32& currentProgram);
+
+  /**
+  * @returns :a reference to the vertex array object 
+  * @bug : no known bugs.
+  */
+  static uint32*
+  getvertexArrayObject();
+
+#endif // OPEN_GL
+
+  sHardWareInfo m_hardWareInfo;
+
+public:
+//selected
+ size_t m_selectedProgram = 0;
 private:
+ constexpr static size_t s_MaxPrograms = 30u;
 #if DIRECTX
   //! used to know which version of the api is needed 
   D3D_FEATURE_LEVEL m_version;
 
-#elif OPEN_GL
+#elif OPENGL
+
+
   static uint32 GlShaderProgram;
   static uint32 vertexArrayObject;
+
   int m_majorVersion;
   int m_minorVersion;
 #endif

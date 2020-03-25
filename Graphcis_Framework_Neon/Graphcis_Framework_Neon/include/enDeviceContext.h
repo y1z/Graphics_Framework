@@ -14,6 +14,8 @@
 
 class enShaderResourceView;
 class enRenderTargetView; 
+class enDepthStencilView;
+class enTexture2D;
 
 
 class enDeviceContext : public soModule<enDeviceContext>

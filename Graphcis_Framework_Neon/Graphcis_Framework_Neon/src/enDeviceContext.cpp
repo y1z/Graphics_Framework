@@ -1,6 +1,8 @@
 #include "..\include\enDeviceContext.h"
 #include "enShaderResourceView.h"
 #include "enRenderTargetView.h"
+#include "enDepthStencilView.h"
+#include "enTexture2D.h"
 
 // limits for setting objects 
 static constexpr const uint8_t c_MaxRenderTargets = 8;

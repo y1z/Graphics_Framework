@@ -15,6 +15,7 @@
 #include "enDeviceContext.h"
 #include "enSwapChain.h"
 #include "enWindow.h"
+#include "cApiComponent.h"
 
 namespace helper
 {
@@ -199,7 +200,47 @@ namespace helper
 
 
     return enErrorCode::FailedCreation;
+    #elif OPENGL
+    GlRemoveAllErrors();
 
+    swapChain.setWindow(window);
+
+    int32 majorVersion{ 0 };
+    int32 minorVersion{ 0 };
+
+    glfwGetVersion(&majorVersion, &minorVersion, NULL);
+
+    const unsigned char* OpenglVersion = glGetString(GL_VERSION);
+    const unsigned char* GlslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
+    const unsigned char* OpenglRenderer = glGetString(GL_RENDERER);
+
+    std::cout << "GLFW version : " << "Major [" << majorVersion << "] Minor [" << minorVersion << "]\n"
+      << "Open_gl version : " << OpenglVersion << '\n'
+      << "Glsl  Shader version : " << GlslVersion << '\n'
+      << "Open_gl renderer : " << OpenglRenderer << '\n';
+      //"alignment of sLightData : " << alignof(sLightData) << '\n' <<
+      //" size of sLightData : " << sizeof(sLightData) << std::endl;
+
+     cApiComponents apiComponent;
+
+    uint32* ptr_vertexArrayObject = cApiComponents::getvertexArrayObject();
+
+    glGenVertexArrays(1, ptr_vertexArrayObject);
+    glBindVertexArray(*ptr_vertexArrayObject);
+
+    glfwSwapInterval(1);
+
+    uint32* ptr_ShaderProgram = cApiComponents::getShaderProgram();
+
+    *(ptr_ShaderProgram) = glCreateProgram();
+
+    if( GlCheckForError() )
+    {
+      EN_LOG_ERROR;
+      return   enErrorCode::NotReady;
+    }
+
+    return enErrorCode::NoError;
   #endif // DIRECTX
 
     return  enErrorCode::UnClassified;
@@ -218,6 +259,8 @@ namespace helper
     windowHeight = widowDimensions.bottom - widowDimensions.top;
 
   #elif OPENGL
+    glfwGetWindowSize(window.getHandle(), &windowWidth, &windowHeight);
+
   #endif // DIRECTX
     return enVector2(windowWidth, windowHeight);
   }

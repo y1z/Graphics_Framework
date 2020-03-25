@@ -3,6 +3,7 @@
 #include "helperFucs.h"
 #include "enViewport.h"
 #include "enRenderTargetView.h"
+#include "enDepthStencilView.h"
 
 
 enSwapChain::enSwapChain(enSwapChain&& other) noexcept
@@ -162,4 +163,10 @@ enSwapChain::Present(int options)
   m_interface->Present(0,options);
 #elif OPENGL
 #endif // DIRECTX
+}
+
+void 
+enSwapChain::setWindow(enWindow& window)
+{
+  m_descriptor.outputWindow = window.getHandle();
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "util/Header.h"
 #include "enRenderTargetView.h"
+#include "enDepthStencilView.h"
 #include "enShaderResourceView.h"
 #include <string_view>
 #include <memory>

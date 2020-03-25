@@ -87,10 +87,11 @@ enWindow::init(windProcType ptr_proc,
 
   return true;
 #elif OPENGL
+  m_width = 640;
+  m_height = 480;
   #ifdef UNICODE
 
-  std::string convertedName = helper::convertWStringToString(m_name);
-
+  std::string const convertedName = helper::convertWStringToString(m_name);
   m_handle = glfwCreateWindow(m_width, m_height, convertedName.c_str(), NULL, NULL);
   #else
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "util/Header.h"
+#include "enTexture2D.h"
 #include <array>
 
   /**
