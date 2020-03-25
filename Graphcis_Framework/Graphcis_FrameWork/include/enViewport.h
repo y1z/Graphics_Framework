@@ -19,5 +19,11 @@ enViewport() = default;
   getDxViewport()const;
 #endif // DIRECTX
 
+  uint32 
+  getWidth() const;
+
+  uint32 
+  getHeight() const;
+
   sViewportDesc m_descriptor;
 };

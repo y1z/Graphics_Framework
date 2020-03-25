@@ -93,7 +93,7 @@ enSwapChain::ResizeSwapChain(enWindow& currentWindow,
   this->m_descriptor.buffWidth = newSize.x;
   this->m_descriptor.buffHeight = newSize.y;
 
-  sTextureDescriptor const DepthDesc = helper::generateDepthStencilDesc(newSize.x,
+  sTextureDescriptor const DepthDesc = helper::generateTextureDescForDepthStencil(newSize.x,
                                                                         newSize.y);
 
   DepthStencilView.m_texture.m_desc = DepthDesc;
@@ -119,7 +119,7 @@ enSwapChain::ResizeSwapChain(enWindow& currentWindow,
 
   assert(isSuccessful && " Error with creating a Depth-Stencil-View ");
 
-  deviceContext.OMSetRenderTargets(&renderTargetView,DepthStencilView);
+  deviceContext.OMSetRenderTargets(&renderTargetView, &DepthStencilView);
 
   viewport.m_descriptor.width = newSize.x;
   viewport.m_descriptor.height= newSize.y;

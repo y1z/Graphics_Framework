@@ -52,6 +52,7 @@ public:
   */
   virtual bool
   init() override;
+ 
 
   /**
   * @brief : this is where the main application starts after gathering resources
@@ -115,11 +116,34 @@ private:
   initForRender();
 
  /**
- * @TODO : move this function to it's own class
  * @brief : creates a window
- **/
+ */
   HRESULT
   InitWindow(HINSTANCE hInstance, int nCmdShow);
+
+  /**
+  * @brief : sets the shader and buffers.
+  * @bug : no known bugs.
+  */
+  void
+  setShaderAndBuffers();
+
+  /**
+  * @brief : draws the scene with the selected 
+  * @param[in] renderTargetIndex: which render target to use.
+  * @bug : no known bugs.
+  */
+  void 
+  drawWithSeletecRenderTarget(size_t renderTargetIndex);
+
+  /**
+  * @brief : switches cameras.
+  * @bug : no known bugs.
+  */
+  void 
+  switchCamera();
+
+
 
   /**
   * @brief : takes care of rendering the image to the screen.
@@ -163,7 +187,7 @@ public:
   std::unique_ptr<enModel> m_model = nullptr;
   static std::unique_ptr<imGuiManager> m_gui; 
 
-  std::unique_ptr<enMultiviewTexture> m_multiTexture = nullptr;
+  std::unique_ptr<enMultiviewTexture> m_renderTargetAndShaderResource = nullptr;
 
   //std::unique_ptr<enShaderResourceView> m_resourceView = nullptr;
   std::shared_ptr<enShaderResourceView> m_resourceView = nullptr;

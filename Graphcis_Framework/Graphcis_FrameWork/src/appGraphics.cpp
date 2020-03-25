@@ -194,7 +194,7 @@ appGraphics::initApi()
                                                                *m_window,
                                                                m_hardwareInfo);
 
-  m_multiTexture->CreateRenderTarget(300.0f, 300.0f);
+  //m_renderTargetAndShaderResource->CreateRenderTarget(300.0f, 300.0f);
 
   if( !m_gui->is_initialized )
   {
@@ -230,7 +230,7 @@ appGraphics::createMyClasses()
     m_window = make_unique<enWindow>();
 
     m_model = make_unique<enModel>();
-    m_multiTexture = make_unique<enMultiviewTexture>();
+    m_renderTargetAndShaderResource = make_unique<enMultiviewTexture>();
   }
   catch( const std::exception & e )
   {
@@ -273,6 +273,12 @@ appGraphics::initForRender()
 
   isSuccessful = device.CreateRenderTargetView(*m_renderTargetView, 1);
 
+ //if( !EN_SUCCESS(m_renderTargetAndShaderResource->CreateRenderTarget(windowSize.x, windowSize.y, enFormats::fR16G16B16A16)) )
+ //{
+ //  EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
+ //  return S_FALSE;
+ //}
+
   if( !isSuccessful )
   {
     EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
@@ -310,7 +316,7 @@ appGraphics::initForRender()
   }
 
   deviceContext.OMSetRenderTargets(m_renderTargetView.get(),
-                                   *m_depthStencilView);
+                                   m_depthStencilView.get());
                                    //deviceContext.OMSetRenderTargets()
                                    // Setup the viewport
   D3D11_VIEWPORT vp;
@@ -390,46 +396,46 @@ appGraphics::initForRender()
   }
 
   // Create vertex buffer
-  SimpleVertex vertices[] =
-  {
-      { glm::vec4(-1.0f, 1.0f, -1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
-      { glm::vec4(1.0f, 1.0f, -1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
-      { glm::vec4(1.0f, 1.0f, 1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
-      { glm::vec4(-1.0f, 1.0f, 1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
+  //SimpleVertex vertices[] =
+  //{
+  //    { glm::vec4(-1.0f, 1.0f, -1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
+  //    { glm::vec4(1.0f, 1.0f, -1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
+  //    { glm::vec4(1.0f, 1.0f, 1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
+  //    { glm::vec4(-1.0f, 1.0f, 1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
 
-      { glm::vec4(-1.0f, -1.0f, -1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
-      { glm::vec4(1.0f, -1.0f, -1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
-      { glm::vec4(1.0f, -1.0f, 1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
-      { glm::vec4(-1.0f, -1.0f, 1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
+  //    { glm::vec4(-1.0f, -1.0f, -1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
+  //    { glm::vec4(1.0f, -1.0f, -1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
+  //    { glm::vec4(1.0f, -1.0f, 1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
+  //    { glm::vec4(-1.0f, -1.0f, 1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
 
-      { glm::vec4(-1.0f, -1.0f, 1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
-      { glm::vec4(-1.0f, -1.0f, -1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
-      { glm::vec4(-1.0f, 1.0f, -1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
-      { glm::vec4(-1.0f, 1.0f, 1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
+  //    { glm::vec4(-1.0f, -1.0f, 1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
+  //    { glm::vec4(-1.0f, -1.0f, -1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
+  //    { glm::vec4(-1.0f, 1.0f, -1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
+  //    { glm::vec4(-1.0f, 1.0f, 1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
 
-      { glm::vec4(1.0f, -1.0f, 1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
-      { glm::vec4(1.0f, -1.0f, -1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
-      { glm::vec4(1.0f, 1.0f, -1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
-      { glm::vec4(1.0f, 1.0f, 1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
+  //    { glm::vec4(1.0f, -1.0f, 1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
+  //    { glm::vec4(1.0f, -1.0f, -1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
+  //    { glm::vec4(1.0f, 1.0f, -1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
+  //    { glm::vec4(1.0f, 1.0f, 1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
 
-      { glm::vec4(-1.0f, -1.0f, -1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
-      { glm::vec4(1.0f, -1.0f, -1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
-      { glm::vec4(1.0f, 1.0f, -1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
-      { glm::vec4(-1.0f, 1.0f, -1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
+  //    { glm::vec4(-1.0f, -1.0f, -1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
+  //    { glm::vec4(1.0f, -1.0f, -1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
+  //    { glm::vec4(1.0f, 1.0f, -1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
+  //    { glm::vec4(-1.0f, 1.0f, -1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
 
-      { glm::vec4(-1.0f, -1.0f, 1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
-      { glm::vec4(1.0f, -1.0f, 1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
-      { glm::vec4(1.0f, 1.0f, 1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
-      { glm::vec4(-1.0f, 1.0f, 1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
-  };
+  //    { glm::vec4(-1.0f, -1.0f, 1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
+  //    { glm::vec4(1.0f, -1.0f, 1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
+  //    { glm::vec4(1.0f, 1.0f, 1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
+  //    { glm::vec4(-1.0f, 1.0f, 1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
+  //};
 
 
-  sBufferDesc VertexBuffdescriptor;
-  VertexBuffdescriptor.cpuAccess = 0;
-  VertexBuffdescriptor.bindFlags = enBufferBind::Vertex;
-  VertexBuffdescriptor.elementCount = ARRAYSIZE(vertices);
-  VertexBuffdescriptor.stride = sizeof(SimpleVertex);
-  VertexBuffdescriptor.ptr_data = vertices;
+  //sBufferDesc VertexBuffdescriptor;
+  //VertexBuffdescriptor.cpuAccess = 0;
+  //VertexBuffdescriptor.bindFlags = enBufferBind::Vertex;
+  //VertexBuffdescriptor.elementCount = ARRAYSIZE(vertices);
+  //VertexBuffdescriptor.stride = sizeof(SimpleVertex);
+  //VertexBuffdescriptor.ptr_data = vertices;
 
 
   if( m_model->LoadModelFromFile("ryuko.fbx") == false )
@@ -438,10 +444,6 @@ appGraphics::initForRender()
       return S_FALSE;
   }
 
-
-  m_vertexBuffer->init(VertexBuffdescriptor);
-
-  isSuccessful = device.CreateVertexBuffer(*m_vertexBuffer);
 
   if( !isSuccessful )
   {
@@ -454,41 +456,6 @@ appGraphics::initForRender()
   UINT offset = 0;
 
   deviceContext.IASetVertexBuffers(m_vertexBuffer.get(), 1);
-
-  // Create index buffer
-  // Create vertex buffer
-  WORD indices[] =
-  {
-      3,1,0,
-      2,1,3,
-
-      6,4,5,
-      7,4,6,
-
-      11,9,8,
-      10,9,11,
-
-      14,12,13,
-      15,12,14,
-
-      19,17,16,
-      18,17,19,
-
-      22,20,21,
-      23,20,22
-  };
-
-
-  sBufferDesc IndexBufferDescriptor;
-  IndexBufferDescriptor.bindFlags = enBufferBind::Index;
-  IndexBufferDescriptor.cpuAccess = 0;
-  IndexBufferDescriptor.elementCount = ARRAYSIZE(indices);
-  IndexBufferDescriptor.stride = sizeof(WORD);
-  IndexBufferDescriptor.ptr_data = indices;
-
-  m_indexBuffer->init(IndexBufferDescriptor);
-
-  device.CreateIndexBuffer(*m_indexBuffer);
 
   if( !isSuccessful )
   {
@@ -555,11 +522,28 @@ appGraphics::initForRender()
       return S_FALSE;
   }
 
-  // Load the Texture
   m_resourceView->init();
 
+  // Load the Texture
   isSuccessful = device.CreateShaderResourceFromFile(*m_resourceView,
                                                      "neon light.jpg");
+
+  if( !isSuccessful )
+  {
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
+    return S_FALSE;
+  }
+
+  enMultiViewType EverySingleView = helper::generateMultiViewType(enMultiViewType::renderTarget |
+                                                                  enMultiViewType::shaderResource);
+ 
+  //EverySingleView = static_cast<enMultiViewType>(EverySingleView | enMultiViewType::renderTarget);
+  
+  isSuccessful = m_renderTargetAndShaderResource->CreateAll(windowSize.x,
+                                        windowSize.y,
+                                        enFormats::fR16G16B16A16,
+                                        enBufferUse::Default,
+                                        EverySingleView);
 
   if( !isSuccessful )
   {
@@ -619,12 +603,6 @@ appGraphics::initForRender()
   cbNeverChanges.mView = glm::transpose(s_Camera->getView() /* s_Camera.getView()*/);
 
 
-  //p_ImmediateContext->UpdateSubresource(p_CBNeverChanges, 0, NULL, &cbNeverChanges, 0, 0);
-#if DIRECTX
-  //deviceContext.getInterface()->UpdateSubresource(s_ViewMatrixBuffer->getInterface(), 0, NULL, &cbNeverChanges, 0, 0);
-
-#endif // DIRECTX
-
   deviceContext.UpdateSubresource(s_ViewMatrixBuffer, &cbNeverChanges);
 
 
@@ -643,7 +621,7 @@ appGraphics::initForRender()
 
   for( auto& mesh : m_model->m_meshes )
   {
-    mesh.mptr_resource = m_resourceView;
+    mesh.mptr_resource = m_resourceView;//   m_renderTargetAndShaderResource->m_shaderResource;
   }
 
   //p_ImmediateContext->UpdateSubresource(p_CBChangeOnResize, 0, NULL, &projMatrixData, 0, 0);
@@ -670,10 +648,78 @@ appGraphics::InitWindow(HINSTANCE hInstance, int nCmdShow)
 
 }
 
+void 
+appGraphics::setShaderAndBuffers()
+{
+  enDeviceContext& deviceContext = enDeviceContext::getInstance();
+  deviceContext.VSSetShader(*m_vertexShader);
+  deviceContext.VSSetConstantBuffer(*s_ViewMatrixBuffer, s_ViewMatrixBuffer->getIndex());
+
+  deviceContext.VSSetConstantBuffer(*s_ProjectionMatrixBuffer,
+                                    s_ProjectionMatrixBuffer->getIndex());
+
+  deviceContext.VSSetConstantBuffer(*m_worldMatrix,
+                                    m_worldMatrix->getIndex());
+
+  deviceContext.PSSetShader(*m_pixelShader);
+
+  deviceContext.PSSetConstantBuffers(*m_worldMatrix, m_worldMatrix->getIndex());
+  deviceContext.PSSetShaderResources(m_resourceView.get(), 1);
+  deviceContext.PSSetSampler(*m_sampler);
+}
+
+void 
+appGraphics::drawWithSeletecRenderTarget(size_t renderTargetIndex)
+{
+  enRenderTargetView* ptr_renderTarget = nullptr;
+  if( renderTargetIndex == 0 )
+  {
+    ptr_renderTarget = m_renderTargetView.get();
+  }
+  else if(renderTargetIndex == 1  ){
+    ptr_renderTarget = &m_renderTargetAndShaderResource->m_renderView;
+  }
+
+  enDeviceContext& deviceContext = enDeviceContext::getInstance();
+
+  deviceContext.OMSetRenderTargets(ptr_renderTarget, m_depthStencilView.get());
+  
+  m_model->DrawMeshes(m_ConstBufferContainer);
+
+}
+
+void 
+appGraphics::switchCamera()
+{
+  BasePerspectiveCamera* ptr_camera = nullptr;
+  if( s_useFreeCam )
+  {
+    ptr_camera = s_CameraManager->getFirstPersonCamera();
+    s_useFreeCam = false;
+  }
+
+  else if( !s_useFreeCam )
+  {
+    ptr_camera = s_CameraManager->getFreeCamera();
+    s_useFreeCam = true;
+  }
+
+  enDeviceContext& deviceContext = enDeviceContext::getInstance();
+
+  viewMatrix cbNeverChanges;
+  cbNeverChanges.mView = glm::transpose(ptr_camera->getView());
+  deviceContext.UpdateSubresource(s_ViewMatrixBuffer, &cbNeverChanges);
+
+
+  projectionMatrix cbChangesOnResize;
+  cbChangesOnResize.mProjection = glm::transpose(ptr_camera->getProjection());
+  deviceContext.UpdateSubresource(s_ProjectionMatrixBuffer, &cbChangesOnResize);
+
+}
+
 void
 appGraphics::Render()
 {
-
   static float t = 0.0f;
   enDeviceContext& deviceContext = enDeviceContext::getInstance();
   {
@@ -692,34 +738,48 @@ appGraphics::Render()
   //
   // Clear the back buffer
   //
-  float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; // red, green, blue, alpha
-  deviceContext.ClearRenderTargetView(*m_renderTargetView);
+  //float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; // red, green, blue, alpha
+  static sColorf ClearColor{ 0.40f,0.50f,1.00f,1.0f };
 
+  deviceContext.ClearRenderTargetView(m_renderTargetAndShaderResource->m_renderView, &ClearColor);
   //
   // Clear the depth buffer to 1.0 (max depth)
   //
   deviceContext.ClearDepthStencilView(*m_depthStencilView);
 
+  this->setShaderAndBuffers();
+
+  this->drawWithSeletecRenderTarget(1);
+/*+++++++++++++++++++++++++++++++++++++++++++++*/
+
+  this->switchCamera();
+  deviceContext.ClearRenderTargetView(*m_renderTargetView);
   //
-  // Render the cube
+  // Clear the depth buffer to 1.0 (max depth)
   //
-  //deviceContext.getInterface()->VSSetShader(m_vertexShader->getInterface(), NULL, 0);
-  //deviceContext.getInterface()->VSSetConstantBuffers(0, 1, s_ViewMatrixBuffer->getInterfaceRef());
+  deviceContext.ClearDepthStencilView(*m_depthStencilView);
 
-  deviceContext.VSSetShader(*m_vertexShader);
-  deviceContext.VSSetConstantBuffer(*s_ViewMatrixBuffer, s_ViewMatrixBuffer->getIndex());
+  this->setShaderAndBuffers();
 
-  deviceContext.VSSetConstantBuffer(*s_ProjectionMatrixBuffer,
-                                    s_ProjectionMatrixBuffer->getIndex());
+  this->drawWithSeletecRenderTarget(0);
 
-  deviceContext.VSSetConstantBuffer(*m_worldMatrix,
-                                    m_worldMatrix->getIndex());
+/*+++++++++++++++++++++++++++++++++++++++++++++*/
 
-  deviceContext.PSSetShader(*m_pixelShader);
+  this->switchCamera();
+  deviceContext.ClearRenderTargetView(m_renderTargetAndShaderResource->m_renderView);
 
-  deviceContext.PSSetConstantBuffers(*m_worldMatrix, m_worldMatrix->getIndex());
-  deviceContext.PSSetShaderResources(m_resourceView.get(), 1);
-  deviceContext.PSSetSampler(*m_sampler);
+  // Clear the depth buffer to 1.0 (max depth)
+
+  deviceContext.ClearDepthStencilView(*m_depthStencilView);
+  this->setShaderAndBuffers();
+
+  this->drawWithSeletecRenderTarget(1);
+
+
+  this->drawWithSeletecRenderTarget(0);
+  //this->setShaderAndBuffers();
+
+  //this->drawWithSeletecRenderTarget(0);
 
   ConstBufferWorldColor cb;
   cb.vMeshColor = m_MeshColor;
@@ -733,13 +793,13 @@ appGraphics::Render()
 
  //deviceContext.getInterface()->DrawIndexed(36, 0, 0);
 
-  m_model->DrawMeshes(m_ConstBufferContainer);
-  m_World = glm::identity<glm::mat4x4>();
+  //m_model->DrawMeshes(m_ConstBufferContainer);
+  //m_World = glm::identity<glm::mat4x4>();
 
 
 
   m_gui->beginFrame("camera view");
-  m_gui->addImage(*m_resourceView);
+  m_gui->addImage(*m_renderTargetAndShaderResource->m_shaderResource);
   m_gui->addButton("switch Cam", s_useFreeCam);
 
   m_gui->endFrame();

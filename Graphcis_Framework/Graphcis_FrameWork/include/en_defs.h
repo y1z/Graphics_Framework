@@ -8,7 +8,6 @@
 #include <cstddef>
 #include <iostream>
 #include <cassert>
-#include <array>
 #include "util/GraphicsDefines.h"
 
 
@@ -22,9 +21,9 @@
  *
  */
 
-/****************************/
+/*++++++++++++++++++++++++++++++++++++*/
 // TYPE DEFS
-/****************************/
+/*++++++++++++++++++++++++++++++++++++*/
 
 // signed int type's
 using int8 = int8_t; /*!<this is a 8-bit integer */
@@ -90,12 +89,13 @@ enum enErrorCode :Byte4
   ShaderLinkError = 0b000'0000'0000'0000'0000'0000'0001'0000, //!< means that a provided path 
   ActorComponentError = 0b000'0000'0000'0000'0000'0000'0010'0000,//!< means that a provided path 
   FailedCreation = 0b000'0000'0000'0000'0000'0000'0100'0000,//!<means that something was not created correctly.
+  AlreadCreated = 0b000'0000'0000'0000'0000'0000'1000'0000,//!<means that a resource is already made.
 };
 
 /**
 *@brief used to tell the a.p.i which type of buffer we are dealing with.
 */
-enum enBufferBind
+enum enBufferBind : uByte4 
 {
   NONE = 0,
 #if DIRECTX
@@ -106,12 +106,12 @@ enum enBufferBind
   RenderTarget = D3D11_BIND_RENDER_TARGET,
   DepthStencil = D3D11_BIND_DEPTH_STENCIL,
 #else
-  Vertex = 0b00'00'0000'0001,
-  Index = 0b00'00'0000'0010,
-  Const = 0b00'00'0000'0100,
-  ShaderResource = 0b00'00'0000'1000,
-  RenderTarget = 0b00'00'0010'0000,
-  DepthStencil = 0b00'00'0100'0000,
+  Vertex = 0b00'0000'0000'0001,
+  Index = 0b00'0000'0000'0010,
+  Const = 0b00'0000'0000'0100,
+  ShaderResource = 0b00'0000'0000'1000,
+  RenderTarget = 0b00'0000'0010'0000,
+  DepthStencil = 0b00'0000'0100'0000,
 #endif // DIRECTX
 };
 
@@ -151,7 +151,7 @@ enum enFormats
   fR32G32B32A32 = DXGI_FORMAT_R32G32B32A32_FLOAT,
   /* other */
   depthStencil_format = DXGI_FORMAT_D24_UNORM_S8_UINT,
-  renderTarget_format = DXGI_FORMAT_R32G32B32A32_TYPELESS,
+  renderTarget_format = DXGI_FORMAT_R32G32B32A32_FLOAT,
 #elif OPENGL
   /* one channel */
   uR8 = GL_UNSIGNED_BYTE, //GL_R8
@@ -308,9 +308,35 @@ enum class enAddress : int32_t
 #endif // DIRECTXe
 };
 
+
+enum enRenderTargetViewType
+{
+#if DIRECTX
+  buffer = D3D11_RTV_DIMENSION_BUFFER,
+  renderTarget2D = D3D11_RTV_DIMENSION_TEXTURE2D,
+
+#else
+  buffer,
+  renderTarget2D,
+#endif // DIRECTX
+
+};
+
+/**
+* @brief : used to determine which type/types is the enMultiviewTexture.
+*/
+enum enMultiViewType : int32
+{
+  zeroType = 0b0'0000'0000,
+  renderTarget = 0b0'0000'0001,
+  depthStencil = 0b0'0000'0010,
+  shaderResource =0b0'0000'0100, 
+};
+
 /*++++++++++++++++++++++++++++++++++++*/
 /* Logger functions */
 /*++++++++++++++++++++++++++++++++++++*/
+
 namespace enError
 {
   /*! Present error message to help with debugging */
@@ -366,8 +392,13 @@ namespace enError
         break;
       case enErrorCode::FailedCreation:
         messageFormat(FunctionName,
-                      R"(the creation of some resource has failed, check if more setup is needed
-or if the setup wrong.)");
+                      "the creation of some resource has failed, check if more setup is needed "
+                      "or if the setup went wrong.");
+
+        break;
+      case enErrorCode::AlreadCreated:
+        messageFormat(FunctionName,
+                      "the resource is already created\n");
 
         break;
       default:
@@ -437,6 +468,13 @@ happen */
   * @bug : no known bugs
   */
 #define EN_SUCCESS(errorCode) enError::enCheckSuccess(errorCode)
+
+  /**
+  * @retuns : false when the ErrorCode is `NoError` anything else returns true 
+  * @bug : no known bugs
+  */
+#define EN_FAIL(errorCode) !enError::enCheckSuccess(errorCode)
+//failed
 #define EN_NODISCARD _NODISCARD
 
 /*++++++++++++++++++++++++++++++++++++*/
@@ -467,6 +505,7 @@ struct sTextureDescriptor
   int Usage{ 0 };
   int BindFlags{ 0 };
   int CpuAccess{ 0 };
+  int Mips{ 1 };
   // this is in case the texture comes in an array format 
   int arraySize{ 1 };
 };
@@ -493,7 +532,7 @@ struct sBufferDesc
 struct sRenderTargetDesc2D
 {
   int format = -1337;
-  int ViewDimension = 0;
+  enRenderTargetViewType renderTargetType = enRenderTargetViewType::buffer;
   int mip = 0;
 };
 
@@ -543,6 +582,7 @@ struct sViewportDesc
   float TopLeftY{ 0.0f };
 };
 
+
 struct sHardWareInfo
 {
 #if DIRECTX
@@ -586,6 +626,25 @@ struct sSwapDesc
   uint8 sampCount{ 0 };
   uint8 sampQuality{ 0 };
   bool isWindowd = true;
+};
+  /**
+  * @brief : used to emulate the setting functionality of DirectX 
+  * in open-Gl.(in other word remember what was last set.)
+  * 
+  */
+struct sDrawData
+{
+#if DIRECTX
+#elif OPENGL
+  /*! used for knowing which of the index-buffers are set */
+  uint32 currentIndexBuffer = 0u;
+  /*! used for knowing which of the vertex-buffers are set */
+  uint32 currentVertexBuffer = 0u;
+  /*! used for knowing which type of topology is set */
+  uint32 currentTopology = 0u;
+  /*! used for knowing how to interpret the indices of the index buffer */
+  uint32 currentFormat = 0u;
+#endif // DIRECTX
 };
 
 // TODO : convert to class
@@ -711,6 +770,6 @@ struct enDepthStencilView
 
 
 
-/*********/
-/*********/
+/*+++++++++++++++++++++++++++++++++++*/
 
+/*+++++++++++++++++++++++++++++++++++*/

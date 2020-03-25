@@ -22,4 +22,17 @@ enViewport::getDxViewport() const
   return result;
 }
 
+
 #endif // DIRECTX
+
+uint32 
+enViewport::getWidth() const
+{
+  return m_descriptor.width;
+}
+
+uint32 
+enViewport::getHeight() const
+{
+  return m_descriptor.height;
+}

@@ -8,19 +8,19 @@
 #include "enVertexShader.h"
 #include "enPixelShader.h"
 #include "enShaderResourceView.h"
-#include  "enRenderTargetView.h"
+#include "enRenderTargetView.h"
 #include "helperFucs.h"
 
 #if DIRECTX
 #include "DirectXTK/include/DDSTextureLoader.h"
 #include "DirectXTK/include/WICTextureLoader.h"
+namespace dx = DirectX;
 #elif OPENGL
 
 #endif // DIRECTX
 
 #include <vector>
 
-namespace dx = DirectX;
 
 
 int
@@ -55,19 +55,26 @@ enDevice::init()
 }
 
 bool
-enDevice::CreateRenderTargetView(enTexture2D& texture,
-                                 enRenderTargetView& renderTraget)
+enDevice::CreateRenderTargetView(enRenderTargetView& renderTraget,
+                                 enTexture2D& texture,
+                                 sRenderTargetDesc2D& Desc)
 {
 #if DIRECTX
   HRESULT hr = S_FALSE;
+  D3D11_RENDER_TARGET_VIEW_DESC directXDesc;
+  std::memset(&directXDesc, 0, sizeof(directXDesc));
+  directXDesc.Format = static_cast<DXGI_FORMAT>(Desc.format);
+  directXDesc.ViewDimension = static_cast<D3D11_RTV_DIMENSION> (Desc.renderTargetType);
+  directXDesc.Texture2D.MipSlice = Desc.mip;
 
   hr = m_interface->CreateRenderTargetView(texture.m_interface,
-                                           NULL,
+                                           &directXDesc,
                                            &renderTraget.m_interface);
   if( SUCCEEDED(hr) )
   {
     return true;
   }
+
 #elif OPENGL
 
 #endif // DIRECTX
@@ -75,7 +82,8 @@ enDevice::CreateRenderTargetView(enTexture2D& texture,
 }
 
 bool
-enDevice::CreateRenderTargetView(enRenderTargetView& renderTraget, uint32 targetIndex)
+enDevice::CreateRenderTargetView(enRenderTargetView& renderTraget,
+                                 uint32 targetIndex)
 {
 
   if( renderTraget.s_renderTargetMax - 1 < targetIndex )
@@ -129,7 +137,8 @@ enDevice::CreateRenderTargetView(enRenderTargetView& renderTragetView,
 }
 
 bool
-enDevice::CreateShaderResourceFromFile(enShaderResourceView& shaderResourceView, std::string_view filePath)
+enDevice::CreateShaderResourceFromFile(enShaderResourceView& shaderResourceView,
+                                       std::string_view filePath)
 {
 #if DIRECTX
 
@@ -157,10 +166,39 @@ enDevice::CreateShaderResourceFromFile(enShaderResourceView& shaderResourceView,
     }
   }
 
+  return true;
+#elif OPENGL
 #endif // DIRECTX
 
-  return true;
+  return false;
 }
+
+bool
+enDevice::CreateShaderResourceFromTexture(enShaderResourceView& shaderResourceView,
+                                          enTexture2D& texture)
+{
+#if DIRECTX
+  D3D11_SHADER_RESOURCE_VIEW_DESC  ViewDescriptor;
+  std::memset(&ViewDescriptor, 0, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+  ViewDescriptor.Format = static_cast<DXGI_FORMAT>(texture.m_desc.texFormat);
+  ViewDescriptor.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;	
+  ViewDescriptor.Texture2D.MipLevels = texture.m_desc.Mips;
+
+  HRESULT hr = m_interface->CreateShaderResourceView(texture.m_interface,
+                                                     &ViewDescriptor,
+                                                     &shaderResourceView.m_interface);
+
+  if( !FAILED(hr) )
+  {
+
+    return true;
+  }
+
+#elif OPENGL
+#endif // DIRECTX
+  return false;
+}
+
 
 bool
 enDevice::CreateTexture2D(sTextureDescriptor& Description,
@@ -201,7 +239,7 @@ enDevice::CreateDepthStencilView(enDepthStencilView& DepthView)
   D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
   SecureZeroMemory(&descDSV, sizeof(descDSV));
   descDSV.Format = static_cast<DXGI_FORMAT>(DepthView.m_desc.Format);
-  descDSV.ViewDimension = static_cast<D3D11_DSV_DIMENSION>(DepthView.m_desc.Dimension);
+  descDSV.ViewDimension= static_cast<D3D11_DSV_DIMENSION>(DepthView.m_desc.Dimension);
   descDSV.Texture2D.MipSlice = DepthView.m_desc.Mip;
 
   hr = m_interface->CreateDepthStencilView(DepthView.m_texture.m_interface,

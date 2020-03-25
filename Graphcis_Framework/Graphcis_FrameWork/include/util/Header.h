@@ -7,9 +7,12 @@
    #endif //__glew_h__
 
 #elif DIRECTX
+
 #include <d3d11.h>
 #include <d3dcompiler.h>
+
 #endif // OPENGL
+
 
 #include "MacroslessWindow.h"
 #include "en_defs.h"

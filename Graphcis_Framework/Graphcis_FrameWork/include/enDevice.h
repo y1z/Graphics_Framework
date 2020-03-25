@@ -54,8 +54,9 @@ public:
   * @bug : no known bugs.
   */
   bool
-  CreateRenderTargetView(enTexture2D& texture,
-                         enRenderTargetView& renderTraget);
+  CreateRenderTargetView(enRenderTargetView& renderTraget,
+                         enTexture2D& texture,
+                         sRenderTargetDesc2D& Desc);
 
   /**
   * @brief : create a render-target-view with one render-target.
@@ -88,6 +89,16 @@ public:
   bool
   CreateShaderResourceFromFile(enShaderResourceView &shaderResourceView,
                                std::string_view filePath);
+
+  /**
+  * @brief : creates makes a texture usable by a shader.
+  * @returns :true if the operation succeeded, False other wise.
+  * @param[out] shaderResourceView: the resulting ShaderResourceView. 
+  * @bug : no known bug.
+  */
+  bool
+  CreateShaderResourceFromTexture(enShaderResourceView &shaderResourceView,
+                                  enTexture2D& texture);
 
   /**
   * @brief :creates a texture.

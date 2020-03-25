@@ -58,11 +58,17 @@ enDeviceContext::ClearState()
 
 void
 enDeviceContext::OMSetRenderTargets(enRenderTargetView renderTargetsViews[],
-                                    enDepthStencilView& depthStencilViews,
+                                    enDepthStencilView*ptr_depthStencilView,
                                     uint32_t numRenderTargets)
 {
 #if DIRECTX
   ID3D11RenderTargetView* RenderTempPtrArr[c_MaxRenderTargets];
+  ID3D11DepthStencilView* ptr_DirectXDepth = nullptr;
+
+  if(ptr_depthStencilView ){
+    ptr_DirectXDepth = ptr_depthStencilView->m_interface;
+  }
+
   if( numRenderTargets <= c_MaxRenderTargets )
   {
     for( uint8_t i = 0; i < numRenderTargets; ++i )
@@ -72,7 +78,7 @@ enDeviceContext::OMSetRenderTargets(enRenderTargetView renderTargetsViews[],
 
     m_interface->OMSetRenderTargets(numRenderTargets,
                                     RenderTempPtrArr,
-                                    depthStencilViews.m_interface);
+                                    ptr_DirectXDepth);
   }
   else
   {
@@ -81,6 +87,20 @@ enDeviceContext::OMSetRenderTargets(enRenderTargetView renderTargetsViews[],
 #elif OPENGL
 #endif // DIRECTX
 
+}
+
+void 
+enDeviceContext::setDepthStencilView(enDepthStencilView& depthStencilView,
+                                     uint32_t numRenderTragets)
+{
+
+#if DIRECTX
+  m_interface->OMSetRenderTargets(numRenderTragets,
+                                  nullptr,
+                                  depthStencilView.m_interface);
+
+#elif OPENGL
+#endif // DIRECTX
 }
 
 
@@ -174,7 +194,7 @@ enDeviceContext::IASetVertexBuffers(enVertexBuffer vertexBuffer[], uint32_t numB
   }
 
 #elif OPENGL
-  m_drawingData.currentVertexBuffer = vertexBuffer[0].getID();
+  m_drawingData.currentVertexBuffer = vertexBuffer[0].getInterface();
 #endif // DIRECTX
 }
 
@@ -184,7 +204,7 @@ enDeviceContext::IASetIndexBuffer(enIndexBuffer& indexBuffer, int Format, int of
 #if DIRECTX
   m_interface->IASetIndexBuffer(indexBuffer.getInterface(), static_cast<DXGI_FORMAT>(Format), offSet);
 #elif OPENGL
-  m_drawingData.currentIndexBuffer = indexBuffer.getID();
+  m_drawingData.currentIndexBuffer = indexBuffer.getInterface();
   m_drawingData.currentFormat = Format;
 #endif // DIRECTX
 }

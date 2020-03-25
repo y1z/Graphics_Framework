@@ -7,6 +7,7 @@ enBaseBuffer::enBaseBuffer(enBaseBuffer&& other)
 #if DIRECTX
   other.m_interface = nullptr;
 #elif OPENGL
+  other.m_interface = 0;
 #else
   other.m_interface = nullptr;
 #endif // DIRECTX
@@ -54,6 +55,19 @@ enBaseBuffer::getInterfaceRef()
 
 
 #elif OPENGL
+
+int32
+enBaseBuffer::getInterface()
+{
+  return m_interface;
+}
+
+int32&
+enBaseBuffer::getInterfaceRef()
+{
+  return m_interface;
+}
+
 #endif // DIRECTX
 
 confInt

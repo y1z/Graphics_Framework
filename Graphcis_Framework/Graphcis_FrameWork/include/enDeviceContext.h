@@ -52,8 +52,14 @@ public:// functions
       \param numRenderTargets [in] to tell how many render target there are */
   void
   OMSetRenderTargets(enRenderTargetView renderTragetsViews[],
-                     enDepthStencilView& depthStencilView,
+                     enDepthStencilView* ptr_depthStencilView,
                      uint32_t numRenderTragets = 1);
+
+  void
+  setDepthStencilView(enDepthStencilView& depthStencilView,
+                      uint32_t numRenderTragets = 1);
+                     
+
   /**
   set render-targets and can set multiple render-targets
     \param renderTragetsViews [out] the render-targets to be set
@@ -161,6 +167,9 @@ public:
 #if DIRECTX
   ID3D11DeviceContext* m_interface = nullptr;
 
+  #elif OPENGL 
+  int32 m_interface = -1;
+ sDrawData m_drawingData;
 #endif // DIRECTX
 
 };

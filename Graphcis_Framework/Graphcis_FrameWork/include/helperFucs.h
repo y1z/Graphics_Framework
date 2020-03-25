@@ -232,8 +232,8 @@ namespace helper
   }
 
   EN_NODISCARD static sTextureDescriptor
-  generateDepthStencilDesc(float const Width,
-                           float const Height)
+  generateTextureDescForDepthStencil(float const Width,
+                                     float const Height)
   {
     sTextureDescriptor result;
     result.texWidth = Width;
@@ -247,8 +247,8 @@ namespace helper
   }
 
   EN_NODISCARD static sTextureDescriptor
-  generateRenderTargetDesc(float const Width,
-                           float const Height)
+  generateTextureDescForRenderTarget(float const Width,
+                                     float const Height)
   {
     sTextureDescriptor result;
     result.texWidth = Width;
@@ -258,6 +258,14 @@ namespace helper
     result.texFormat = static_cast<int>(enFormats::renderTarget_format);
     result.Usage = enBufferUse::Default;
     result.arraySize = 1;
+    return result;
+  }
+  
+  EN_NODISCARD static enMultiViewType 
+  generateMultiViewType(int32 valueOfType)
+  {
+    enMultiViewType result = static_cast<enMultiViewType>(0);
+    result = static_cast<enMultiViewType>(valueOfType);
     return result;
   }
 }

@@ -30,12 +30,15 @@ public:
   int32
   getInterface();
 
-  int32
+  int32&
   getInterfaceRef();
 #endif // DIRECTX
 
 public: // functions 
-  //! for setting the values in the buffer 
+
+  /**
+  * @brief : set's the value for the buffer.
+  */
   virtual void
   init(uint32 singleElementSize,
        uint32 totalElements,
@@ -45,7 +48,9 @@ public: // functions
        uint32 miscFlags = 0,
        uint32 structured = 0) = 0;
 
-  //! returns the number of elements in the buffer 
+  /**
+  * @retuns :the number of elements the buffer contain.
+  */
   confInt
   getElementCount() const;
 

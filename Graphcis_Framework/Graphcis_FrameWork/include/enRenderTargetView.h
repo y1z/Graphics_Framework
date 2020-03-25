@@ -2,7 +2,9 @@
 #include "util/Header.h"
 #include <array>
 
-
+  /**
+  * @brief : controls render-target. 
+  */
 class enRenderTargetView
 {
 public:
@@ -16,6 +18,7 @@ public:
 
   enRenderTargetView& operator =(enRenderTargetView&& other)noexcept;
 public:
+
   /**
   * @brief : releases a specific render-target.
   * @bug :no known bugs
@@ -39,7 +42,12 @@ public:
   void* m_interface = nullptr;
 #endif // DIRECTX
 
-  static constexpr uint32 s_renderTargetMax = 8;
+  /**
+  * @brief : optional descriptor ( unnecessary when used by swap chain )
+  */
+  sRenderTargetDesc2D m_desc;
+
+  static constexpr const uint32 s_renderTargetMax = 8;
 
   uint32 m_targetsCount = 0U;
   std::array<enTexture2D, s_renderTargetMax> m_targets{};
