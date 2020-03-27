@@ -4,6 +4,7 @@
 #include "enViewport.h"
 #include "enRenderTargetView.h"
 #include "enDepthStencilView.h"
+#include "enTexture2D.h"
 
 
 enSwapChain::enSwapChain(enSwapChain&& other) noexcept
@@ -152,6 +153,9 @@ enSwapChain::ReciveBuckBuffer(enRenderTargetView& renderTargetView)
 
   return true;
 #elif OPENGL
+  m_GlBackBuffer = &renderTargetView.m_targets[0];
+
+  return true;
 #endif // DIRECTX
   return false;
 }
@@ -162,6 +166,7 @@ enSwapChain::Present(int options)
 #if DIRECTX
   m_interface->Present(0,options);
 #elif OPENGL
+  glfwSwapBuffers(m_descriptor.outputWindow);
 #endif // DIRECTX
 }
 

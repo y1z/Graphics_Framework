@@ -31,7 +31,7 @@ enDevice::OnStartUp(void* _Descriptor)
 #if DIRECTX
   m_interface = nullptr;
 #elif OPENGL
-  m_interface = 0;
+  m_interface = std::numeric_limits<uint32>::max();
 #endif // DIRECTX
   return 0;
 }
@@ -42,6 +42,7 @@ enDevice::OnShutDown()
 #if DIRECTX
   RELEASE_DX_PTR(m_interface);
 #elif OPENGL
+  m_interface = std::numeric_limits<uint32>::max();
 #endif // DIRECTX
 }
 
@@ -111,7 +112,51 @@ enDevice::CreateRenderTargetView(enRenderTargetView& renderTraget,
     return true;
   }
 #elif OPENGL
+  //TODO :  set up the frame buffer  http://docs.gl/gl4/glGenFramebuffers
+  GlRemoveAllErrors();
 
+  enTexture2D* ptrTexture = &renderTraget.m_targets[targetIndex];
+  float const width = ptrTexture->m_desc.texWidth;
+  float const height = ptrTexture->m_desc.texHeight;
+
+  glGenRenderbuffers(1, &ptrTexture->m_interface);
+
+  glBindRenderbuffer(GL_RENDERBUFFER,
+                     static_cast<GLuint>(ptrTexture->getInterface()));
+
+  glRenderbufferStorage(GL_RENDERBUFFER,
+                        enFormats::renderTarget_format,
+                        width,
+                        height);
+
+  glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+  glGenFramebuffers(1, &renderTraget.m_interface);
+
+  glBindFramebuffer(GL_FRAMEBUFFER,
+                    renderTraget.m_interface);
+
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER,
+                            GL_COLOR_ATTACHMENT0,
+                            GL_RENDERBUFFER,
+                            static_cast<GLuint>(ptrTexture->getInterface()));
+
+
+  GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+  if (status != GL_FRAMEBUFFER_COMPLETE)
+  {
+  	 std::string ErrorCode = std::to_string(status);
+  	 assert(true == false && "Frame buffer Errror :");
+  }
+
+  if( !GlCheckForError() )
+  {
+    // un bind the buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    return true;
+  }
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  return false;
 #endif // DIRECTX
   return false;
 }
@@ -133,7 +178,50 @@ enDevice::CreateRenderTargetView(enRenderTargetView& renderTragetView,
     return true;
   }
 #elif OPENGL
+  //TODO :  set up the frame buffer  http://docs.gl/gl4/glGenFramebuffers
+  GlRemoveAllErrors();
+  enTexture2D* ptrTexture = &texture;
+  float const width = ptrTexture->m_desc.texWidth;
+  float const height = ptrTexture->m_desc.texHeight;
 
+  glGenRenderbuffers(1, &ptrTexture->m_interface);
+
+  glBindRenderbuffer(GL_RENDERBUFFER,
+                     static_cast<GLuint>(ptrTexture->getInterface()));
+
+  glRenderbufferStorage(GL_RENDERBUFFER,
+                        enFormats::renderTarget_format,
+                        width,
+                        height);
+
+
+  glGenFramebuffers(1, texture.getInterfacePtr());
+
+  glBindFramebuffer(GL_FRAMEBUFFER,
+                    texture.getInterface());
+
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER,
+                            GL_COLOR_ATTACHMENT0,
+                            GL_RENDERBUFFER,
+                            static_cast<GLuint>(ptrTexture->getInterface()));
+                    
+
+
+  GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+  //if (status != GL_FRAMEBUFFER_COMPLETE)
+  //{
+  //	 std::string ErrorCode = std::to_string(status);
+  //	 assert(true == false && "Frame buffer Errror :");
+  //}
+
+  if( !GlCheckForError() )
+  {
+    // un bind the buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    return true;
+  }
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  return true;
 #endif // DIRECTX
   return false;
 }
@@ -229,6 +317,31 @@ enDevice::CreateTexture2D(sTextureDescriptor& Description,
     return true;
   }
 #elif OPENGL
+  GlRemoveAllErrors();
+
+  glGenTextures(1, Texture.getInterfacePtr());
+
+  glBindTexture(GL_TEXTURE_2D, Texture.getInterface());
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  glTexImage2D(GL_TEXTURE_2D,
+               0,
+               GL_RGBA,
+               Description.texWidth,
+               Description.texHeight,
+               0,
+               GL_RGBA,
+               GL_UNSIGNED_BYTE,
+               NULL);
+
+  glBindTexture(GL_TEXTURE_2D, 0);
+
+  if( !GlCheckForError() )
+  {
+    return true;
+  }
 #endif // DIRECTX
   return false;
 }
@@ -254,6 +367,23 @@ enDevice::CreateDepthStencilView(enDepthStencilView& DepthView)
   }
 
 #elif OPENGL
+  GlRemoveAllErrors();
+  enTexture2D& refToTexture = DepthView.m_texture;
+
+  glGenRenderbuffers(1, &DepthView.m_interface);
+  glBindRenderbuffer(GL_RENDERBUFFER, DepthView.m_interface);
+
+  glRenderbufferStorage(GL_RENDERBUFFER,
+                        GL_DEPTH_COMPONENT,
+                        refToTexture.m_desc.texWidth,
+                        refToTexture.m_desc.texHeight);
+
+  glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+  if( !GlCheckForError() )
+  {
+    return true;
+  }
 #endif // DIRECTX
   return false;
 }

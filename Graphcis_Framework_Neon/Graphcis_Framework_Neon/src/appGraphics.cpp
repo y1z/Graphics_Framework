@@ -340,6 +340,13 @@ appGraphics::initForRender()
 
   deviceContext.RSSetViewports(m_viewport.get());
 
+#if DIRECTX
+
+#elif OPENGL
+  constexpr const char* vertexShaderPath = "GraphcisFramework.vs";
+#endif // DIRECTX
+
+
   enErrorCode errorCode = m_vertexShader->compileShaderFromFile("GraphcisFramework.fx",
                                                                 "VS",
                                                                 "vs_4_0");

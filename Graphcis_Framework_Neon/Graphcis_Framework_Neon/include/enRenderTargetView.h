@@ -38,7 +38,7 @@ public:
 #if DIRECTX
   ID3D11RenderTargetView* m_interface = nullptr;
 #elif OPENGL
-  int32 m_interface = -1;
+  uint32 m_interface = std::numeric_limits<uint32>::max();
 #else
   void* m_interface = nullptr;
 #endif // DIRECTX

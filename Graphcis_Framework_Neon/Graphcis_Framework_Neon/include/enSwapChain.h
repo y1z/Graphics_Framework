@@ -6,6 +6,7 @@ class enWindow;
 class enViewport;
 class enRenderTargetView;
 class enDepthStencilView;
+class enTexture2D;
 
   /**
   * @brief : takes care of switching the front-buffers and back-buffer each frame.
@@ -73,15 +74,20 @@ public:
   void 
   Present(int options = 0);
 
-
+  /**
+  * @brief : sets which window the swap-chain controls
+  * @bug : no known bugs.
+  */
   void
   setWindow(enWindow& window);
 
 public:
+  sSwapDesc m_descriptor;
 #if DIRECTX
   IDXGISwapChain* m_interface = nullptr;
 #elif OPENGL
+  enTexture2D* m_GlBackBuffer = nullptr;
+  uint32 m_interface = std::numeric_limits<uint32>::max();
 #endif // DIRECTX
-  sSwapDesc m_descriptor;
 };
 

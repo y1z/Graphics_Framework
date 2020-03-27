@@ -1,5 +1,6 @@
 #pragma once
 #include "util/Header.h"
+#include <numeric>
 
 
 class enBaseBuffer
@@ -27,10 +28,10 @@ public:
   ID3D11Buffer **
   getInterfaceRef();
 #elif OPENGL
-  int32
+  uint32
   getInterface();
 
-  int32&
+  uint32&
   getInterfaceRef();
 #endif // DIRECTX
 
@@ -83,7 +84,7 @@ protected:
   //! directX 11 buffer implementation
   ID3D11Buffer* m_interface = nullptr;
 #elif OPENGL
-  int32 m_interface = 0;
+  uint32 m_interface = std::numeric_limits<uint32>::max();
   #else
   void* m_interface = nullptr;
 #endif 

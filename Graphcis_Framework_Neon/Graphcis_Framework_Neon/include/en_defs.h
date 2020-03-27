@@ -146,6 +146,7 @@ enum enFormats
 
   /* two channel*/
   fR16G16 = DXGI_FORMAT_R16G16_FLOAT,
+  R16G16,
   /* three channel */
 
   /*Four channel */
@@ -162,18 +163,21 @@ enum enFormats
   fR16 = GL_HALF_FLOAT,
   uR32 = GL_UNSIGNED_INT,
   fR32 = GL_FLOAT,
-/*two channel */
+
+/* two channel */
+
 fR16G16 = GL_RGB16F,
+R16G16 = GL_RG16,
 /* three channel */
 
 /*Four channel */
-R8G8B8A8_uniform_norm,
+R8G8B8A8_uniform_norm = GL_RGBA8_SNORM,
 fR16G16B16A16 = GL_RGBA16F,
 
 fR32G32B32A32 = GL_RGBA32F,
 /* other */
 depthStencil_format = GL_DEPTH24_STENCIL8,
-renderTarget_format, 
+renderTarget_format = GL_RGB32F, 
 #else
 
   uR8,

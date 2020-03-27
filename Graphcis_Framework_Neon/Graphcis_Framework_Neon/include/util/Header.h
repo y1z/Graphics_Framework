@@ -22,3 +22,4 @@
 
 
 #include <cassert>
+#include <numeric>

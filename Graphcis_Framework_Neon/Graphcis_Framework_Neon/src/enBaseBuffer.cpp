@@ -19,6 +19,11 @@ enBaseBuffer::~enBaseBuffer()
 #if DIRECTX
   RELEASE_DX_PTR(m_interface)
   #elif OPENGL
+  if(m_interface != 0)
+  {
+    glDeleteBuffers(1, &m_interface);
+    m_interface = 0;
+  }
 #endif // DIRECTX
 }
 
@@ -32,6 +37,13 @@ enBaseBuffer::operator=(enBaseBuffer&& other)
     this->m_interface = other.m_interface;
     other.m_interface = nullptr;
   #elif OPENGL
+    if( m_interface != std::numeric_limits<uint32>::max() )
+    {
+      glDeleteBuffers(1, &m_interface);
+    }
+
+    m_interface = other.m_interface;
+    other.m_interface = std::numeric_limits<uint32>::max();
   #endif // DIRECTX
     this->m_Desc = std::move(other.m_Desc);
   }
@@ -56,13 +68,13 @@ enBaseBuffer::getInterfaceRef()
 
 #elif OPENGL
 
-int32
+uint32
 enBaseBuffer::getInterface()
 {
   return m_interface;
 }
 
-int32&
+uint32&
 enBaseBuffer::getInterfaceRef()
 {
   return m_interface;
