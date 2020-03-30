@@ -77,7 +77,7 @@ bool
 enMesh::createVertexBuffer()
 {
   enDevice& device = enDevice::getInstance();
-  bool result = device.CreateVertexBuffer(*mptr_vertexBuffer);
+  bool const result = device.CreateVertexBuffer(*mptr_vertexBuffer);
   return result;
 }
 
@@ -85,7 +85,7 @@ bool
 enMesh::createIndexBuffer()
 {
   enDevice& device = enDevice::getInstance();
-  bool result = device.CreateIndexBuffer(*mptr_indexBuffer);
+  bool const result = device.CreateIndexBuffer(*mptr_indexBuffer);
   return result;
 }
 

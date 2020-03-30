@@ -190,6 +190,12 @@ appGraphics::initApi()
     assert((true == false) && " failed to start glew");
   }
 
+  cApiComponents::startupShaderPrograms();
+
+  if( !cApiComponents::createProgram(0u) )
+  {
+    return enErrorCode::FailedCreation;
+  }
   //SetCallBackFunctions(my_window);
 
 #endif // OPENGL
@@ -341,26 +347,26 @@ appGraphics::initForRender()
   deviceContext.RSSetViewports(m_viewport.get());
 
 #if DIRECTX
-
+  constexpr const char* vertexShaderPath = "GraphcisFramework.fx";
 #elif OPENGL
-  constexpr const char* vertexShaderPath = "GraphcisFramework.vs";
+  constexpr const char* vertexShaderPath = "GraphcisFramework.vert";
 #endif // DIRECTX
 
+{
+  enErrorCode vertexShaderCode = m_vertexShader->compileShaderFromFile(vertexShaderPath,
+                                                                       "VS",
+                                                                       "vs_4_0");
 
-  enErrorCode errorCode = m_vertexShader->compileShaderFromFile("GraphcisFramework.fx",
-                                                                "VS",
-                                                                "vs_4_0");
-
-  if( !EN_SUCCESS(errorCode) )
+  if( !EN_SUCCESS(vertexShaderCode) )
   {
-    EN_LOG_ERROR_WITH_CODE(errorCode);
+    EN_LOG_ERROR_WITH_CODE(vertexShaderCode);
     MessageBox(NULL,
                L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.",
                L"Error",
                MB_OK);
     return S_FALSE;
   }
-
+}
 
   // Create the vertex shader
   //hr = device.getInterface()->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), NULL, &m_vertexShader->m_interface);
@@ -374,7 +380,8 @@ appGraphics::initForRender()
   m_inputLayout->ReadShaderData(*m_vertexShader);
 
 
-  isSuccessful = device.CreateInputLayout(*m_inputLayout, *m_vertexShader);
+  isSuccessful = device.CreateInputLayout(*m_inputLayout,
+                                          *m_vertexShader);
 
   if( !isSuccessful )
   {
@@ -385,15 +392,24 @@ appGraphics::initForRender()
   //p_ImmediateContext->IASetInputLayout(m_inputLayout->getInterface());
   deviceContext.IASetInputLayout(*m_inputLayout);
 
-  isSuccessful = m_pixelShader->compileShaderFromFile("GraphcisFramework.fx",
-                                                      "PS",
-                                                      "ps_4_0");
-  if( FAILED(hr) )
+#if DIRECTX
+  constexpr const char* pixelShaderPath = "GraphcisFramework.fx";
+#elif OPENGL
+  constexpr const char* pixelShaderPath = "GraphcisFramework.frag";
+#endif // DIRECTX
+
+ enErrorCode pixelShaderCode = m_pixelShader->compileShaderFromFile(pixelShaderPath,
+                                                                    "PS",
+                                                                    "ps_4_0");
+
+  if( EN_FAIL(pixelShaderCode) )
   {
+   
     MessageBox(NULL,
                L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.",
                L"Error",
                MB_OK);
+
     return hr;
   }
 
@@ -402,64 +418,15 @@ appGraphics::initForRender()
 
   if( !isSuccessful )
   {
-    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation)
-      return S_FALSE;
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
+    return S_FALSE;
   }
-
-  // Create vertex buffer
-  //SimpleVertex vertices[] =
-  //{
-  //    { glm::vec4(-1.0f, 1.0f, -1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
-  //    { glm::vec4(1.0f, 1.0f, -1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
-  //    { glm::vec4(1.0f, 1.0f, 1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
-  //    { glm::vec4(-1.0f, 1.0f, 1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
-
-  //    { glm::vec4(-1.0f, -1.0f, -1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
-  //    { glm::vec4(1.0f, -1.0f, -1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
-  //    { glm::vec4(1.0f, -1.0f, 1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
-  //    { glm::vec4(-1.0f, -1.0f, 1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
-
-  //    { glm::vec4(-1.0f, -1.0f, 1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
-  //    { glm::vec4(-1.0f, -1.0f, -1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
-  //    { glm::vec4(-1.0f, 1.0f, -1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
-  //    { glm::vec4(-1.0f, 1.0f, 1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
-
-  //    { glm::vec4(1.0f, -1.0f, 1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
-  //    { glm::vec4(1.0f, -1.0f, -1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
-  //    { glm::vec4(1.0f, 1.0f, -1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
-  //    { glm::vec4(1.0f, 1.0f, 1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
-
-  //    { glm::vec4(-1.0f, -1.0f, -1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
-  //    { glm::vec4(1.0f, -1.0f, -1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
-  //    { glm::vec4(1.0f, 1.0f, -1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
-  //    { glm::vec4(-1.0f, 1.0f, -1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
-
-  //    { glm::vec4(-1.0f, -1.0f, 1.0f,1.0f), glm::vec2(0.0f, 0.0f) },
-  //    { glm::vec4(1.0f, -1.0f, 1.0f,1.0f), glm::vec2(1.0f, 0.0f) },
-  //    { glm::vec4(1.0f, 1.0f, 1.0f,1.0f), glm::vec2(1.0f, 1.0f) },
-  //    { glm::vec4(-1.0f, 1.0f, 1.0f,1.0f), glm::vec2(0.0f, 1.0f) },
-  //};
-
-
-  //sBufferDesc VertexBuffdescriptor;
-  //VertexBuffdescriptor.cpuAccess = 0;
-  //VertexBuffdescriptor.bindFlags = enBufferBind::Vertex;
-  //VertexBuffdescriptor.elementCount = ARRAYSIZE(vertices);
-  //VertexBuffdescriptor.stride = sizeof(SimpleVertex);
-  //VertexBuffdescriptor.ptr_data = vertices;
 
 
   if( m_model->LoadModelFromFile("ryuko.fbx") == false )
   {
-    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation)
-      return S_FALSE;
-  }
-
-
-  if( !isSuccessful )
-  {
-    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation)
-      return S_FALSE;
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
+    return S_FALSE;
   }
 
   // Set vertex buffer
@@ -467,12 +434,6 @@ appGraphics::initForRender()
   UINT offset = 0;
 
   deviceContext.IASetVertexBuffers(m_vertexBuffer.get(), 1);
-
-  if( !isSuccessful )
-  {
-    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation)
-      return S_FALSE;
-  }
 
   deviceContext.IASetIndexBuffer(*m_indexBuffer, enFormats::uR16);
 
@@ -798,9 +759,7 @@ appGraphics::Render()
 
 
   this->drawWithSeletecRenderTarget(0);
-  //this->setShaderAndBuffers();
 
-  //this->drawWithSeletecRenderTarget(0);
 
   ConstBufferWorldColor cb;
   cb.vMeshColor = m_MeshColor;

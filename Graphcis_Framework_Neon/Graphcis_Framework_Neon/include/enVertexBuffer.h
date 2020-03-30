@@ -1,5 +1,10 @@
 #pragma once
 #include "enBaseBuffer.h"
+
+  /**
+  * @brief : defines a vertex buffer and all related operations.
+  * @bug : no known bugs.
+  */
 class enVertexBuffer final :
   public enBaseBuffer
 {
@@ -20,6 +25,13 @@ public:
 
   void 
   init(const sBufferDesc& descriptor);
+
+  /**
+  * @returns : a pointer to the data of the buffer.
+  * @bug : no known bugs.
+  */
+  void*
+  getData();
 
 
 #if DIRECTX

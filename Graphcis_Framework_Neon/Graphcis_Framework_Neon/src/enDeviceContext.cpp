@@ -60,14 +60,15 @@ enDeviceContext::ClearState()
 
 void
 enDeviceContext::OMSetRenderTargets(enRenderTargetView renderTargetsViews[],
-                                    enDepthStencilView*ptr_depthStencilView,
+                                    enDepthStencilView* ptr_depthStencilView,
                                     uint32_t numRenderTargets)
 {
 #if DIRECTX
   ID3D11RenderTargetView* RenderTempPtrArr[c_MaxRenderTargets];
   ID3D11DepthStencilView* ptr_DirectXDepth = nullptr;
 
-  if(ptr_depthStencilView ){
+  if( ptr_depthStencilView )
+  {
     ptr_DirectXDepth = ptr_depthStencilView->m_interface;
   }
 
@@ -91,7 +92,7 @@ enDeviceContext::OMSetRenderTargets(enRenderTargetView renderTargetsViews[],
 
 }
 
-void 
+void
 enDeviceContext::setDepthStencilView(enDepthStencilView& depthStencilView,
                                      uint32_t numRenderTragets)
 {
@@ -212,11 +213,12 @@ enDeviceContext::IASetIndexBuffer(enIndexBuffer& indexBuffer, int Format, int of
 }
 
 void
-enDeviceContext::IASetPrimitiveTopology(int enTopology)
+enDeviceContext::IASetPrimitiveTopology(int selectedTopology)
 {
 #if DIRECTX
-  m_interface->IASetPrimitiveTopology(static_cast<D3D11_PRIMITIVE_TOPOLOGY>(enTopology));
+  m_interface->IASetPrimitiveTopology(static_cast<D3D11_PRIMITIVE_TOPOLOGY>(selectedTopology));
 #elif OPENGL
+  m_drawingData.currentTopology = selectedTopology;
 #endif // DIRECTX
 }
 
@@ -254,6 +256,20 @@ enDeviceContext::ClearRenderTargetView(enRenderTargetView& renderTargetView,
                                        color->allColor);
   }
 #elif OPENGL
+  static constexpr sColorf OpenGlColor{ 1.0f,0.34f,0.20f,1.0f };
+      //rgb(1.00, 0.73, 0.20) https://rgbcolorcode.com/color/FFBB33
+
+  if( color != nullptr )
+  {
+    glClearColor(color->red, color->green, color->blue, color->alpha);
+  }
+  else
+  {
+    glClearColor(OpenGlColor.red, OpenGlColor.green, OpenGlColor.blue, OpenGlColor.alpha);
+  }
+
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 #endif // DIRECTX
 }
 
@@ -275,6 +291,8 @@ enDeviceContext::ClearDepthStencilView(enDepthStencilView& depthStencilView,
                                      DepthClearValue,
                                      StencilClearValues);
 #elif OPENGL
+
+
 #endif // DIRECTX
 }
 
@@ -293,20 +311,20 @@ enDeviceContext::VSSetShader(enVertexShader& vertexShaderPath)
 void
 enDeviceContext::VSSetConstantBuffer(enConstBuffer& Buffer,
                                      uint32_t Index)
-{
-#if DIRECTX
-  // make sure i don't use more slot than directX has 
-  if( Index <= D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT - 1 )
   {
-    this->m_interface->VSSetConstantBuffers(Index, 1, Buffer.getInterfaceRef());
-  }
-  else
-  {
-    assert("Error used too many slot " && Index <= D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT - 1);
-  }
-#elif OPENGL
-#endif // DIRECTX
-}
+  #if DIRECTX
+    // make sure i don't use more slot than directX has 
+    if( Index <= D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT - 1 )
+    {
+      this->m_interface->VSSetConstantBuffers(Index, 1, Buffer.getInterfaceRef());
+    }
+    else
+    {
+      assert("Error used too many slot " && Index <= D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT - 1);
+    }
+  #elif OPENGL
+  #endif // DIRECTX
+    }
 
 void
 enDeviceContext::PSSetShader(enPixelShader& pixelShader)
@@ -340,7 +358,7 @@ enDeviceContext::PSSetShaderResources(enShaderResourceView shaderResources[],
                                       numResources,
                                       ShaderPtrArr);
 
-  }
+}
   else
   {
     EN_LOG_ERROR_WITH_CODE(enErrorCode::UnClassified);
@@ -450,7 +468,7 @@ enDeviceContext::PSSetSampler(enSampler& sampler)
   }
 
 #endif // DIRECTX
-}
+  }
 
 void
 enDeviceContext::DrawIndexed(uint32_t indexCount)
@@ -459,7 +477,7 @@ enDeviceContext::DrawIndexed(uint32_t indexCount)
   this->m_interface->DrawIndexed(indexCount, 0u, 0);
 #elif OPENGL
 #endif // DIRECTX
-}
+  }
 
 bool
 enDeviceContext::SetShaders(enVertexShader& vertexShader,

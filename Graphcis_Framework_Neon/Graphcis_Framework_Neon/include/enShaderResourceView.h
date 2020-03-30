@@ -3,7 +3,9 @@
 #include <string_view>
 #include <deque>
 
-
+  /**
+  * @brief : defines a view into a resource that can be used by the shader.
+  */
 class enShaderResourceView
 {
 
@@ -21,8 +23,6 @@ public:
 
   int32
   getIndex()const;
-
-
 
 public:
   std::deque<std::string> m_resourcePaths;

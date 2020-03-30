@@ -315,6 +315,14 @@ enum class enAddress : int32_t
 #endif // DIRECTXe
 };
 
+enum class enShaderTypes
+{
+  noType = 0,
+  vertexType,
+  pixelType,
+  constType,
+
+};
 
 enum enRenderTargetViewType
 {
@@ -340,6 +348,31 @@ enum enMultiViewType : int32
   shaderResource =0b0'0000'0100, 
 };
 
+/**
+* @brief  this is used to tell me which type of element is used by the uniform
+*/
+enum class enConstBufferElem :int32
+{
+  NONE = 0,
+  mat4x4,
+  mat3x3,
+
+  vec4,
+  vec3,
+  vec2,
+
+  single_float,
+  // integer types  
+  imat4x4,
+  imat3x3,
+
+  ivec4,
+  ivec3,
+  ivec2,
+
+  single_int,
+
+};
 /*++++++++++++++++++++++++++++++++++++*/
 /* Logger functions */
 /*++++++++++++++++++++++++++++++++++++*/
@@ -714,6 +747,17 @@ struct sDrawData
   /*! used for knowing how to interpret the indices of the index buffer */
   uint32 currentFormat = 0u;
 #endif // DIRECTX
+};
+
+/*!
+* @brief used to keep track of the necessary data used in a uniform
+*/
+struct sUniformDetails
+{
+  std::string name{ "\0" };
+  const void* ptr_data{ nullptr };
+  uint32 id{ UINT32_MAX };
+  enConstBufferElem element = enConstBufferElem::NONE;
 };
 
 /*+++++++++++++++++++++++++++++++++++*/

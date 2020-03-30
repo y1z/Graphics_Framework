@@ -143,10 +143,10 @@ enDevice::CreateRenderTargetView(enRenderTargetView& renderTraget,
 
 
   GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-  if (status != GL_FRAMEBUFFER_COMPLETE)
+  if( status != GL_FRAMEBUFFER_COMPLETE )
   {
-  	 std::string ErrorCode = std::to_string(status);
-  	 assert(true == false && "Frame buffer Errror :");
+    std::string ErrorCode = std::to_string(status);
+    assert(true == false && "Frame buffer Errror :");
   }
 
   if( !GlCheckForError() )
@@ -161,7 +161,7 @@ enDevice::CreateRenderTargetView(enRenderTargetView& renderTraget,
   return false;
 }
 
-bool 
+bool
 enDevice::CreateRenderTargetView(enRenderTargetView& renderTragetView,
                                  enTexture2D& texture)
 {
@@ -204,7 +204,7 @@ enDevice::CreateRenderTargetView(enRenderTargetView& renderTragetView,
                             GL_COLOR_ATTACHMENT0,
                             GL_RENDERBUFFER,
                             static_cast<GLuint>(ptrTexture->getInterface()));
-                    
+
 
 
   GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -271,7 +271,7 @@ enDevice::CreateShaderResourceFromTexture(enShaderResourceView& shaderResourceVi
   D3D11_SHADER_RESOURCE_VIEW_DESC  ViewDescriptor;
   std::memset(&ViewDescriptor, 0, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
   ViewDescriptor.Format = static_cast<DXGI_FORMAT>(texture.m_desc.texFormat);
-  ViewDescriptor.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;	
+  ViewDescriptor.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;
   ViewDescriptor.Texture2D.MipLevels = texture.m_desc.Mips;
 
   HRESULT hr = m_interface->CreateShaderResourceView(texture.m_interface,
@@ -354,7 +354,7 @@ enDevice::CreateDepthStencilView(enDepthStencilView& DepthView)
   D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
   SecureZeroMemory(&descDSV, sizeof(descDSV));
   descDSV.Format = static_cast<DXGI_FORMAT>(DepthView.m_desc.Format);
-  descDSV.ViewDimension= static_cast<D3D11_DSV_DIMENSION>(DepthView.m_desc.Dimension);
+  descDSV.ViewDimension = static_cast<D3D11_DSV_DIMENSION>(DepthView.m_desc.Dimension);
   descDSV.Texture2D.MipSlice = DepthView.m_desc.Mip;
 
   hr = m_interface->CreateDepthStencilView(DepthView.m_texture.m_interface,
@@ -430,6 +430,24 @@ enDevice::CreateVertexShader(enVertexShader& vertexShader)
   }
 
 #elif OPENGL
+  GlRemoveAllErrors();
+  glAttachShader(*cApiComponents::getShaderProgram(), vertexShader.getShaderInfo());
+  glLinkProgram(*cApiComponents::getShaderProgram());
+  glValidateProgram(*cApiComponents::getShaderProgram());
+
+  int Status;
+  glGetProgramiv(*cApiComponents::getShaderProgram(), GL_VALIDATE_STATUS, &Status);
+  if( Status == GL_FALSE )
+  {
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::ShaderLinkError);
+  }
+
+  if( GlCheckForError() )
+  {
+    return false;
+  }
+
+  return true;
 #endif // DIRECTX
   return false;
 }
@@ -449,6 +467,25 @@ enDevice::CreatePixelShader(enPixelShader& pixelShader)
     return true;
   }
 #elif OPENGL
+  GlRemoveAllErrors();
+  glAttachShader(*cApiComponents::getShaderProgram(), pixelShader.getShaderInfo());
+  glLinkProgram(*cApiComponents::getShaderProgram());
+  glValidateProgram(*cApiComponents::getShaderProgram());
+
+  int Status;
+  glGetProgramiv(*cApiComponents::getShaderProgram(), GL_VALIDATE_STATUS, &Status);
+  if( Status == GL_FALSE )
+  {
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::ShaderLinkError);
+  }
+
+  if( GlCheckForError() )
+  {
+    return false;
+  }
+
+  return true;
+
 #endif // DIRECTX
   return false;
 }
@@ -487,7 +524,17 @@ enDevice::CreateInputLayout(enInputLayout& inputLayout,
     return true;
   }
 
-#elif OPENGL
+#elif OPENGL  
+  GlRemoveAllErrors();
+  glEnableVertexAttribArray(0);// position 
+  glEnableVertexAttribArray(1);// normals 
+
+  if( GlCheckForError() )
+  {
+    EN_LOG_ERROR;
+    return false;
+  }
+  return true;
 #endif // DIRECTX
   return false;
 }
@@ -509,7 +556,40 @@ enDevice::CreateIndexBuffer(enIndexBuffer& indexBuffer)
     return true;
   }
   return false;
-#elif OPENGL 
+#elif OPENGL
+  GlRemoveAllErrors();
+
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer.getInterface());
+
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, // buffer type 
+               indexBuffer.getBufferSize(),
+               indexBuffer.getData(),
+               GL_STATIC_DRAW);
+
+
+  int32 size = 0;
+  glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER,
+                         GL_BUFFER_SIZE,
+                         &size);
+
+  if( size != indexBuffer.getBufferSize() )
+  {
+    EN_LOG_ERROR;
+    return false;
+  }
+
+
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+  if( GlCheckForError() )
+  {
+    EN_LOG_ERROR;
+    return false;
+  }
+  else
+  {
+    return true;
+  }
 #endif// DIRECTX
 
   return false;
@@ -532,6 +612,37 @@ enDevice::CreateVertexBuffer(enVertexBuffer& vertexBuffer)
     return true;
   }
 #elif OPENGL
+  GlRemoveAllErrors();
+
+  glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer.getInterface());
+
+  glBufferData(GL_ARRAY_BUFFER, // buffer type 
+               vertexBuffer.getBufferSize(),
+               vertexBuffer.getData(),
+               GL_DYNAMIC_DRAW);
+
+
+  int32 size = 0;
+  glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
+
+  if( size != vertexBuffer.getBufferSize() )
+  {
+    EN_LOG_ERROR;
+    return false;
+  }
+
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+  if( GlCheckForError() )
+  {
+    EN_LOG_ERROR;
+    return false;
+  }
+  else
+  {
+    return true;
+  }
 #endif // DIRECTX
 
 
@@ -554,6 +665,50 @@ enDevice::CreateConstBuffer(enConstBuffer& constBuffer)
     return true;
   }
 #elif OPENGL
+  GlRemoveAllErrors();
+
+  uint32* shaderProgram = cApiComponents::getShaderProgram();
+
+  glUseProgram(*shaderProgram);
+
+  auto refToContainer = &constBuffer.m_containedVariables;
+
+  auto FindAndAddUniformID = [&refToContainer](uint32* ShaderProgram) {
+
+    for( sUniformDetails& uni : *refToContainer )
+    {
+      uni.id = glGetUniformLocation(*ShaderProgram, uni.name.c_str());
+    }
+  };
+
+  if( constBuffer.getIndex() == 0 )
+  {
+    refToContainer->push_back(helper::GlCreateUniformDetail("u_view", enConstBufferElem::mat4x4));
+    FindAndAddUniformID(shaderProgram);
+
+  }
+  else if( constBuffer.getIndex() == 1 )
+  {
+    refToContainer->push_back(helper::GlCreateUniformDetail("u_projection", enConstBufferElem::mat4x4));
+    FindAndAddUniformID(shaderProgram);
+  }
+  else if( constBuffer.getIndex() == 2 )
+  {
+    *constBuffer.getInterfacePtr() = glGetUniformBlockIndex(*shaderProgram, "u_worldAndColor");
+    glGenBuffers(1, &constBuffer.m_multiElementInterface);
+    std::cout << "uniform block id for u_worldAndColor [" << constBuffer.m_multiElementInterface << ']' << '\n';
+    std::cout << "regular buffer id for u_worldAndColor [" << constBuffer.getInterface() << ']' << '\n';
+    glBindBuffer(GL_UNIFORM_BUFFER, constBuffer.m_multiElementInterface);
+
+    //constBuffer.setData(glMapBuffer(GL_UNIFORM_BUFFER, GL_READ_WRITE));
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+  }
+
+
+  if( !GlCheckForError() )
+  {
+    return true;
+  }
 #endif // DIRECTX
   return false;
 }

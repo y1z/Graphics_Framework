@@ -74,6 +74,12 @@ enBaseBuffer::getInterface()
   return m_interface;
 }
 
+uint32*
+enBaseBuffer::getInterfacePtr()
+{
+  return &m_interface;
+}
+
 uint32&
 enBaseBuffer::getInterfaceRef()
 {
@@ -110,4 +116,10 @@ uint32
 enBaseBuffer::getIndex() const
 {
   return m_Desc.index;
+}
+
+void 
+enBaseBuffer::setData(void* data)
+{
+  m_Desc.ptr_data = data;
 }

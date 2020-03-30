@@ -36,6 +36,35 @@ public:
 
   ID3DBlob **
   getShaderInfoRef();
+#elif OPENGL
+
+  uint32
+  getShaderInfo();
+
+  uint32*
+  getShaderInfoPtr();
+
+  uint32&
+  getShaderInfoRef();
+
+  /**
+  * @brief : the object/ value used to interact with the open-gl api.
+  */
+  uint32
+  getinterface();
+
+  /**
+  * @brief : a pointer to the object/ value used to interact with the open-gl api.
+  */
+  uint32*
+  getinterfacePtr();
+
+  /**
+  * @brief : a reference to the object/ value used to interact with the open-gl api.
+  */
+  uint32&
+  getinterfaceRef();
+
 #endif // DIRECTX
 
 public:
@@ -56,12 +85,15 @@ public:
   */
   std::string m_shaderModel;
 
- private:
+private:
+
 #if DIRECTX
   ID3DBlob* m_infoOfShader = nullptr;
 #elif OPENGL
-// TODO : make getter function
-  uint32 m_infoOfShader = 0u;
+  uint32 m_infoOfShader = std::numeric_limits<uint32>::max();
+  uint32 m_interface = std::numeric_limits<uint32>::max();
 #endif // DIRECTX
+protected:
+  enShaderTypes m_type = enShaderTypes::noType;
 };
 

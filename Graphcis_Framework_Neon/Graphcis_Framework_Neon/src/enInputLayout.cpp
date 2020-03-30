@@ -1,7 +1,21 @@
 #include "..\include\enInputLayout.h"
 #include "enVertexShader.h"
+#include "cApiComponent.h"
 
+
+enInputLayout::enInputLayout(enInputLayout&& other) noexcept
+  :m_interface(other.m_interface)
+{
+#if DIRECTX 
+  other.m_interface = nullptr;
+#elif OPENGL
+  other.m_interface = std::numeric_limits<int32>::max();
+#else
+  other.m_interface = nullptr;
+#endif // DIRECTX
+}
 #if DIRECTX
+
 ID3D11InputLayout*
 enInputLayout::getInterface()
 {
@@ -23,7 +37,7 @@ enInputLayout::ReadShaderData(enVertexShader& ShaderData, bool isPerVertex)
 
 // to init a shader Reflection
   HRESULT hr = D3DReflect(ShaderData.getShaderInfo()->GetBufferPointer(),
-                          ShaderData. getShaderInfo()->GetBufferSize(),
+                          ShaderData.getShaderInfo()->GetBufferSize(),
                           IID_ID3D11ShaderReflection,
                           reinterpret_cast<void**>(&ReflectorShader));
 
@@ -149,12 +163,54 @@ enInputLayout::ReadShaderData(enVertexShader& ShaderData, bool isPerVertex)
   // no longer needed 
   ReflectorShader->Release();
   return true;
+#elif OPENGL
+  GlRemoveAllErrors();
+
+  uint32* shader = cApiComponents::getShaderProgram();
+  int32 count = 0;
+  glGetProgramiv(*shader, GL_ACTIVE_UNIFORMS, &count);
+
+  GLchar name[256];
+  std::memset(name, 0, sizeof(name));
+
+  int32 length = 0;
+  int32 size = 0;
+  GLenum type = 0;
+  for( uint32 i = 0; i < count; ++i )
+  {
+    glGetActiveUniform(*shader, i, sizeof(name), &length, &size, &type, name);
+
+    std::cout << "Uniform name [" << name << "]  " << " Index:[" << i << "] " << '\n';
+  }
+
+  glGetProgramiv(*shader, GL_ACTIVE_ATTRIBUTES, &count);
+
+  for( uint32 i = 0; i < count; i++ )
+  {
+    glGetActiveAttrib(*shader, i, sizeof(name), &length, &size, &type, name);
+
+
+    std::cout << "attributes name [" << name <<"]  " 
+    << " Index:[" << i << "] " << '\n';
+  }
+
+  glGetProgramiv(*shader, GL_ACTIVE_UNIFORM_BLOCKS, &count);
+
+  for( uint32 i = 0; i < count; i++ )
+  {
+
+    glGetActiveUniformBlockName(*shader, i, sizeof(name), &length, name);
+
+    std::cout << "uniform block name [" << name <<"]  " 
+    << " Index:[" << i << "] " << '\n';
+  }
+
 #endif // DIRECTX
-return true;
+  return true;
 }
 
 std::vector<sInputDescriptor>
 enInputLayout::getInputDesenriptor() const
 {
-  return m_InputLayouts; 
+  return m_InputLayouts;
 }

@@ -3,7 +3,8 @@
 
 enConstBuffer::enConstBuffer()
 :enBaseBuffer()
-{}
+{
+}
 
 void
 enConstBuffer::init(uint32 singleElementSize,
@@ -29,7 +30,6 @@ enConstBuffer::init(uint32 singleElementSize,
 #if DIRECTX
   m_Desc.usage = static_cast<int32>(D3D11_USAGE_DEFAULT);
 #elif OPENGL
-  glGenBuffers(1, &m_interface);
 #endif // DIRECTX
 }
 
@@ -43,7 +43,7 @@ enConstBuffer::init(const sBufferDesc& descriptor)
 #if DIRECTX
   m_Desc.usage = static_cast<int32>(D3D11_USAGE_DEFAULT);
 #elif OPENGL
-  glGenBuffers(1, &m_interface);
+
 #endif // DIRECTX
 }
 

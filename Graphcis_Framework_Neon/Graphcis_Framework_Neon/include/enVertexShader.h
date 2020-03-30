@@ -2,14 +2,13 @@
 #include "enBaseShader.h"
 
   /**
-  * @brief :
-  * @bug :
+  * @brief : defines a vertex-shader And all operations related to one.
   */
 class enVertexShader final :
   public enBaseShader
 {
 public :
-  enVertexShader() = default;
+  enVertexShader();
   enVertexShader(const enVertexShader& other) = delete;
   enVertexShader(enVertexShader&& other) noexcept;
   ~enVertexShader();

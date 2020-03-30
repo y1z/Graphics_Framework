@@ -21,14 +21,14 @@ namespace helper
 {
   /*!converts radians to degrees*/
   static constexpr float
-    radiansToDegrees(float radians)
+  radiansToDegrees(float radians)
   {
     return radians *= (180.0f / 3.14159f);
   }
 
   /*!converts degrees to radians*/
   static constexpr float
-    degreesToRadians(float degrees)
+  degreesToRadians(float degrees)
   {
     return  degrees *= (3.14159f / 180.0f);
   }
@@ -38,7 +38,7 @@ namespace helper
   *@brief converts a wstring/const wchar_t* to it's string equivalent assuming it has any.
   */
   static std::string
-    convertWStringToString(std::wstring_view wideString)
+  convertWStringToString(std::wstring_view wideString)
   {
     std::string Result(wideString.length() + 1, '\0');
 
@@ -221,7 +221,7 @@ namespace helper
       //"alignment of sLightData : " << alignof(sLightData) << '\n' <<
       //" size of sLightData : " << sizeof(sLightData) << std::endl;
 
-     cApiComponents apiComponent;
+    cApiComponents apiComponent;
 
     uint32* ptr_vertexArrayObject = cApiComponents::getvertexArrayObject();
 
@@ -309,6 +309,16 @@ namespace helper
   {
     enMultiViewType result = static_cast<enMultiViewType>(0);
     result = static_cast<enMultiViewType>(valueOfType);
+    return result;
+  }
+
+  EN_NODISCARD static sUniformDetails
+  GlCreateUniformDetail(std::string_view name, enConstBufferElem type)
+  {
+    sUniformDetails result;
+    result.name = name;
+    result.element = type;
+
     return result;
   }
 }

@@ -1,7 +1,11 @@
 #pragma once
 #include "enBaseBuffer.h"
+#include <vector>
 
-
+  /**
+  * @brief : defines a buffer that contains the variables used in 
+  * the shader.
+  */
 class enConstBuffer :
   public enBaseBuffer
 {
@@ -23,12 +27,19 @@ public:
   void
   init(const sBufferDesc& descriptor);
 
+
+
 #if DIRECTX
 
   D3D11_BUFFER_DESC
     getDirectXDesc() override;
 #elif OPENGL
+  /**
+  * @brief : used for when the 'enConstBuffer' handles more that one element.
+  */
+  uint32 m_multiElementInterface = std::numeric_limits<uint32 >::max();
 
+  std::vector<sUniformDetails> m_containedVariables;
 #endif // DIRECTX
 };
 

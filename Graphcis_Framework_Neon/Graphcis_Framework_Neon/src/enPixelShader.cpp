@@ -1,5 +1,11 @@
 #include "..\include\enPixelShader.h"
 
+enPixelShader::enPixelShader()
+:enBaseShader()
+{
+  m_type = enShaderTypes::pixelType;
+}
+
 enPixelShader::enPixelShader(enPixelShader&& other)
 :enBaseShader(std::forward<enBaseShader>(other))
 {

@@ -1,10 +1,10 @@
 #include "enVertexBuffer.h"
 
 enVertexBuffer::enVertexBuffer()
-:enBaseBuffer()
+  :enBaseBuffer()
 {}
 
-void 
+void
 enVertexBuffer::init(uint32 singleElementSize,
                      uint32 totalElements,
                      uint32 index,
@@ -26,10 +26,18 @@ enVertexBuffer::init(uint32 singleElementSize,
   m_Desc.bindFlags = enBufferBind::Vertex;
 #if DIRECTX
   m_Desc.usage = static_cast<int32>(D3D11_USAGE_DEFAULT);
+#elif OPENGL
+
+  if( m_interface == std::numeric_limits<uint32>::max() )
+  {
+    glGenBuffers(1, &m_interface);
+    glBindBuffer(GL_ARRAY_BUFFER, m_interface);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+  }
 #endif // DIRECTX
 }
 
-void 
+void
 enVertexBuffer::init(const sBufferDesc& descriptor)
 {
   m_Desc = descriptor;
@@ -38,10 +46,20 @@ enVertexBuffer::init(const sBufferDesc& descriptor)
 
 #if DIRECTX
   m_Desc.usage = static_cast<int32>(D3D11_USAGE_DEFAULT);
+#elif OPENGL
+
+  if( m_interface == std::numeric_limits<uint32>::max() )
+  {
+    glGenBuffers(1, &m_interface);
+    glBindBuffer(GL_ARRAY_BUFFER, m_interface);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  }
 #endif // DIRECTX
 }
 
 #if DIRECTX
+
 
 D3D11_BUFFER_DESC
 enVertexBuffer::getDirectXDesc()
@@ -60,10 +78,16 @@ D3D11_SUBRESOURCE_DATA
 enVertexBuffer::getSubresource() const
 {
   D3D11_SUBRESOURCE_DATA result;
-  std::memset(&result,0,sizeof(D3D11_SUBRESOURCE_DATA));
+  std::memset(&result, 0, sizeof(D3D11_SUBRESOURCE_DATA));
   result.pSysMem = m_Desc.ptr_data;
   return result;
 }
 
 
 #endif // DIRECTX
+
+void*
+enVertexBuffer::getData()
+{
+  return m_Desc.ptr_data;
+}

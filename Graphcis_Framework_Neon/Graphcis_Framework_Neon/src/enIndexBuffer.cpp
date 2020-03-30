@@ -25,6 +25,10 @@ enIndexBuffer::init(uint32 singleElementSize,
 
 #elif OPENGL
 
+  glGenBuffers(1, &m_interface);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_interface);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
 #endif // DIRECTX
 }
 

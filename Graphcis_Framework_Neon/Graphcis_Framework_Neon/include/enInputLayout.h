@@ -5,23 +5,18 @@
 
 class enVertexShader;
 
-
+  /**
+  * @brief : defines the input layout for the shader.
+  * @bug : no known bugs.
+  */
 class enInputLayout
 {
 public:
   enInputLayout() = default;
   enInputLayout(const enInputLayout & other) = delete;
 
-  enInputLayout(enInputLayout && other)noexcept 
-    :m_interface(other.m_interface)
-  {
-  #if DIRECTX 
-    other.m_interface = nullptr;
-    #elif OPENGL
-    #else
-    other.m_interface = nullptr;
-  #endif // DIRECTX
-  }
+  enInputLayout(enInputLayout && other)noexcept ;
+
   ~enInputLayout()
   {
   #if DIRECTX
@@ -52,7 +47,7 @@ private:
 #if DIRECTX
   ID3D11InputLayout* m_interface = nullptr;
 #elif OPENGL
-  int32 m_interface = 0;
+  int32 m_interface = std::numeric_limits<int32>::max();
   #else
   void* m_interface = nullptr;
 #endif // DIRECTX

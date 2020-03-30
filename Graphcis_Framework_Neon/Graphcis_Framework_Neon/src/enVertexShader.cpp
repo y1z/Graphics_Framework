@@ -1,5 +1,11 @@
 #include "enVertexShader.h"
 
+enVertexShader::enVertexShader()
+:enBaseShader()
+{
+  m_type = enShaderTypes::vertexType;
+}
+
 enVertexShader::enVertexShader(enVertexShader&& other) noexcept
 :enBaseShader(std::forward<enBaseShader>(other))
 {

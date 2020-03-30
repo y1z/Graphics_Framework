@@ -16,8 +16,6 @@ public://operator
   enBaseBuffer & operator =(const enBaseBuffer & other) = delete;
   enBaseBuffer & operator =(enBaseBuffer && other);
 
-
-
 public:
 #if DIRECTX
   //! for functions that require a single pointer 
@@ -28,9 +26,25 @@ public:
   ID3D11Buffer **
   getInterfaceRef();
 #elif OPENGL
+
+  /**
+  * @returns :the object/value that the open-gl api uses.
+  * @bug :no known bugs.
+  */
   uint32
   getInterface();
 
+  /**
+  * @returns : a pointer to the object/value that the open-gl api uses.
+  * @bug :no known bugs.
+  */
+  uint32*
+  getInterfacePtr();
+
+  /**
+  * @returns : a reference to the object/value that the open-gl api uses.
+  * @bug :no known bugs.
+  */
   uint32&
   getInterfaceRef();
 #endif // DIRECTX
@@ -76,7 +90,13 @@ public: // functions
 
   uint32
   getIndex() const;
-  
+
+  /**
+  * @brief : used to set pointer to the data the buffer contains
+  * @bug : no known bugs.
+  */
+  void 
+  setData(void *data);
 
 protected:
 

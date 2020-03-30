@@ -1,11 +1,15 @@
 #include "enShaderResourceView.h"
+#if DIRECTX
 #include "DirectXTK/include/DDSTextureLoader.h"
 #include "DirectXTK/include/WICTextureLoader.h"
+namespace dx = DirectX;
+#elif OPENGL
+
+#endif // DIRECTX
 #include "enDevice.h"
 #include "helperFucs.h"
 
 
-namespace dx = DirectX;
 
 enShaderResourceView::enShaderResourceView(enShaderResourceView&& other) noexcept
   :m_interface(other.m_interface)

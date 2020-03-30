@@ -5,7 +5,7 @@ class enPixelShader :
   public enBaseShader
 {
 public:
-  enPixelShader() = default;
+  enPixelShader(); 
   enPixelShader(const enPixelShader& other ) = delete;
   enPixelShader( enPixelShader&& other );
   ~enPixelShader();
