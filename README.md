@@ -34,3 +34,12 @@ This repository will house a graphics framework that can chose between 2 api's o
  - DEVLIBS : `C:\c++libs\`
     - aka in the folder where **YOUR** libs.
  - PlatformTarget : in windows this should be x64 or x86 depending on the configuration.
+
+## controls 
+ w: move forward 
+ s: move backwords 
+ a: move to the left 
+ d: move to the right 
+ 1: to switch cameras 
+ I : to tilt right
+ P : to tilt left 
