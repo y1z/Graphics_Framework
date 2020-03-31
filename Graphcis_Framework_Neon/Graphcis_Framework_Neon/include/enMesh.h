@@ -17,8 +17,9 @@ class enMesh
 {
 public:
   enMesh();
-  // I demand move construction
+
   enMesh(const enMesh& mesh) = delete;
+
   enMesh(enMesh&& mesh) noexcept;
   ~enMesh();
 
@@ -87,9 +88,17 @@ public: // functions
   enIndexBuffer&
   getIndexBufferRef();
 
+  /**
+  * @returns : the amount of indices that the mesh contains.
+  * @bug : no known bugs.
+  */
+  confInt
+  getIndicesCount()const;
+
 /*! returns a vector that contains all data related with vertexes of the mesh */
   const std::vector< SimpleVertex>*
   getVertexData() const;
+
 /*! returns a vector that contains all data related with indices of the mesh */
   const std::vector<uint16>*
   getIndiceData() const;

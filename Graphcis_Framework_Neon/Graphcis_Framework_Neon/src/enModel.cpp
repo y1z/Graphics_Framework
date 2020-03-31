@@ -142,12 +142,11 @@ enModel::DrawMeshes(std::vector<enConstBuffer*>& buffers,
                                  color.blue,
                                  color.alpha);
 
-  //mesh.setTransform(Transform);
   for( enMesh& mesh : m_meshes )
   {
     mesh.setMesh();
 
-    deviceContext.DrawIndexed(mesh.getIndexBuffer()->getElementCount());
+    deviceContext.DrawIndexed(mesh.getIndicesCount());
   }
 
   enMatrix4x4 temp;

@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Graphcis_Framework_Neon", "Graphcis_Framework_Neon\Graphcis_Framework_Neon.vcxproj", "{B3298D8F-9DCB-40AB-B7C9-13E57850622D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		directx_debug|x64 = directx_debug|x64
+		directx_debug|x86 = directx_debug|x86
+		directx_release|x64 = directx_release|x64
+		directx_release|x86 = directx_release|x86
+		opengl_debug|x64 = opengl_debug|x64
+		opengl_debug|x86 = opengl_debug|x86
+		opengl_release|x64 = opengl_release|x64
+		opengl_release|x86 = opengl_release|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.Debug|x64.ActiveCfg = Debug|x64
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.Debug|x64.Build.0 = Debug|x64
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.Debug|x86.ActiveCfg = Debug|Win32
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.Debug|x86.Build.0 = Debug|Win32
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.directx_debug|x64.ActiveCfg = directx_debug|x64
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.directx_debug|x64.Build.0 = directx_debug|x64
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.directx_debug|x86.ActiveCfg = directx_debug|Win32
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.directx_debug|x86.Build.0 = directx_debug|Win32
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.directx_release|x64.ActiveCfg = directx_release|x64
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.directx_release|x64.Build.0 = directx_release|x64
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.directx_release|x86.ActiveCfg = directx_release|Win32
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.directx_release|x86.Build.0 = directx_release|Win32
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.opengl_debug|x64.ActiveCfg = opengl_debug|x64
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.opengl_debug|x64.Build.0 = opengl_debug|x64
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.opengl_debug|x86.ActiveCfg = opengl_debug|Win32
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.opengl_debug|x86.Build.0 = opengl_debug|Win32
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.opengl_release|x64.ActiveCfg = opengl_release|x64
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.opengl_release|x64.Build.0 = opengl_release|x64
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.opengl_release|x86.ActiveCfg = opengl_release|Win32
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.opengl_release|x86.Build.0 = opengl_release|Win32
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.Release|x64.ActiveCfg = Release|x64
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.Release|x64.Build.0 = Release|x64
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.Release|x86.ActiveCfg = Release|Win32
+		{B3298D8F-9DCB-40AB-B7C9-13E57850622D}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E98F6F80-9A80-4AF3-BC80-D8E3A90F7B87}
+	EndGlobalSection
+EndGlobal

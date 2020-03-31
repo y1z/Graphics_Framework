@@ -23,6 +23,10 @@ void
 enSampler::init(const sSamplerDesc& descriptor)
 {
   m_desc = descriptor;
+#if OPENGL
+  glGenSamplers(1, &m_interface);
+#endif // OPENGL
+
 }
 
 int32_t 
@@ -42,6 +46,7 @@ enSampler::setBorderColor(float red,
   m_desc.boderColor[2] = blue;
   m_desc.boderColor[3] = alpha;
 }
+
 #if DIRECTX
 
 D3D11_SAMPLER_DESC

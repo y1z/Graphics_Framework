@@ -44,6 +44,13 @@ public:
   void
   addCamera(BasePerspectiveCamera *ptrToCamera);
 
+  /**
+  * @returns : a pointer to the last selected camera.
+  * @bug : no known bugs.
+  */
+  BasePerspectiveCamera*
+  getLastSelectedCam();
+
 private:
   /**
   * @brief : contains the cameras used by the manager

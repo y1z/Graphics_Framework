@@ -62,3 +62,9 @@ enCameraManager::addCamera(BasePerspectiveCamera* ptrToCamera)
 {
   m_cameras.emplace_back(ptrToCamera);
 }
+
+BasePerspectiveCamera* 
+enCameraManager::getLastSelectedCam()
+{
+  return m_cameras[m_currentCamIndex];
+}

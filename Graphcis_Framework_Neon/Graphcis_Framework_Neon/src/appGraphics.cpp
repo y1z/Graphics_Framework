@@ -41,6 +41,12 @@ enConstBuffer* appGraphics::s_ProjectionMatrixBuffer = nullptr;
 
 std::unique_ptr<imGuiManager> appGraphics::m_gui = make_unique<imGuiManager>();
 
+//TODO : reorganize this better( or find a way to use one event handler for both api.)
+#if OPENGL
+static bool s_pressedShift = false;
+
+#endif // OPENGL
+
 bool
 appGraphics::init()
 {
@@ -196,7 +202,8 @@ appGraphics::initApi()
   {
     return enErrorCode::FailedCreation;
   }
-  //SetCallBackFunctions(my_window);
+
+ appGraphics::SetCallBackFunctions(*m_window);
 
 #endif // OPENGL
 
@@ -506,16 +513,15 @@ appGraphics::initForRender()
     return S_FALSE;
   }
 
-  enMultiViewType EverySingleView = helper::generateMultiViewType(enMultiViewType::renderTarget |
-                                                                  enMultiViewType::shaderResource);
+  enMultiViewType renderAndShaderView = helper::generateMultiViewType(enMultiViewType::renderTarget |
+                                                                      enMultiViewType::shaderResource);
  
-  //EverySingleView = static_cast<enMultiViewType>(EverySingleView | enMultiViewType::renderTarget);
   
   isSuccessful = m_renderTargetAndShaderResource->CreateAll(windowSize.x,
-                                        windowSize.y,
-                                        enFormats::fR16G16B16A16,
-                                        enBufferUse::Default,
-                                        EverySingleView);
+                                                            windowSize.y,
+                                                            enFormats::fR16G16B16A16,
+                                                            enBufferUse::Default,
+                                                            renderAndShaderView);
 
   if( !isSuccessful )
   {
@@ -550,6 +556,7 @@ appGraphics::initForRender()
   sPerspectiveCameraDesc descriptorCamera;
   descriptorCamera.upDir = enVector3(0.0f, 1.0f, 0.0f);
   descriptorCamera.lookAtPosition = enVector3(0.0f, 0.0f, -1.0f);
+  descriptorCamera.position = enVector3(0.0f, 0.0f, -10.0f);
   descriptorCamera.height = windowSize.y;
   descriptorCamera.width = windowSize.x;
 
@@ -572,32 +579,26 @@ appGraphics::initForRender()
   glm::vec3 Up(0.0f, 1.0f, 0.0f);
 
   viewMatrix cbNeverChanges;
-  cbNeverChanges.mView = glm::transpose(s_Camera->getView() /* s_Camera.getView()*/);
+  enMatrix4x4 CameraViewMatrix = s_Camera->getView();
+
+  cbNeverChanges.mView = helper::arrangeForApi(CameraViewMatrix);/* s_Camera.getView()*/
 
 
   deviceContext.UpdateSubresource(s_ViewMatrixBuffer, &cbNeverChanges);
 
-
-  // Initialize the projection matrix
-  m_Projection = glm::perspectiveFovLH(glm::quarter_pi<float>(),
-                                       windowSize.x,
-                                       windowSize.y,
-                                       0.01f,
-                                       100.0f);
-
   projectionMatrix cbChangesOnResize;
-  cbChangesOnResize.mProjection = glm::transpose(s_Camera->getProjection() /*s_Camera.getProjection()*/);
+
+  enMatrix4x4 CameraProjectionMatrix = s_Camera->getProjection();
+  cbChangesOnResize.mProjection = helper::arrangeForApi(CameraProjectionMatrix);
 
   deviceContext.UpdateSubresource(s_ProjectionMatrixBuffer, &cbChangesOnResize);
 
 
   for( auto& mesh : m_model->m_meshes )
   {
-    mesh.mptr_resource = m_resourceView;//   m_renderTargetAndShaderResource->m_shaderResource;
+    mesh.mptr_resource = m_resourceView;
   }
 
-  //p_ImmediateContext->UpdateSubresource(p_CBChangeOnResize, 0, NULL, &projMatrixData, 0, 0);
-  //deviceContext.getInterface()->UpdateSubresource(p_CBChangeOnResize, 0, NULL, &projMatrixData, 0, 0);
   return S_OK;
 }
 
@@ -689,12 +690,14 @@ appGraphics::switchCamera()
   enDeviceContext& deviceContext = enDeviceContext::getInstance();
 
   viewMatrix cbNeverChanges;
-  cbNeverChanges.mView = glm::transpose(ptr_camera->getView());
+  enMatrix4x4 MatrixForCamera = ptr_camera->getView();
+  cbNeverChanges.mView = helper::arrangeForApi(MatrixForCamera);
   deviceContext.UpdateSubresource(s_ViewMatrixBuffer, &cbNeverChanges);
 
 
   projectionMatrix cbChangesOnResize;
-  cbChangesOnResize.mProjection = glm::transpose(ptr_camera->getProjection());
+  enMatrix4x4 ProjMatrixForCamera = ptr_camera->getProjection();
+  cbChangesOnResize.mProjection = helper::arrangeForApi(ProjMatrixForCamera);
   deviceContext.UpdateSubresource(s_ProjectionMatrixBuffer, &cbChangesOnResize);
 
 }
@@ -763,29 +766,16 @@ appGraphics::Render()
 
   ConstBufferWorldColor cb;
   cb.vMeshColor = m_MeshColor;
-  cb.mWorld = glm::transpose(m_World);
+  cb.mWorld = helper::arrangeForApi(m_World);
 
-  //deviceContext.getInterface()->UpdateSubresource(p_CBChangesEveryFrame, 0, NULL, &cb, 0, 0);
   deviceContext.UpdateSubresource(m_worldMatrix.get(), &cb);
- // deviceContext.DrawIndexed(36);
-
-
-
- //deviceContext.getInterface()->DrawIndexed(36, 0, 0);
-
-  //m_model->DrawMeshes(m_ConstBufferContainer);
-  //m_World = glm::identity<glm::mat4x4>();
-
-
 
   m_gui->beginFrame("camera view");
   m_gui->addImage(*m_renderTargetAndShaderResource->m_shaderResource);
   m_gui->addButton("switch Cam", s_useFreeCam);
 
   m_gui->endFrame();
-  // Present our back buffer to our front buffer
-  //
-  //p_SwapChain->Present(0, 0);
+
   m_swapchain->Present();
 }
 
@@ -1124,3 +1114,67 @@ appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
   return 0;
 }
+
+#if OPENGL
+
+void 
+appGraphics::SetCallBackFunctions(enWindow & window)
+{
+  glfwSetInputMode(window.getHandle(), GLFW_STICKY_KEYS, GLFW_TRUE);
+  glfwSetCursorPosCallback(window.getHandle(), GLMoveMouse);
+
+}
+
+void 
+appGraphics::GLMoveMouse(GLFWwindow* window,
+                         double xPos,
+                         double yPos)
+{
+  if( s_initIsFinish && s_pressedShift )
+  {
+    enVector2 const currentPos(xPos, yPos);
+
+    int width = 0;
+    int heigth = 0;
+    glfwGetWindowSize(window, &width, &heigth);
+
+    enVector2 const centerPos(width * 0.5f, heigth * 0.5f);
+
+    glfwSetCursorPos(window, centerPos.x, centerPos.y);
+
+    enVector3 mouseDir(currentPos.x - centerPos.x,
+                       currentPos.y - centerPos.y,
+                       0.0f);
+
+    mouseDir.x = -mouseDir.x;
+
+    BasePerspectiveCamera* cameraPtr = s_CameraManager->getLastSelectedCam();
+
+
+    if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
+    {
+      FirstPersonCam->rotateVector(mouseDir);
+    }
+
+    if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
+    {
+      freeCam->rotateVector(mouseDir);
+    }
+    enDeviceContext& deviceContext = enDeviceContext::getInstance();
+
+    viewMatrix cbNeverChanges;
+    cbNeverChanges.mView = cameraPtr->getView();
+    helper::arrangeForApi(cbNeverChanges.mView);
+    deviceContext.UpdateSubresource(s_ViewMatrixBuffer, &cbNeverChanges);
+
+    projectionMatrix cbChangesOnResize;
+    cbChangesOnResize.mProjection = cameraPtr->getProjection();
+    helper::arrangeForApi(cbChangesOnResize.mProjection);
+    deviceContext.UpdateSubresource(s_ProjectionMatrixBuffer, &cbChangesOnResize);
+
+  }
+
+}
+
+#endif // OPENGL
+

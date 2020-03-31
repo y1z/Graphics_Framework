@@ -18,6 +18,7 @@
 #include "DirectXTK/include/WICTextureLoader.h"
 namespace dx = DirectX;
 #elif OPENGL
+#include "SOIL2/include/SOIL2.h"
 
 #endif // DIRECTX
 
@@ -79,7 +80,51 @@ enDevice::CreateRenderTargetView(enRenderTargetView& renderTraget,
   }
 
 #elif OPENGL
+  //TODO :  set up the frame buffer  http://docs.gl/gl4/glGenFramebuffers
+  GlRemoveAllErrors();
 
+  enTexture2D* ptrTexture = &texture;
+
+  float const width = ptrTexture->m_desc.texWidth;
+  float const height = ptrTexture->m_desc.texHeight;
+
+  glGenRenderbuffers(1, &ptrTexture->m_interface);
+
+  glBindRenderbuffer(GL_RENDERBUFFER,
+                     static_cast<GLuint>(ptrTexture->getInterface()));
+
+  glRenderbufferStorage(GL_RENDERBUFFER,
+                        enFormats::renderTarget_format,
+                        width,
+                        height);
+
+  glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+  glGenFramebuffers(1, &renderTraget.m_interface);
+
+  glBindFramebuffer(GL_FRAMEBUFFER,
+                    renderTraget.m_interface);
+
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER,
+                            GL_COLOR_ATTACHMENT0,
+                            GL_RENDERBUFFER,
+                            static_cast<GLuint>(ptrTexture->getInterface()));
+
+
+  GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+  if( status != GL_FRAMEBUFFER_COMPLETE )
+  {
+    std::string ErrorCode = std::to_string(status);
+    assert(true == false && "Frame buffer Errror :");
+  }
+
+  if( !GlCheckForError() )
+  {
+    // un bind the buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    return true;
+  }
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 #endif // DIRECTX
   return false;
 }
@@ -258,6 +303,28 @@ enDevice::CreateShaderResourceFromFile(enShaderResourceView& shaderResourceView,
 
   return true;
 #elif OPENGL
+  GlRemoveAllErrors();
+  std::string const imagePath(filePath);
+
+  shaderResourceView.m_interface = SOIL_load_OGL_texture
+  (
+    imagePath.c_str(),
+    SOIL_LOAD_AUTO,
+    SOIL_CREATE_NEW_ID,
+    SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB 
+  );
+
+  /* check for an error during the load process */
+  if( 0 == shaderResourceView.m_interface )
+  {
+    printf("SOIL loading error: '%s'\n", SOIL_last_result());
+  }
+
+  if( !GlCheckForError() )
+  {
+    return true;
+  }
+
 #endif // DIRECTX
 
   return false;
@@ -285,8 +352,9 @@ enDevice::CreateShaderResourceFromTexture(enShaderResourceView& shaderResourceVi
   }
 
 #elif OPENGL
+// TODO : Create a shader Resource From a Texture.
 #endif // DIRECTX
-  return false;
+  return true;
 }
 
 
@@ -675,9 +743,10 @@ enDevice::CreateConstBuffer(enConstBuffer& constBuffer)
 
   auto FindAndAddUniformID = [&refToContainer](uint32* ShaderProgram) {
 
-    for( sUniformDetails& uni : *refToContainer )
+    for(size_t i = 0; i < refToContainer->size(); ++i )
     {
-      uni.id = glGetUniformLocation(*ShaderProgram, uni.name.c_str());
+      refToContainer->at(i).id = glGetUniformLocation(*ShaderProgram,
+                                                      refToContainer->at(i).name.c_str());
     }
   };
 
@@ -694,14 +763,9 @@ enDevice::CreateConstBuffer(enConstBuffer& constBuffer)
   }
   else if( constBuffer.getIndex() == 2 )
   {
-    *constBuffer.getInterfacePtr() = glGetUniformBlockIndex(*shaderProgram, "u_worldAndColor");
-    glGenBuffers(1, &constBuffer.m_multiElementInterface);
-    std::cout << "uniform block id for u_worldAndColor [" << constBuffer.m_multiElementInterface << ']' << '\n';
-    std::cout << "regular buffer id for u_worldAndColor [" << constBuffer.getInterface() << ']' << '\n';
-    glBindBuffer(GL_UNIFORM_BUFFER, constBuffer.m_multiElementInterface);
-
-    //constBuffer.setData(glMapBuffer(GL_UNIFORM_BUFFER, GL_READ_WRITE));
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    refToContainer->push_back(helper::GlCreateUniformDetail("u_world", enConstBufferElem::mat4x4));
+    refToContainer->push_back(helper::GlCreateUniformDetail("uColor", enConstBufferElem::vec4));
+    FindAndAddUniformID(shaderProgram);
   }
 
 
@@ -726,8 +790,11 @@ enDevice::CreateSamplerState(enSampler& sampler)
   {
     return true;
   }
-#elif OPENGL
+#elif OPENGL 
+// TODO : add sampler functionality
 
+
+  return true;
 #endif // DIRECTX
   return false;
 }

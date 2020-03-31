@@ -43,8 +43,12 @@ public:
                  float alpha = 1.0f);
 
 #if DIRECTX
+  /**
+  * @returns : directX native descriptor, using.
+  * @bug :
+  */
   D3D11_SAMPLER_DESC
-    getDirectxSamplerDesc();
+  getDirectxSamplerDesc();
 
 #endif // DIRECTX
 
@@ -54,7 +58,7 @@ public:
 #if DIRECTX
   ID3D11SamplerState* m_interface = nullptr;
 #elif OPENGL
-  int32 m_interface = 0;
+  uint32 m_interface = std::numeric_limits<uint32>::max();
 #endif // DIRECTX
 };
 

@@ -756,7 +756,7 @@ struct sUniformDetails
 {
   std::string name{ "\0" };
   const void* ptr_data{ nullptr };
-  uint32 id{ UINT32_MAX };
+  int32 id{ INT32_MAX };
   enConstBufferElem element = enConstBufferElem::NONE;
 };
 

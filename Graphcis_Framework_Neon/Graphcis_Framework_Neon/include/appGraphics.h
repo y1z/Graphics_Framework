@@ -70,12 +70,6 @@ public:
 
 private:
   
-  /**
-  * @brief : used to capture the wndProc Events
-  * @bug : no known bugs
-  */
-  static LRESULT CALLBACK
-  WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
   /**
   * @brief : initializes all static classes. 
@@ -163,6 +157,34 @@ private:
   void
   Update();
 
+  /**
+  * @brief : used to capture the wndProc Events
+  * @bug : no known bugs
+  */
+  static LRESULT CALLBACK
+  WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+#if OPENGL
+
+  /**
+  * @brief : set up the call bock functions
+  * @bug : no known bugs
+  */
+  static void
+  SetCallBackFunctions(enWindow& window);
+
+  /**
+  * @brief : lets open-gl react to mouse input.
+  * @bug : no known bugs
+  */
+  static void 
+  GLMoveMouse(GLFWwindow* window,
+              double xPos,
+              double yPos);
+
+
+#endif // OPENGL
+
 public:
 
   sHardWareInfo m_hardwareInfo;
@@ -206,7 +228,6 @@ public:
 
   /**************************************************/
   glm::mat4x4 m_World = glm::mat4x4(1.0f);
-  glm::mat4x4 m_Projection = glm::mat4x4(1.0f);
 
   std::vector<enConstBuffer*> m_ConstBufferContainer;
 
@@ -216,6 +237,7 @@ public:
 
   static bool s_initIsFinish;
   static bool s_useFreeCam;
+  static bool 
 };
 
 

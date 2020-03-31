@@ -1,0 +1,701 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="directx_debug|Win32">
+      <Configuration>directx_debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="directx_debug|x64">
+      <Configuration>directx_debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="directx_release|Win32">
+      <Configuration>directx_release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="directx_release|x64">
+      <Configuration>directx_release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="opengl_debug|Win32">
+      <Configuration>opengl_debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="opengl_debug|x64">
+      <Configuration>opengl_debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="opengl_release|Win32">
+      <Configuration>opengl_release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="opengl_release|x64">
+      <Configuration>opengl_release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{b3298d8f-9dcb-40ab-b7c9-13e57850622d}</ProjectGuid>
+    <RootNamespace>Graphcis_Framework_Neon</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='opengl_debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='directx_debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='opengl_release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='directx_release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='opengl_debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='directx_debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='opengl_release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='directx_release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='opengl_debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='directx_debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='opengl_release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='directx_release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='opengl_debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='directx_debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='opengl_release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='directx_release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(ProjectDir)bin\exe\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)bin\intermediate\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_$(PlatformTarget)_$(Configuration)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='opengl_debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(ProjectDir)bin\exe\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)bin\intermediate\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_$(PlatformTarget)_$(Configuration)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='directx_debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(ProjectDir)bin\exe\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)bin\intermediate\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_$(PlatformTarget)_$(Configuration)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(ProjectDir)bin\exe\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)bin\intermediate\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_$(PlatformTarget)_$(Configuration)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='opengl_debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(ProjectDir)bin\exe\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)bin\intermediate\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_$(PlatformTarget)_$(Configuration)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='directx_debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(ProjectDir)bin\exe\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)bin\intermediate\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_$(PlatformTarget)_$(Configuration)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(ProjectDir)bin\exe\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)bin\intermediate\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_$(PlatformTarget)_$(Configuration)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='opengl_release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(ProjectDir)bin\exe\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)bin\intermediate\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_$(PlatformTarget)_$(Configuration)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='directx_release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(ProjectDir)bin\exe\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)bin\intermediate\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_$(PlatformTarget)_$(Configuration)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(ProjectDir)bin\exe\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)bin\intermediate\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_$(PlatformTarget)_$(Configuration)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='opengl_release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(ProjectDir)bin\exe\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)bin\intermediate\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_$(PlatformTarget)_$(Configuration)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='directx_release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(ProjectDir)bin\exe\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)bin\intermediate\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_$(PlatformTarget)_$(Configuration)</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>EN_DEBUG;_DEBUG;_CONSOLE;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(DEVLIBS)glfw\include;$(ProjectDir)include;$(DEVLIBS)glm;$(ProjectDir)dependencies;$(ProjectDir)dependencies\Assimp\include;$(DEVLIBS)glew\include;</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(DEVLIBS)Assimp\lib\$(PlatformTarget);$(ProjectDir)dependencies\DirectXTK\lib\$(PlatformTarget);$(ProjectDir)dependencies\Assimp\lib\$(PlatformTarget);$(DEVLIBS)glew\lib\$(PlatformTarget);$(DEVLIBS)glfw\lib\$(PlatformTarget);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LinkStatus>
+      </LinkStatus>
+      <AdditionalDependencies>dxguid.lib;d3d11.lib;opengl32.lib;DirectXTK_D.lib;d3dcompiler.lib;assimp-vc142-mt-D.lib;glfw3dll-D.lib;glew32sd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='opengl_debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>EN_DEBUG;_DEBUG;_CONSOLE;GLEW_STATIC;OPENGL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(DEVLIBS)glfw\include;$(ProjectDir)include;$(DEVLIBS)glm;$(ProjectDir)dependencies;$(ProjectDir)dependencies\Assimp\include;$(DEVLIBS)glew\include;</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)dependencies\SOIL2\lib\$(PlatformTarget);$(DEVLIBS)Assimp\lib\$(PlatformTarget);$(ProjectDir)dependencies\DirectXTK\lib\$(PlatformTarget);$(ProjectDir)dependencies\Assimp\lib\$(PlatformTarget);$(DEVLIBS)glew\lib\$(PlatformTarget);$(DEVLIBS)glfw\lib\$(PlatformTarget);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LinkStatus>
+      </LinkStatus>
+      <AdditionalDependencies>dxguid.lib;d3d11.lib;opengl32.lib;DirectXTK_D.lib;d3dcompiler.lib;assimp-vc142-mt-D.lib;glfw3dll-D.lib;glew32sd.lib;soil2-debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='directx_debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>EN_DEBUG;_DEBUG;_CONSOLE;GLEW_STATIC;DIRECTX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(DEVLIBS)glfw\include;$(ProjectDir)include;$(DEVLIBS)glm;$(ProjectDir)dependencies;$(ProjectDir)dependencies\Assimp\include;$(DEVLIBS)glew\include;</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(DEVLIBS)Assimp\lib\$(PlatformTarget);$(ProjectDir)dependencies\DirectXTK\lib\$(PlatformTarget);$(ProjectDir)dependencies\Assimp\lib\$(PlatformTarget);$(DEVLIBS)glew\lib\$(PlatformTarget);$(DEVLIBS)glfw\lib\$(PlatformTarget);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LinkStatus>
+      </LinkStatus>
+      <AdditionalDependencies>dxguid.lib;d3d11.lib;opengl32.lib;DirectXTK_D.lib;d3dcompiler.lib;assimp-vc142-mt-D.lib;glfw3dll-D.lib;glew32sd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>EN_DEBUG;_DEBUG;_CONSOLE;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(DEVLIBS)glfw\include;$(ProjectDir)include;$(DEVLIBS)glm;$(ProjectDir)dependencies;$(ProjectDir)dependencies\Assimp\include;$(DEVLIBS)glew\include;</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(DEVLIBS)Assimp\lib\$(PlatformTarget);$(ProjectDir)dependencies\DirectXTK\lib\$(PlatformTarget);$(ProjectDir)dependencies\Assimp\lib\$(PlatformTarget);$(DEVLIBS)glew\lib\$(PlatformTarget);$(DEVLIBS)glfw\lib\$(PlatformTarget);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LinkStatus>
+      </LinkStatus>
+      <AdditionalDependencies>dxguid.lib;d3d11.lib;opengl32.lib;DirectXTK_D.lib;d3dcompiler.lib;assimp-vc142-mt-D.lib;glfw3dll-D.lib;glew32sd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='opengl_debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>EN_DEBUG;_DEBUG;_CONSOLE;GLEW_STATIC;OPENGL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(DEVLIBS)glfw\include;$(ProjectDir)include;$(DEVLIBS)glm;$(ProjectDir)dependencies;$(ProjectDir)dependencies\Assimp\include;$(DEVLIBS)glew\include;</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)dependencies\SOIL2\lib\$(PlatformTarget);$(DEVLIBS)Assimp\lib\$(PlatformTarget);$(ProjectDir)dependencies\DirectXTK\lib\$(PlatformTarget);$(ProjectDir)dependencies\Assimp\lib\$(PlatformTarget);$(DEVLIBS)glew\lib\$(PlatformTarget);$(DEVLIBS)glfw\lib\$(PlatformTarget);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LinkStatus>
+      </LinkStatus>
+      <AdditionalDependencies>dxguid.lib;d3d11.lib;opengl32.lib;DirectXTK_D.lib;d3dcompiler.lib;assimp-vc142-mt-D.lib;glfw3dll-D.lib;glew32sd.lib;soil2-debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='directx_debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>EN_DEBUG;_DEBUG;_CONSOLE;GLEW_STATIC;DIRECTX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(DEVLIBS)glfw\include;$(ProjectDir)include;$(DEVLIBS)glm;$(ProjectDir)dependencies;$(ProjectDir)dependencies\Assimp\include;$(DEVLIBS)glew\include;</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(DEVLIBS)Assimp\lib\$(PlatformTarget);$(ProjectDir)dependencies\DirectXTK\lib\$(PlatformTarget);$(ProjectDir)dependencies\Assimp\lib\$(PlatformTarget);$(DEVLIBS)glew\lib\$(PlatformTarget);$(DEVLIBS)glfw\lib\$(PlatformTarget);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LinkStatus>
+      </LinkStatus>
+      <AdditionalDependencies>dxguid.lib;d3d11.lib;opengl32.lib;DirectXTK_D.lib;d3dcompiler.lib;assimp-vc142-mt-D.lib;glfw3dll-D.lib;glew32sd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(DEVLIBS)glfw\include;$(ProjectDir)include;$(DEVLIBS)glm;$(ProjectDir)dependencies;$(ProjectDir)dependencies\Assimp\include;$(DEVLIBS)glew\include;</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(DEVLIBS)Assimp\lib\$(PlatformTarget);$(ProjectDir)dependencies\DirectXTK\lib\$(PlatformTarget);$(ProjectDir)dependencies\Assimp\lib\$(PlatformTarget);$(DEVLIBS)glew\lib\$(PlatformTarget);$(DEVLIBS)glfw\lib\$(PlatformTarget);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LinkStatus>
+      </LinkStatus>
+      <AdditionalDependencies>dxguid.lib;d3d11.lib;opengl32.lib;DirectXTK_R.lib;d3dcompiler.lib;assimp-vc142-mt.lib;glfw3dll.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='opengl_release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;GLEW_STATIC;OPENGL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(DEVLIBS)glfw\include;$(ProjectDir)include;$(DEVLIBS)glm;$(ProjectDir)dependencies;$(ProjectDir)dependencies\Assimp\include;$(DEVLIBS)glew\include;</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(DEVLIBS)Assimp\lib\$(PlatformTarget);$(ProjectDir)dependencies\DirectXTK\lib\$(PlatformTarget);$(ProjectDir)dependencies\Assimp\lib\$(PlatformTarget);$(DEVLIBS)glew\lib\$(PlatformTarget);$(DEVLIBS)glfw\lib\$(PlatformTarget);$(ProjectDir)dependencies\SOIL2\lib\$(PlatformTarget);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LinkStatus>
+      </LinkStatus>
+      <AdditionalDependencies>dxguid.lib;d3d11.lib;opengl32.lib;DirectXTK_R.lib;d3dcompiler.lib;assimp-vc142-mt.lib;glfw3dll.lib;glew32s.lib;soil2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='directx_release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;GLEW_STATIC;DIRECTX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(DEVLIBS)glfw\include;$(ProjectDir)include;$(DEVLIBS)glm;$(ProjectDir)dependencies;$(ProjectDir)dependencies\Assimp\include;$(DEVLIBS)glew\include;</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(DEVLIBS)Assimp\lib\$(PlatformTarget);$(ProjectDir)dependencies\DirectXTK\lib\$(PlatformTarget);$(ProjectDir)dependencies\Assimp\lib\$(PlatformTarget);$(DEVLIBS)glew\lib\$(PlatformTarget);$(DEVLIBS)glfw\lib\$(PlatformTarget);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LinkStatus>
+      </LinkStatus>
+      <AdditionalDependencies>dxguid.lib;d3d11.lib;opengl32.lib;DirectXTK_R.lib;d3dcompiler.lib;assimp-vc142-mt.lib;glfw3dll.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(DEVLIBS)glfw\include;$(ProjectDir)include;$(DEVLIBS)glm;$(ProjectDir)dependencies;$(ProjectDir)dependencies\Assimp\include;$(DEVLIBS)glew\include;</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(DEVLIBS)Assimp\lib\$(PlatformTarget);$(ProjectDir)dependencies\DirectXTK\lib\$(PlatformTarget);$(ProjectDir)dependencies\Assimp\lib\$(PlatformTarget);$(DEVLIBS)glew\lib\$(PlatformTarget);$(DEVLIBS)glfw\lib\$(PlatformTarget);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LinkStatus>
+      </LinkStatus>
+      <AdditionalDependencies>dxguid.lib;d3d11.lib;opengl32.lib;DirectXTK_R.lib;d3dcompiler.lib;assimp-vc142-mt.lib;glfw3dll.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='opengl_release|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;GLEW_STATIC;OPENGL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(DEVLIBS)glfw\include;$(ProjectDir)include;$(DEVLIBS)glm;$(ProjectDir)dependencies;$(ProjectDir)dependencies\Assimp\include;$(DEVLIBS)glew\include;</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(DEVLIBS)Assimp\lib\$(PlatformTarget);$(ProjectDir)dependencies\DirectXTK\lib\$(PlatformTarget);$(ProjectDir)dependencies\Assimp\lib\$(PlatformTarget);$(DEVLIBS)glew\lib\$(PlatformTarget);$(DEVLIBS)glfw\lib\$(PlatformTarget);$(ProjectDir)dependencies\SOIL2\lib\$(PlatformTarget);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LinkStatus>
+      </LinkStatus>
+      <AdditionalDependencies>dxguid.lib;d3d11.lib;opengl32.lib;DirectXTK_R.lib;d3dcompiler.lib;assimp-vc142-mt.lib;glfw3dll.lib;glew32s.lib;soil2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='directx_release|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;GLEW_STATIC;DIRECTX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(DEVLIBS)glfw\include;$(ProjectDir)include;$(DEVLIBS)glm;$(ProjectDir)dependencies;$(ProjectDir)dependencies\Assimp\include;$(DEVLIBS)glew\include;</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(DEVLIBS)Assimp\lib\$(PlatformTarget);$(ProjectDir)dependencies\DirectXTK\lib\$(PlatformTarget);$(ProjectDir)dependencies\Assimp\lib\$(PlatformTarget);$(DEVLIBS)glew\lib\$(PlatformTarget);$(DEVLIBS)glfw\lib\$(PlatformTarget);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LinkStatus>
+      </LinkStatus>
+      <AdditionalDependencies>dxguid.lib;d3d11.lib;opengl32.lib;DirectXTK_R.lib;d3dcompiler.lib;assimp-vc142-mt.lib;glfw3dll.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="dependencies\imgui\imgui.cpp" />
+    <ClCompile Include="dependencies\imgui\imgui_demo.cpp" />
+    <ClCompile Include="dependencies\imgui\imgui_draw.cpp" />
+    <ClCompile Include="dependencies\imgui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="dependencies\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="dependencies\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="dependencies\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="dependencies\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\appGraphics.cpp" />
+    <ClCompile Include="src\BasePerspectiveCamera.cpp" />
+    <ClCompile Include="src\cApiComponent.cpp" />
+    <ClCompile Include="src\enBaseBuffer.cpp" />
+    <ClCompile Include="src\enBaseShader.cpp" />
+    <ClCompile Include="src\enCameraManager.cpp" />
+    <ClCompile Include="src\enConstBuffer.cpp" />
+    <ClCompile Include="src\enDepthStencilView.cpp" />
+    <ClCompile Include="src\enDevice.cpp" />
+    <ClCompile Include="src\enDeviceContext.cpp" />
+    <ClCompile Include="src\enFirstPersonCamera.cpp" />
+    <ClCompile Include="src\enIndexBuffer.cpp" />
+    <ClCompile Include="src\enInputLayout.cpp" />
+    <ClCompile Include="src\enMesh.cpp" />
+    <ClCompile Include="src\enModel.cpp" />
+    <ClCompile Include="src\enMultiviewTexture.cpp" />
+    <ClCompile Include="src\enPerspectiveFreeCamera.cpp" />
+    <ClCompile Include="src\enPixelShader.cpp" />
+    <ClCompile Include="src\enRenderTargetView.cpp" />
+    <ClCompile Include="src\enSampler.cpp" />
+    <ClCompile Include="src\enShaderResourceView.cpp" />
+    <ClCompile Include="src\enSwapChain.cpp" />
+    <ClCompile Include="src\enTexture2D.cpp" />
+    <ClCompile Include="src\enTransform.cpp" />
+    <ClCompile Include="src\enVertexBuffer.cpp" />
+    <ClCompile Include="src\enVertexShader.cpp" />
+    <ClCompile Include="src\enViewport.cpp" />
+    <ClCompile Include="src\enWindow.cpp" />
+    <ClCompile Include="src\imGuiManager.cpp" />
+    <ClCompile Include="src\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="dependencies\Assimp\include\assimp\ai_assert.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\anim.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\BaseImporter.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\Bitmap.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\BlobIOSystem.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\ByteSwapper.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\camera.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\cexport.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\cfileio.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\cimport.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\color4.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\config.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\CreateAnimMesh.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\DefaultIOStream.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\DefaultIOSystem.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\DefaultLogger.hpp" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\Defines.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\defs.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\Exceptional.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\Exporter.hpp" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\fast_atof.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\GenericProperty.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\Hash.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\Importer.hpp" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\importerdesc.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\IOStream.hpp" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\IOStreamBuffer.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\IOSystem.hpp" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\irrXMLWrapper.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\light.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\LineSplitter.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\LogAux.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\Logger.hpp" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\LogStream.hpp" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\Macros.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\material.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\MathFunctions.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\matrix3x3.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\matrix4x4.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\MemoryIOWrapper.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\mesh.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\metadata.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\NullLogger.hpp" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\ParsingUtils.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\pbrmaterial.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\postprocess.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\Profiler.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\ProgressHandler.hpp" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\qnan.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\quaternion.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\RemoveComments.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\scene.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\SceneCombiner.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\SGSpatialSort.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\SkeletonMeshBuilder.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\SmoothingGroups.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\SpatialSort.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\StandardShapes.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\StreamReader.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\StreamWriter.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\StringComparison.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\StringUtils.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\Subdivision.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\texture.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\TinyFormatter.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\types.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\vector2.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\vector3.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\version.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\Vertex.h" />
+    <ClInclude Include="dependencies\Assimp\include\assimp\XMLTools.h" />
+    <ClInclude Include="dependencies\DirectXTK\include\Audio.h" />
+    <ClInclude Include="dependencies\DirectXTK\include\CommonStates.h" />
+    <ClInclude Include="dependencies\DirectXTK\include\DDSTextureLoader.h" />
+    <ClInclude Include="dependencies\DirectXTK\include\DirectXHelpers.h" />
+    <ClInclude Include="dependencies\DirectXTK\include\Effects.h" />
+    <ClInclude Include="dependencies\DirectXTK\include\GamePad.h" />
+    <ClInclude Include="dependencies\DirectXTK\include\GeometricPrimitive.h" />
+    <ClInclude Include="dependencies\DirectXTK\include\GraphicsMemory.h" />
+    <ClInclude Include="dependencies\DirectXTK\include\Keyboard.h" />
+    <ClInclude Include="dependencies\DirectXTK\include\Model.h" />
+    <ClInclude Include="dependencies\DirectXTK\include\Mouse.h" />
+    <ClInclude Include="dependencies\DirectXTK\include\PostProcess.h" />
+    <ClInclude Include="dependencies\DirectXTK\include\PrimitiveBatch.h" />
+    <ClInclude Include="dependencies\DirectXTK\include\ScreenGrab.h" />
+    <ClInclude Include="dependencies\DirectXTK\include\SimpleMath.h" />
+    <ClInclude Include="dependencies\DirectXTK\include\SpriteBatch.h" />
+    <ClInclude Include="dependencies\DirectXTK\include\SpriteFont.h" />
+    <ClInclude Include="dependencies\DirectXTK\include\VertexTypes.h" />
+    <ClInclude Include="dependencies\DirectXTK\include\WICTextureLoader.h" />
+    <ClInclude Include="dependencies\DirectXTK\include\XboxDDSTextureLoader.h" />
+    <ClInclude Include="dependencies\imgui\imconfig.h" />
+    <ClInclude Include="dependencies\imgui\imgui.h" />
+    <ClInclude Include="dependencies\imgui\imgui_impl_dx11.h" />
+    <ClInclude Include="dependencies\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="dependencies\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="dependencies\imgui\imgui_impl_win32.h" />
+    <ClInclude Include="dependencies\imgui\imgui_internal.h" />
+    <ClInclude Include="dependencies\imgui\imstb_rectpack.h" />
+    <ClInclude Include="dependencies\imgui\imstb_textedit.h" />
+    <ClInclude Include="dependencies\imgui\imstb_truetype.h" />
+    <ClInclude Include="dependencies\SOIL2\include\SOIL2.h" />
+    <ClInclude Include="include\appGraphics.h" />
+    <ClInclude Include="include\BasePerspectiveCamera.h" />
+    <ClInclude Include="include\cApiComponent.h" />
+    <ClInclude Include="include\enBaseBuffer.h" />
+    <ClInclude Include="include\enBaseShader.h" />
+    <ClInclude Include="include\enCameraManager.h" />
+    <ClInclude Include="include\enConstBuffer.h" />
+    <ClInclude Include="include\enDepthStencilView.h" />
+    <ClInclude Include="include\enDevice.h" />
+    <ClInclude Include="include\enDeviceContext.h" />
+    <ClInclude Include="include\enFirstPersonCamera.h" />
+    <ClInclude Include="include\enIndexBuffer.h" />
+    <ClInclude Include="include\enInputLayout.h" />
+    <ClInclude Include="include\enMesh.h" />
+    <ClInclude Include="include\enModel.h" />
+    <ClInclude Include="include\enMultiviewTexture.h" />
+    <ClInclude Include="include\enPerspectiveFreeCamera.h" />
+    <ClInclude Include="include\enPixelShader.h" />
+    <ClInclude Include="include\enRenderTargetView.h" />
+    <ClInclude Include="include\enSampler.h" />
+    <ClInclude Include="include\enShaderResourceView.h" />
+    <ClInclude Include="include\enSwapChain.h" />
+    <ClInclude Include="include\enTexture2D.h" />
+    <ClInclude Include="include\enTransform.h" />
+    <ClInclude Include="include\enTypes.h" />
+    <ClInclude Include="include\enVertexBuffer.h" />
+    <ClInclude Include="include\enVertexShader.h" />
+    <ClInclude Include="include\enViewport.h" />
+    <ClInclude Include="include\enWindow.h" />
+    <ClInclude Include="include\en_defs.h" />
+    <ClInclude Include="include\helperFucs.h" />
+    <ClInclude Include="include\imGuiManager.h" />
+    <ClInclude Include="include\MacroslessWindow.h" />
+    <ClInclude Include="include\Resource.h" />
+    <ClInclude Include="include\util\cBaseApp.h" />
+    <ClInclude Include="include\util\GraphicsDefines.h" />
+    <ClInclude Include="include\util\Header.h" />
+    <ClInclude Include="include\util\soModule.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dependencies\Assimp\include\assimp\color4.inl" />
+    <None Include="dependencies\Assimp\include\assimp\config.h.in" />
+    <None Include="dependencies\Assimp\include\assimp\material.inl" />
+    <None Include="dependencies\Assimp\include\assimp\matrix3x3.inl" />
+    <None Include="dependencies\Assimp\include\assimp\matrix4x4.inl" />
+    <None Include="dependencies\Assimp\include\assimp\quaternion.inl" />
+    <None Include="dependencies\Assimp\include\assimp\SmoothingGroups.inl" />
+    <None Include="dependencies\Assimp\include\assimp\vector2.inl" />
+    <None Include="dependencies\Assimp\include\assimp\vector3.inl" />
+    <None Include="dependencies\DirectXTK\include\SimpleMath.inl" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

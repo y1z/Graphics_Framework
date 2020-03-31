@@ -117,7 +117,11 @@ namespace helper
     return Result;
   }
 
-  // TODO : add function to resource manager
+
+  /**
+  * @brief : initializes important part of the api.
+  * @bug : no known bugs.
+  */
   EN_NODISCARD static enErrorCode
   CreateDeviceAndSwapchain(enSwapChain& swapChain,
                            enWindow& window,
@@ -247,6 +251,10 @@ namespace helper
   }
 
 
+  /**
+  * @returns : the size of the window .
+  * @bug : no known bugs.
+  */
   EN_NODISCARD static enVector2 
   getWindowSize(enWindow& window)
   {
@@ -265,15 +273,26 @@ namespace helper
     return enVector2(windowWidth, windowHeight);
   }
 
-  static void 
+  /**
+  * @returns : a matrix that may or may not be transposed ( depends on the api).
+  * @bug : no known bugs.
+  */
+  EN_NODISCARD static enMatrix4x4 
   arrangeForApi(enMatrix4x4& mat)
   {
   #if DIRECTX
      mat = glm::transpose(mat);
+     return mat ;
   #elif OPENGL
+
+     return mat ;
   #endif // DIRECTX
   }
 
+  /**
+  * @returns : descriptor that used for a DepthStencil .
+  * @bug :no known bugs.
+  */
   EN_NODISCARD static sTextureDescriptor
   generateTextureDescForDepthStencil(float const Width,
                                      float const Height)
@@ -289,6 +308,10 @@ namespace helper
     return result;
   }
 
+  /**
+  * @returns : descriptor that used for a render-Target.
+  * @bug :no known bugs.
+  */
   EN_NODISCARD static sTextureDescriptor
   generateTextureDescForRenderTarget(float const Width,
                                      float const Height)
@@ -303,15 +326,25 @@ namespace helper
     result.arraySize = 1;
     return result;
   }
-  
+
+  /**
+  * @brief : creates instance of 'enMultiViewType' that possible has multiple different values OR'ED 
+  *  together example (enMultiViewType::renderTarget  | enMultiViewType::depthStencil )
+  *  
+  * @bug : no known bugs.
+  */
   EN_NODISCARD static enMultiViewType 
   generateMultiViewType(int32 valueOfType)
   {
-    enMultiViewType result = static_cast<enMultiViewType>(0);
+    enMultiViewType result = enMultiViewType::zeroType;
     result = static_cast<enMultiViewType>(valueOfType);
     return result;
   }
 
+  /**
+  * @brief : creates a 'sUniformDetails'
+  * @bug : no known bugs.
+  */
   EN_NODISCARD static sUniformDetails
   GlCreateUniformDetail(std::string_view name, enConstBufferElem type)
   {
@@ -321,5 +354,77 @@ namespace helper
 
     return result;
   }
+
+  EN_NODISCARD static void
+  GlUpdateUniform(sUniformDetails& details)
+  {
+    if( details.ptr_data == nullptr )
+    {
+      std::cerr << "uniform data pointer is null ";
+      assert(details.ptr_data != nullptr);
+    }
+
+    switch( details.element )
+    {
+      case enConstBufferElem::NONE:
+        assert(details.element != enConstBufferElem::NONE && "element in the buffer has no type");
+        break;
+      case enConstBufferElem::mat4x4:
+
+        glUniformMatrix4fv(details.id,
+                           1,
+                           GL_TRUE, 
+                           static_cast<const GLfloat*> (details.ptr_data));
+        break;
+      case enConstBufferElem::mat3x3:
+      {
+        glUniformMatrix3fv(details.id,
+                           1,
+                           GL_TRUE, 
+                           static_cast<const  GLfloat*> (details.ptr_data));
+      }
+        break;
+      case enConstBufferElem::vec4:
+
+        glUniform4fv(details.id,
+                     1,
+                     static_cast<const  GLfloat*> (details.ptr_data));
+        break;
+      case enConstBufferElem::vec3:
+
+        glUniform3fv(details.id,
+                     1,
+                     static_cast<const GLfloat*> (details.ptr_data));
+        break;
+      case enConstBufferElem::vec2:
+
+        glUniform2fv(details.id,
+                     1,
+                     static_cast<const  GLfloat*> (details.ptr_data));
+      break;
+      case enConstBufferElem::single_float:
+        glUniform1fv(details.id,
+                     1,
+                     static_cast<const  GLfloat*> (details.ptr_data));
+        break;
+      case enConstBufferElem::imat4x4:
+        break;
+      case enConstBufferElem::imat3x3:
+        break;
+      case enConstBufferElem::ivec4:
+        break;
+      case enConstBufferElem::ivec3:
+        break;
+      case enConstBufferElem::ivec2:
+        break;
+      case enConstBufferElem::single_int:
+        break;
+      default:
+        assert(details.element != enConstBufferElem::NONE && "element in the buffer has no type");
+        break;
+    }
+
+  }
+
 }
 

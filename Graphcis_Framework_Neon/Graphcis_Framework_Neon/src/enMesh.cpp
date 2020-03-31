@@ -81,7 +81,7 @@ enMesh::createVertexBuffer()
   return result;
 }
 
-bool 
+bool
 enMesh::createIndexBuffer()
 {
   enDevice& device = enDevice::getInstance();
@@ -101,18 +101,18 @@ enMesh::setTransform(const glm::mat4& newTransform)
   m_transform = newTransform;
 }
 
-void 
+void
 enMesh::setMesh()
 {
- enDeviceContext& deviceContext = enDeviceContext::getInstance();
+  enDeviceContext& deviceContext = enDeviceContext::getInstance();
 
- deviceContext.IASetVertexBuffers(mptr_vertexBuffer,1); 
- deviceContext.IASetIndexBuffer(*mptr_indexBuffer, enFormats::uR16);
- deviceContext.IASetPrimitiveTopology((int)m_topology);
- if( mptr_resource )
- {
-   deviceContext.PSSetShaderResources(&*mptr_resource);
- }
+  deviceContext.IASetVertexBuffers(mptr_vertexBuffer, 1);
+  deviceContext.IASetIndexBuffer(*mptr_indexBuffer, enFormats::uR16);
+  deviceContext.IASetPrimitiveTopology((int)m_topology);
+  if( mptr_resource )
+  {
+    deviceContext.PSSetShaderResources(&*mptr_resource);
+  }
 }
 
 glm::mat4
@@ -145,7 +145,7 @@ enMesh::getVertexBuffer()
   return mptr_vertexBuffer;
 }
 
-enVertexBuffer& 
+enVertexBuffer&
 enMesh::getVertexBufferRef()
 {
   return *mptr_vertexBuffer;
@@ -161,7 +161,13 @@ enMesh::getIndexBuffer()
 enIndexBuffer&
 enMesh::getIndexBufferRef()
 {
-return *mptr_indexBuffer;
+  return *mptr_indexBuffer;
+}
+
+confInt 
+enMesh::getIndicesCount() const
+{
+  return mptr_indexBuffer->getElementCount();
 }
 
 const std::vector<SimpleVertex>*

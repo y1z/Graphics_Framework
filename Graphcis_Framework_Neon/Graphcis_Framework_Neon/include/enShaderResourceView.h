@@ -31,8 +31,8 @@ public:
 #if DIRECTX
   ID3D11ShaderResourceView* m_interface = nullptr;
 #elif OPENGL
-  int32 m_interface = 0u;
-  #else
+  uint32 m_interface = 0u;
+#else
   void* m_interface = nullptr;
 #endif // DIRECTX
   int32 m_index;

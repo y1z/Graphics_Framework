@@ -3,6 +3,7 @@
 #include "enRenderTargetView.h"
 #include "enDepthStencilView.h"
 #include "enTexture2D.h"
+#include "helperFucs.h"
 
 // limits for setting objects 
 static constexpr const uint8_t c_MaxRenderTargets = 8;
@@ -235,6 +236,77 @@ enDeviceContext::UpdateSubresource(enBaseBuffer* Buffer,
                                  0,
                                  0);
 #elif OPENGL
+  GlRemoveAllErrors();
+
+  enConstBuffer* ptr_buffer = dynamic_cast<enConstBuffer*>(Buffer);
+
+  auto AddDataToUniformDetail = [](sUniformDetails& uniform, const char* possibleMatch, const void* data) 
+  {
+    if( !uniform.name.compare(possibleMatch) )
+    {
+      uniform.ptr_data = data;
+    }
+  };
+
+  if( ptr_buffer )
+  {
+    if( ptr_buffer->getIndex() == 0 )
+    {
+      viewMatrix const* ptr_viewMatrix = reinterpret_cast<viewMatrix const*>(originOfData);
+      for( sUniformDetails& uni : ptr_buffer->m_containedVariables )
+      {
+        AddDataToUniformDetail(uni, "u_view", &ptr_viewMatrix->mView);
+
+        if( uni.ptr_data != nullptr && uni.id != UINT32_MAX )
+        {
+          helper::GlUpdateUniform(uni);
+        }
+      }
+    }
+
+    else if( ptr_buffer->getIndex() == 1 )
+    {
+      projectionMatrix const* ptr_projectionMatrix = reinterpret_cast<projectionMatrix const*>(originOfData);
+
+      for( sUniformDetails& uni : ptr_buffer->m_containedVariables )
+      {
+        AddDataToUniformDetail(uni, "u_projection", &ptr_projectionMatrix->mProjection);
+
+        if( uni.ptr_data != nullptr && uni.id != UINT32_MAX )
+        {
+          helper::GlUpdateUniform(uni);
+        }
+      }
+    }
+
+    else if( ptr_buffer->getIndex() == 2 )
+    {
+      // TODO : update when using a different struct
+      ConstBufferWorldColor const * worldMatrix =
+        reinterpret_cast<ConstBufferWorldColor const*>(originOfData);
+
+      for( sUniformDetails& uni : ptr_buffer->m_containedVariables )
+      {
+        AddDataToUniformDetail(uni, "u_world", &worldMatrix->mWorld);
+        AddDataToUniformDetail(uni, "uColor", &worldMatrix->vMeshColor);
+
+        if( uni.ptr_data != nullptr && uni.id != UINT32_MAX )
+        {
+          helper::GlUpdateUniform(uni);
+        }
+      }
+
+    }
+
+  }
+
+
+  if( GlCheckForError() )
+  {
+    assert(true == false && " updating const-buffer failed");
+  }
+
+
 #endif//DIRECTX
 }
 
@@ -311,20 +383,20 @@ enDeviceContext::VSSetShader(enVertexShader& vertexShaderPath)
 void
 enDeviceContext::VSSetConstantBuffer(enConstBuffer& Buffer,
                                      uint32_t Index)
+{
+#if DIRECTX
+  // make sure i don't use more slot than directX has 
+  if( Index <= D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT - 1 )
   {
-  #if DIRECTX
-    // make sure i don't use more slot than directX has 
-    if( Index <= D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT - 1 )
-    {
-      this->m_interface->VSSetConstantBuffers(Index, 1, Buffer.getInterfaceRef());
-    }
-    else
-    {
-      assert("Error used too many slot " && Index <= D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT - 1);
-    }
-  #elif OPENGL
-  #endif // DIRECTX
-    }
+    this->m_interface->VSSetConstantBuffers(Index, 1, Buffer.getInterfaceRef());
+  }
+  else
+  {
+    assert("Error used too many slot " && Index <= D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT - 1);
+  }
+#elif OPENGL
+#endif // DIRECTX
+}
 
 void
 enDeviceContext::PSSetShader(enPixelShader& pixelShader)
@@ -358,7 +430,7 @@ enDeviceContext::PSSetShaderResources(enShaderResourceView shaderResources[],
                                       numResources,
                                       ShaderPtrArr);
 
-}
+  }
   else
   {
     EN_LOG_ERROR_WITH_CODE(enErrorCode::UnClassified);
@@ -476,8 +548,46 @@ enDeviceContext::DrawIndexed(uint32_t indexCount)
 #if DIRECTX
   this->m_interface->DrawIndexed(indexCount, 0u, 0);
 #elif OPENGL
-#endif // DIRECTX
+  GlRemoveAllErrors();
+
+  glBindBuffer(GL_ARRAY_BUFFER,m_drawingData.currentVertexBuffer);// m_drawingData.currentVertexBuffer);
+  size_t OffSetOfFirst = offsetof(SimpleVertex, Pos);
+  glVertexAttribPointer(0,
+                        4,
+                        GL_FLOAT,
+                        GL_FALSE,
+                        sizeof(SimpleVertex),
+                        reinterpret_cast<const void*>(OffSetOfFirst));
+
+
+  glBindBuffer(GL_ARRAY_BUFFER, m_drawingData.currentVertexBuffer);
+  size_t OffSetOfSecond = offsetof(SimpleVertex, Tex);
+  glVertexAttribPointer(1,
+                        2,
+                        GL_FLOAT,
+                        GL_FALSE,
+                        sizeof(SimpleVertex),
+                        reinterpret_cast<const void*>(OffSetOfSecond));
+
+  if( GlCheckForError() )
+  {
+    assert(true == false && " Error when drawing ");
   }
+ // UN-BIND FROM THE VERTEX BUFFER 
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  // draw the indices 
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,
+               m_drawingData.currentIndexBuffer);
+
+  glDrawElements(m_drawingData.currentTopology,
+                 indexCount,
+                 m_drawingData.currentFormat,
+                 reinterpret_cast<const void*>(0));
+
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+#endif // DIRECTX
+}
 
 bool
 enDeviceContext::SetShaders(enVertexShader& vertexShader,

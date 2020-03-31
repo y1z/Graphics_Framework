@@ -18,6 +18,8 @@ enFirstPersonCamera::init(const sFirstPersonCameraDesc& descriptor)
   m_horizantalAngle = m_desc.m_horizantalAngle;
   m_verticalAngle = m_desc.m_verticalAngle;
 
+  m_position = enVector3(-25.0f, 0.0f, -10.0f);
+
   m_height = m_desc.height;
   m_width = m_desc.width;
 
