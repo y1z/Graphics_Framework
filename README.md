@@ -1,11 +1,23 @@
 # Graphics_Framework
 This repository will house a graphics framework that can chose between 2 api's open_gl and directX
+
 ## External libs 
 - DirectXTK :  https://github.com/Microsoft/DirectXTK
-    - include in the project 
+    - include in the project as a static lib.
+
+
+- SOIL2 : https://github.com/SpartanJ/SOIL2
+    - included in the project as a static lib.
+
 - GLM : https://github.com/g-truc/glm
     - NOT include in the project 
+    - *only requires* that you have the headers
     - path is __`$(DEVLIBS)glm`__ 
+
+- GLFW : https://github.com/glfw/glfw
+    - included in the project as a dynamic lib.
+    - ALL the '.dll' files are already in the places where the '.exe' will be generated. 
+
 ## Environment variable
  - DEVLIBS : `C:\c++libs\`
     - aka it in the same place where i keep my libs 
