@@ -237,7 +237,6 @@ public:
 
   static bool s_initIsFinish;
   static bool s_useFreeCam;
-  static bool 
 };
 
 
