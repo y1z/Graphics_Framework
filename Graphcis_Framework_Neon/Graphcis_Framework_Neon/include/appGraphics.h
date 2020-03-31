@@ -182,6 +182,9 @@ private:
               double xPos,
               double yPos);
 
+  static void
+  GLCloseWindow(GLFWwindow* window);
+
 
 #endif // OPENGL
 
@@ -237,6 +240,7 @@ public:
 
   static bool s_initIsFinish;
   static bool s_useFreeCam;
+  static bool s_run;
 };
 
 

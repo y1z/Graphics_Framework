@@ -35,6 +35,7 @@ enCameraManager* appGraphics::s_CameraManager = nullptr;
 
 bool appGraphics::s_initIsFinish = false;
 bool appGraphics::s_useFreeCam = true;
+bool appGraphics::s_run = true;
 
 enConstBuffer* appGraphics::s_ViewMatrixBuffer = nullptr;
 enConstBuffer* appGraphics::s_ProjectionMatrixBuffer = nullptr;
@@ -127,8 +128,15 @@ appGraphics::run()
     }
     else
     {
-      this->Render();
-      this->Update();
+      if( s_run == false )
+      {
+        break;
+      }
+      else{
+        this->Render();
+        this->Update();
+
+      }
     }
   }
 
@@ -430,7 +438,7 @@ appGraphics::initForRender()
   }
 
 
-  if( m_model->LoadModelFromFile("ryuko.fbx") == false )
+  if( m_model->LoadModelFromFile("scene.fbx") == false )
   {
     EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
     return S_FALSE;
@@ -1122,7 +1130,7 @@ appGraphics::SetCallBackFunctions(enWindow & window)
 {
   glfwSetInputMode(window.getHandle(), GLFW_STICKY_KEYS, GLFW_TRUE);
   glfwSetCursorPosCallback(window.getHandle(), GLMoveMouse);
-
+  glfwSetWindowCloseCallback(window.getHandle(), GLCloseWindow);
 }
 
 void 
@@ -1174,6 +1182,13 @@ appGraphics::GLMoveMouse(GLFWwindow* window,
 
   }
 
+}
+
+void 
+appGraphics::GLCloseWindow(GLFWwindow* window)
+{
+  s_run = false;
+  glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
 #endif // OPENGL
