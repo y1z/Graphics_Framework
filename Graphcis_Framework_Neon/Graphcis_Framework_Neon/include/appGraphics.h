@@ -41,7 +41,14 @@ class appGraphics :
   public cBaseApp
 {
 public:// typedef 
+  /**
+  * @brief : a type def of the wndproc function.
+  */
   using windProcType = LRESULT(CALLBACK*)(HWND, UINT, WPARAM, LPARAM);
+
+  /**
+  * @brief : a pointer to a method
+  */
   using pointerToMethod = LRESULT(appGraphics::*) (HWND, UINT, WPARAM, LPARAM);
 public:
   appGraphics() = default;
@@ -161,6 +168,13 @@ private:
   Update();
 
   /**
+  * @brief : handles the input from the wndProc function.
+  * @bug : no known bugs.
+  */
+  void 
+  handleWindProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+  /**
   * @brief : used to capture the wndProc Events
   * @bug : no known bugs
   */
@@ -244,6 +258,8 @@ public:
   static enPerspectiveFreeCamera* s_Camera;
   static enFirstPersonCamera* s_FirstPersonCamera;
   static enCameraManager* s_CameraManager;
+
+  pointerToMethod m_winProcFunctionRedirect;
 
 
   /**************************************************/
