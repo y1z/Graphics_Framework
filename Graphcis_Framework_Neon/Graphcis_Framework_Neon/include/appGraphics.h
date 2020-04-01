@@ -40,6 +40,9 @@ class enShaderResourceView;
 class appGraphics :
   public cBaseApp
 {
+public:// typedef 
+  using windProcType = LRESULT(CALLBACK*)(HWND, UINT, WPARAM, LPARAM);
+  using pointerToMethod = LRESULT(appGraphics::*) (HWND, UINT, WPARAM, LPARAM);
 public:
   appGraphics() = default;
   ~appGraphics() = default;
