@@ -1131,6 +1131,7 @@ appGraphics::SetCallBackFunctions(enWindow & window)
   glfwSetInputMode(window.getHandle(), GLFW_STICKY_KEYS, GLFW_TRUE);
   glfwSetCursorPosCallback(window.getHandle(), GLMoveMouse);
   glfwSetWindowCloseCallback(window.getHandle(), GLCloseWindow);
+  glfwSetKeyCallback
 }
 
 void 
