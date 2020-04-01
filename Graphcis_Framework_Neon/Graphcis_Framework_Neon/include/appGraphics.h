@@ -229,12 +229,11 @@ public:
 
   std::unique_ptr<enSampler> m_sampler = nullptr;
   std::unique_ptr<enModel> m_model = nullptr;
-  static std::unique_ptr<imGuiManager> m_gui; 
 
   std::unique_ptr<enMultiviewTexture> m_renderTargetAndShaderResource = nullptr;
-
   std::shared_ptr<enShaderResourceView> m_resourceView = nullptr;
 
+  static std::unique_ptr<imGuiManager> s_gui; 
   static enConstBuffer * s_ViewMatrixBuffer;
   static enConstBuffer * s_ProjectionMatrixBuffer;
 
@@ -248,10 +247,9 @@ public:
   glm::mat4x4 m_World = glm::mat4x4(1.0f);
 
   std::vector<enConstBuffer*> m_ConstBufferContainer;
+  const std::filesystem::path m_initPath = std::filesystem::current_path();
 
   glm::vec4 m_MeshColor = glm::vec4(0.7f, 0.7f, 0.7f, 1.0f);
-
-  const std::filesystem::path m_initPath = std::filesystem::current_path();
 
   static bool s_initIsFinish;
   static bool s_useFreeCam;

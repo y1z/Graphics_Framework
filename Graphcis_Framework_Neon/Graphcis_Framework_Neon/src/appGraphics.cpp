@@ -40,7 +40,7 @@ bool appGraphics::s_run = true;
 enConstBuffer* appGraphics::s_ViewMatrixBuffer = nullptr;
 enConstBuffer* appGraphics::s_ProjectionMatrixBuffer = nullptr;
 
-std::unique_ptr<imGuiManager> appGraphics::m_gui = make_unique<imGuiManager>();
+std::unique_ptr<imGuiManager> appGraphics::s_gui = nullptr;
 
 //TODO : reorganize this better( or find a way to use one event handler for both api.)
 #if OPENGL
@@ -172,6 +172,7 @@ appGraphics::InitStatics()
     s_CameraManager = new enCameraManager();
     s_ViewMatrixBuffer = new enConstBuffer();
     s_ProjectionMatrixBuffer = new enConstBuffer();
+    s_gui = std::make_unique<imGuiManager>();
   }
   catch( const std::bad_alloc & allocError )
   {
@@ -221,9 +222,9 @@ appGraphics::initApi()
                                                                m_hardwareInfo);
 
 
-  if( !m_gui->is_initialized )
+  if( !s_gui->is_initialized )
   {
-    m_gui->Init(*m_window);
+    s_gui->Init(*m_window);
   }
 
   return checkForError;
@@ -778,11 +779,11 @@ appGraphics::Render()
 
   deviceContext.UpdateSubresource(m_worldMatrix.get(), &cb);
 
-  m_gui->beginFrame("camera view");
-  m_gui->addImage(*m_renderTargetAndShaderResource->m_shaderResource);
-  m_gui->addButton("switch Cam", s_useFreeCam);
+  s_gui->beginFrame("camera view");
+  s_gui->addImage(*m_renderTargetAndShaderResource->m_shaderResource);
+  s_gui->addButton("switch Cam", s_useFreeCam);
 
-  m_gui->endFrame();
+  s_gui->endFrame();
 
   m_swapchain->Present();
 }
@@ -843,6 +844,10 @@ appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
   if( s_initIsFinish == false )
   {
     return DefWindowProc(hWnd, message, wParam, lParam);
+  }
+  else
+  {
+
   }
 
   BasePerspectiveCamera* cameraPtr = nullptr;
