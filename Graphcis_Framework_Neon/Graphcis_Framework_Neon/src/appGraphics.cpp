@@ -1131,7 +1131,8 @@ appGraphics::SetCallBackFunctions(enWindow & window)
   glfwSetInputMode(window.getHandle(), GLFW_STICKY_KEYS, GLFW_TRUE);
   glfwSetCursorPosCallback(window.getHandle(), GLMoveMouse);
   glfwSetWindowCloseCallback(window.getHandle(), GLCloseWindow);
-  glfwSetKeyCallback
+
+  glfwSetKeyCallback(window.getHandle(), GLKeyInput);
 }
 
 void 
@@ -1190,6 +1191,24 @@ appGraphics::GLCloseWindow(GLFWwindow* window)
 {
   s_run = false;
   glfwSetWindowShouldClose(window, GLFW_TRUE);
+}
+
+void
+appGraphics::GLKeyInput(GLFWwindow* window,
+                        int key,
+                        int scancode,
+                        int action,
+                        int mods)
+{
+
+  if( key == GLFW_KEY_LEFT_SHIFT )
+  {
+    (s_pressedShift) ?
+      s_pressedShift = false : s_pressedShift = true;
+
+  }
+
+
 }
 
 #endif // OPENGL

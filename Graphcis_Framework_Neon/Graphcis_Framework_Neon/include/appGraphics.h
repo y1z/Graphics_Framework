@@ -182,8 +182,23 @@ private:
               double xPos,
               double yPos);
 
+  /**
+  * @brief : tell's glfw what to do when closing a window.
+  * @bug : no known bugs.
+  */
   static void
   GLCloseWindow(GLFWwindow* window);
+
+  /**
+  * @brief : tell's glfw what to do when i press a key.
+  * @bug : no known bugs.
+  */
+  static void 
+  GLKeyInput(GLFWwindow* window,
+             int key,
+             int scancode,
+             int action,
+             int mods);
 
 
 #endif // OPENGL
