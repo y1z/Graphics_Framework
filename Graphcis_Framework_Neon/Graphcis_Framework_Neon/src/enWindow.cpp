@@ -155,5 +155,9 @@ enWindow::update()
   m_width = currentRect.right - currentRect.left;
   m_height = currentRect.bottom - currentRect.top;
 #elif OPENGL
+  enVector2 const sizeOfWindow = helper::getWindowSize(*this);
+
+  m_width = sizeOfWindow.x;
+  m_height = sizeOfWindow.y;
 #endif // DIRECTX
 }

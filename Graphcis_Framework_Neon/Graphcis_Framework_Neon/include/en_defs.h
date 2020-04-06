@@ -76,6 +76,43 @@ using uByte4c = uint_least32_t const;//<! 4 bytes per instance
 using uByte8c = uint_least64_t const;//<! 8 bytes per instance 
 
 /*++++++++++++++++++++++++++++++++++++*/
+// CONSTANTS
+/*++++++++++++++++++++++++++++++++++++*/
+namespace gvars
+{
+  /**
+  * @brief : the value of pi calculated with fractions.
+  * // https://www.wired.com/2011/03/what-is-the-best-fractional-representation-of-pi/
+  */
+  static constexpr const float pi = 355.0f / 113.0f;
+
+  /**
+  * @brief : the value of pi + HalfPi.
+  */
+  static constexpr const float onePlusHalfPi = pi * 1.5f;
+
+  /**
+  * @brief : twice the value of pi.
+  */
+  static constexpr const float twoPi = pi * 2.0f;
+
+  /**
+  * @brief : 3/4 of pi 
+  */
+  static constexpr const float threeFourthsPi = pi * .75f;
+
+  /**
+  * @brief : pi divided by half.
+  */
+  static constexpr const float halfPi = pi * .5f;
+
+  /**
+  * @brief : 1 fourth of pi.
+  */
+  static constexpr const float quarterPi = pi * .25f;//
+}
+
+/*++++++++++++++++++++++++++++++++++++*/
 /* ENUMS */
 /*++++++++++++++++++++++++++++++++++++*/
 

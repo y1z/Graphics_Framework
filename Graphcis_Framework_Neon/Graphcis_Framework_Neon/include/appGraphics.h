@@ -171,8 +171,11 @@ private:
   * @brief : handles the input from the wndProc function.
   * @bug : no known bugs.
   */
-  void 
-  handleWindProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+  HRESULT
+  handleWindProc(HWND hWnd,
+                 UINT message,
+                 WPARAM wParam,
+                 LPARAM lParam);
 
   /**
   * @brief : used to capture the wndProc Events
@@ -259,7 +262,7 @@ public:
   static enFirstPersonCamera* s_FirstPersonCamera;
   static enCameraManager* s_CameraManager;
 
-  pointerToMethod m_winProcFunctionRedirect;
+  static pointerToMethod s_winProcFunctionRedirect;
 
 
   /**************************************************/

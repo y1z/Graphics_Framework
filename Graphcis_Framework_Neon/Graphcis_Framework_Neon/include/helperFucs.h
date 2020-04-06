@@ -7,6 +7,7 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include <cwchar>
 
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/matrix_access.hpp"
@@ -42,14 +43,14 @@ namespace helper
   {
     std::string Result(wideString.length() + 1, '\0');
 
-    // converts a wide string to a char/multi-byte string
-    std::size_t checkForError = std::wcstombs(Result.data(),
-                                              wideString.data(),
-                                              wideString.length());
-    // how to check for errors  https://en.cppreference.com/w/cpp/string/multibyte/wcstombs
-    if( checkForError == static_cast<std::size_t>(-1) )
-    {
-      assert(checkForError != static_cast<std::size_t>(-1) && "invalid string conversion");
+    size_t index = wideString.length() - 1;
+
+    for( auto &element : wideString ){
+
+      int status;
+      wctomb_s(&status, &Result[index], sizeof(char), wideString[index]);
+      --index;
+      assert(status != -1 && "conversion is not possible give the current local");
     }
 
     return Result;
@@ -59,23 +60,20 @@ namespace helper
   *@brief converts a string/const char* to it's wstring equivalent
   */
   static std::wstring
-    convertStringToWString(std::string_view String)
+  convertStringToWString(std::string_view String)
   {
     std::wstring Result(String.length() + 1, '\0');
 
     std::size_t checkForError = std::mbstowcs(Result.data(), String.data(), String.length());
 
-    if( checkForError == static_cast<std::size_t>(-1) )
-    {
-      assert(checkForError != static_cast<std::size_t>(-1) && "invalid string conversion");
-    }
+    assert(checkForError != static_cast<std::size_t>(-1) && "invalid string conversion");
 
     return Result;
   }
 
 
   static std::string
-    loadFileToString(std::string_view filePath)
+  loadFileToString(std::string_view filePath)
   {
     std::string Result{ "Error" };
     std::ifstream File(filePath.data());
@@ -97,7 +95,7 @@ namespace helper
   /*************/
 
   static std::string
-    loadFileToString(std::wstring_view filePath)
+  loadFileToString(std::wstring_view filePath)
   {
     std::string Result{ "Error" };
     std::wifstream File(filePath.data());
@@ -293,7 +291,7 @@ namespace helper
   * @returns : descriptor that used for a DepthStencil .
   * @bug :no known bugs.
   */
-  EN_NODISCARD static sTextureDescriptor
+  EN_NODISCARD static constexpr sTextureDescriptor
   generateTextureDescForDepthStencil(float const Width,
                                      float const Height)
   {
@@ -312,7 +310,7 @@ namespace helper
   * @returns : descriptor that used for a render-Target.
   * @bug :no known bugs.
   */
-  EN_NODISCARD static sTextureDescriptor
+  EN_NODISCARD static constexpr sTextureDescriptor
   generateTextureDescForRenderTarget(float const Width,
                                      float const Height)
   {
@@ -355,6 +353,12 @@ namespace helper
     return result;
   }
 
+  /**
+  * @brief : updates the uniform variables in the glsl shader
+  * @param[in] details : contains the type of the variable and the values
+  * that the variable should contain.
+  * @bug : no known bug.
+  */
   EN_NODISCARD static void
   GlUpdateUniform(sUniformDetails& details)
   {
@@ -367,64 +371,82 @@ namespace helper
     switch( details.element )
     {
       case enConstBufferElem::NONE:
-        assert(details.element != enConstBufferElem::NONE && "element in the buffer has no type");
-        break;
-      case enConstBufferElem::mat4x4:
+      assert(details.element != enConstBufferElem::NONE && "element in the buffer has no type");
+      break;
 
+      case enConstBufferElem::mat4x4:
+      {
         glUniformMatrix4fv(details.id,
                            1,
-                           GL_TRUE, 
-                           static_cast<const GLfloat*> (details.ptr_data));
-        break;
+                           GL_TRUE,
+                           static_cast< const GLfloat* > (details.ptr_data));
+      }
+      break;
+
       case enConstBufferElem::mat3x3:
       {
         glUniformMatrix3fv(details.id,
                            1,
-                           GL_TRUE, 
-                           static_cast<const  GLfloat*> (details.ptr_data));
+                           GL_TRUE,
+                           static_cast< const  GLfloat* > (details.ptr_data));
       }
-        break;
+      break;
+
       case enConstBufferElem::vec4:
 
+      {
         glUniform4fv(details.id,
                      1,
-                     static_cast<const  GLfloat*> (details.ptr_data));
-        break;
+                     static_cast< const  GLfloat* > (details.ptr_data));
+      }
+      break;
+      
       case enConstBufferElem::vec3:
-
+      {
         glUniform3fv(details.id,
                      1,
-                     static_cast<const GLfloat*> (details.ptr_data));
-        break;
-      case enConstBufferElem::vec2:
+                     static_cast< const GLfloat* > (details.ptr_data));
+      }
+      break;
 
+      case enConstBufferElem::vec2:
+      {
         glUniform2fv(details.id,
                      1,
-                     static_cast<const  GLfloat*> (details.ptr_data));
+                     static_cast< const  GLfloat* > (details.ptr_data));
+      }
       break;
+
       case enConstBufferElem::single_float:
+      {
         glUniform1fv(details.id,
                      1,
-                     static_cast<const  GLfloat*> (details.ptr_data));
-        break;
+                     static_cast< const  GLfloat* > (details.ptr_data));
+      }
+      break;
+
       case enConstBufferElem::imat4x4:
-        break;
+      break;
+
       case enConstBufferElem::imat3x3:
-        break;
+      break;
+
       case enConstBufferElem::ivec4:
-        break;
+      break;
+
       case enConstBufferElem::ivec3:
-        break;
+      break;
       case enConstBufferElem::ivec2:
-        break;
+      break;
       case enConstBufferElem::single_int:
-        break;
+      break;
       default:
-        assert(details.element != enConstBufferElem::NONE && "element in the buffer has no type");
-        break;
+      assert(details.element != enConstBufferElem::NONE && "element in the buffer has no type");
+      break;
     }
 
   }
+
 
 }
 

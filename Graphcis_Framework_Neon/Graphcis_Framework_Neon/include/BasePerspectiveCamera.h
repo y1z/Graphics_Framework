@@ -363,5 +363,7 @@ protected: // variables
   *  @brief : used to control how fast the camera moves in world-space.
   */
   float m_speed{ 10.0f };
+
+  uint32 m_Id;
 };
 

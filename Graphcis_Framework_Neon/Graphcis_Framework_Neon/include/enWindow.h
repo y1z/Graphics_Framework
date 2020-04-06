@@ -53,6 +53,8 @@ public:
   update();
 
 private:
+
+
 #if UNICODE 
   std::wstring m_name;
   std::wstring m_className;

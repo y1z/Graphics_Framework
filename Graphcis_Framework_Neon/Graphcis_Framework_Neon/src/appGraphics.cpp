@@ -41,6 +41,9 @@ enConstBuffer* appGraphics::s_ViewMatrixBuffer = nullptr;
 enConstBuffer* appGraphics::s_ProjectionMatrixBuffer = nullptr;
 
 std::unique_ptr<imGuiManager> appGraphics::s_gui = nullptr;
+appGraphics::pointerToMethod appGraphics::s_winProcFunctionRedirect = nullptr;
+
+static appGraphics* s_pointerToClassInstance = nullptr;;
 
 //TODO : reorganize this better( or find a way to use one event handler for both api.)
 #if OPENGL
@@ -628,6 +631,8 @@ appGraphics::InitWindow(HINSTANCE hInstance, int nCmdShow)
   bool isSuccessful = m_window->init(WndProcRedirect,
                                      hInstance,
                                      " Graphics window ");
+  s_pointerToClassInstance = this;
+  
 
   if( isSuccessful )
   {
@@ -829,31 +834,14 @@ appGraphics::Update()
 
 }
 
-void 
-appGraphics::handleWindProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{}
-
-extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-LRESULT
-appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+HRESULT
+appGraphics::handleWindProc(HWND hWnd,
+                            UINT message,
+                            WPARAM wParam,
+                            LPARAM lParam)
 {
   PAINTSTRUCT ps;
   HDC hdc;
-
-  if( ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam) )
-    return true;
-
-  enDeviceContext& deviceContext = enDeviceContext::getInstance();
-  if( s_initIsFinish == false )
-  {
-    return DefWindowProc(hWnd, message, wParam, lParam);
-  }
-  else
-  {
-
-  }
-
   BasePerspectiveCamera* cameraPtr = nullptr;
   if( s_useFreeCam )
   {
@@ -865,6 +853,7 @@ appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
   }
 
 
+  enDeviceContext& deviceContext = enDeviceContext::getInstance();
   switch( message )
   {
     case WM_PAINT:
@@ -884,12 +873,10 @@ appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
         if( s_useFreeCam )
         {
           s_useFreeCam = false;
-          std::cout << "false\n";
         }
         else
         {
           s_useFreeCam = true;
-          std::cout << "true\n";
         }
       }
 
@@ -909,8 +896,6 @@ appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
       if( wParam == (WPARAM)'S' )
       {
-        //s_FirstPersonCamera.TranslateRelative(0.0f, 0.0f, -1.0f);
-
         if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
         {
           freeCam->TranslateRelative(0.0f, 0.0f, -1.0f);
@@ -1130,6 +1115,30 @@ appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
   }
 
   return 0;
+  return 0;
+}
+
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+LRESULT
+appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+  PAINTSTRUCT ps;
+  HDC hdc;
+
+  if( ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam) )
+    return true;
+
+  enDeviceContext& deviceContext = enDeviceContext::getInstance();
+  if( s_initIsFinish == false )
+  {
+    return DefWindowProc(hWnd, message, wParam, lParam);
+  }
+  else
+  {
+    return s_pointerToClassInstance->handleWindProc(hWnd, message, wParam, lParam);
+  }
+
 }
 
 #if OPENGL
