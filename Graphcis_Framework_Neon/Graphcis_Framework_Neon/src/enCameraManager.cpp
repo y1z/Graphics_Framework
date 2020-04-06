@@ -12,10 +12,32 @@ enCameraManager::translateRelative(const enVector3& translationVector,
                                    const bool useFreeCam,
                                    const size_t whichInstanceToUse)
 {
+  BasePerspectiveCamera * ptr_cam = nullptr;
+  if( false == useFreeCam )
+  {
+    ptr_cam = this->getNthFreeCamera(whichInstanceToUse);
+  }
+  else
+  {
+    ptr_cam = this->getNthFirstPersonCamera(whichInstanceToUse);
+  }
 
+  getCameraInstance(whichInstanceToUse, useFreeCam);
 
+ 
+  if( ptr_cam == nullptr )
+    return false;
 
-  return false;
+  if( auto cam = dynamic_cast< enPerspectiveFreeCamera* >(ptr_cam) )
+  {
+    cam->TranslateRelative(translationVector.x, translationVector.y, translationVector.z);
+  }
+  else if( auto cam = dynamic_cast< enFirstPersonCamera* >(ptr_cam))
+  {
+    cam->TranslateRelative(translationVector.x, translationVector.y, translationVector.z);
+  }
+
+  return true;
 }
 
 enFirstPersonCamera*
@@ -78,6 +100,7 @@ enCameraManager::getNthFirstPersonCamera(size_t instance)
       --instance;
     }
 
+    ++m_currentCamIndex;
   }
 
   return result;
@@ -104,6 +127,7 @@ enCameraManager::getNthFreeCamera(size_t instance)
       --instance;
     }
 
+    ++m_currentCamIndex;
   }
 
   return result;
@@ -130,4 +154,20 @@ BasePerspectiveCamera*
 enCameraManager::getLastSelectedCam()
 {
   return m_cameras[m_currentCamIndex];
+}
+
+BasePerspectiveCamera* 
+enCameraManager::getCameraInstance(size_t const selectedInstance,
+                                   bool const useFreeCam)
+{
+  BasePerspectiveCamera * ptr_cam = nullptr;
+  if( false == useFreeCam )
+  {
+    ptr_cam = this->getNthFreeCamera(selectedInstance);
+  }
+  else
+  {
+    ptr_cam = this->getNthFirstPersonCamera(selectedInstance);
+  }
+  return ptr_cam;
 }

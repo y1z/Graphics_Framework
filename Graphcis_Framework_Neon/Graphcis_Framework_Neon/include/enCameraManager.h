@@ -78,6 +78,11 @@ public:
   getLastSelectedCam();
 
 private:
+
+  BasePerspectiveCamera*
+  getCameraInstance( size_t const selectedInstance,
+                    bool const useFreeCam);
+
   /**
   * @brief : contains the cameras used by the manager
   */

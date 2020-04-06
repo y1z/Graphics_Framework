@@ -843,7 +843,7 @@ appGraphics::handleWindProc(HWND hWnd,
   PAINTSTRUCT ps;
   HDC hdc;
   BasePerspectiveCamera* cameraPtr = nullptr;
-  if( s_useFreeCam )
+  if( s_useFreeCam == false )
   {
     cameraPtr = s_CameraManager->getFirstPersonCamera();
   }
@@ -868,7 +868,7 @@ appGraphics::handleWindProc(HWND hWnd,
     case WM_KEYDOWN:
     {
 
-      if( wParam == (WPARAM)'1' )
+      if( (WPARAM)'1' == wParam )
       {
         if( s_useFreeCam )
         {
@@ -880,88 +880,32 @@ appGraphics::handleWindProc(HWND hWnd,
         }
       }
 
-      if( wParam == (WPARAM)'W' )
+      if( wParam == ( WPARAM )'W' )
       {
-        if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
-        {
-          freeCam->TranslateRelative(0.0f, 0.0f, 1.0f);
-        }
-
-        if( auto* FirstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
-        {
-          FirstPersonCam->TranslateRelative(0.0f, 0.0f, 1.0f);
-        }
-
+        s_CameraManager->translateRelative(enVector3(0.0f, 0.0f, 1.0f), s_useFreeCam);
       }
 
-      if( wParam == (WPARAM)'S' )
+      if( wParam == ( WPARAM )'S' )
       {
-        if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
-        {
-          freeCam->TranslateRelative(0.0f, 0.0f, -1.0f);
-        }
-
-        if( auto* firstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
-        {
-          firstPersonCam->TranslateRelative(0.0f, 0.0f, -1.0f);
-        }
+        s_CameraManager->translateRelative(enVector3(0.0f, 0.0f, -1.0f), s_useFreeCam);
       }
-      if( wParam == (WPARAM)'D' )
+      if( wParam == ( WPARAM )'D' )
 
       {
-        if( auto* FreeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
-        {
-          FreeCam->TranslateRelative(-1.0f, 0.0f, 0.0f);
-        }
-
-        if( auto* FirstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
-        {
-          FirstPersonCam->TranslateRelative(-1.0f, 0.0f, 0.0f);
-        }
-        //s_FirstPersonCamera.TranslateRelative(-1.0f, 0.0f, 0.0f);
+        s_CameraManager->translateRelative(enVector3(-1.0f, 0.0f, 0.0f), s_useFreeCam);
       }
-      if( wParam == (WPARAM)'A' )
+      if( wParam == ( WPARAM )'A' )
       {
-       // s_FirstPersonCamera.TranslateRelative(1.0f, 0.0f, 0.0f);
-
-        if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
-        {
-          freeCam->TranslateRelative(1.0f, 0.0f, 0.0f);
-        }
-
-        if( auto* FirstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
-        {
-          FirstPersonCam->TranslateRelative(1.0f, 0.0f, 0.0f);
-        }
+        s_CameraManager->translateRelative(enVector3(1.0f, 0.0f, 0.0f), s_useFreeCam);
       }
-      if( wParam == static_cast<WPARAM>('E') )
+      if( wParam == static_cast< WPARAM >('E') )
       {
-        //s_FirstPersonCamera.TranslateRelative(0.0f, 1.0f, 0.0f);
-
-        if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
-        {
-          freeCam->TranslateRelative(0.0f, 1.0f, 0.0f);
-        }
-
-        if( auto* FirstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
-        {
-          FirstPersonCam->TranslateRelative(0.0f, 1.0f, 0.0f);
-        }
+        s_CameraManager->translateRelative(enVector3(0.0f, 1.0f, 0.0f), s_useFreeCam);
       }
 
       if( wParam == static_cast<WPARAM>('Q') )
       {
-        //s_FirstPersonCamera.TranslateRelative(0.0f, -1.0f, 0.0f);
-
-        if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
-        {
-          freeCam->TranslateRelative(0.0f, -1.0f, 0.0f);
-        }
-
-        if( auto* FirstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
-        {
-          FirstPersonCam->TranslateRelative(0.0f, -1.0f, 0.0f);
-        }
+        s_CameraManager->translateRelative(enVector3(0.0f, -1.0f, 0.0f), s_useFreeCam);
       }
 
       if( wParam == VK_RIGHT )

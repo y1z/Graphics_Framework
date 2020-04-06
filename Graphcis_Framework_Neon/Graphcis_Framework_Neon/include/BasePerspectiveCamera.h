@@ -1,5 +1,5 @@
 #pragma once
-#include "enTypes.h"
+#include "util/Header.h"
 #include <cstdint>
 
 /**
