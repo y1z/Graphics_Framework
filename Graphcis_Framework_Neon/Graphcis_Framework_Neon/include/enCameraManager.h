@@ -17,6 +17,19 @@ public:
 
 public:
 
+  /**
+  * @brief : translates a camera relative to it self.
+  * @returns true if the operation succeeded.
+  * @param[in] translationVector : controls how the camera is going to translate.
+  * @param[in] useFreeCam determines which type of camera to use.
+  * @param[in] whichInstanceToUse : controls which instance of the cameras to use.
+  * @bug : no known bugs.
+  */
+  bool
+  translateRelative(const enVector3 & translationVector,
+                    const bool useFreeCam = true,
+                    const size_t whichInstanceToUse = 0);
+
 
   /**
   * @brief finds the first instance of a 'enFirstPersonCamera' camera and returns a pointer to it.
@@ -29,6 +42,19 @@ public:
   */
   enPerspectiveFreeCamera*
   getFreeCamera();
+
+  /**
+  * @brief find the nth instance of a camera if it exist.
+  */
+  enFirstPersonCamera*
+  getNthFirstPersonCamera(size_t instance);
+
+  /**
+  * @brief find the nth instance of a camera if it exist.
+  */
+  enPerspectiveFreeCamera*
+  getNthFreeCamera(size_t instance);
+
 
   /**
   * @brief :

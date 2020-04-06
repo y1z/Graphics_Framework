@@ -7,6 +7,17 @@ enCameraManager::enCameraManager()
 enCameraManager::~enCameraManager()
 {}
 
+bool
+enCameraManager::translateRelative(const enVector3& translationVector,
+                                   const bool useFreeCam,
+                                   const size_t whichInstanceToUse)
+{
+
+
+
+  return false;
+}
+
 enFirstPersonCamera*
 enCameraManager::getFirstPersonCamera()
 {
@@ -41,6 +52,58 @@ enCameraManager::getFreeCamera()
     if(result != nullptr ) 
       break;
     ++m_currentCamIndex;
+  }
+
+  return result;
+}
+
+enFirstPersonCamera*
+enCameraManager::getNthFirstPersonCamera(size_t instance)
+{
+  enFirstPersonCamera* result = nullptr;
+  enFirstPersonCamera* currentCam = nullptr;
+  m_currentCamIndex = 0u;
+  for( auto& ptrToCameras : m_cameras )
+  {
+    currentCam = dynamic_cast< enFirstPersonCamera* >(ptrToCameras);
+
+    if( currentCam != nullptr )
+    {
+      if( instance == 0 )
+      {
+        result = currentCam;
+        break;
+      }
+
+      --instance;
+    }
+
+  }
+
+  return result;
+}
+
+enPerspectiveFreeCamera*
+enCameraManager::getNthFreeCamera(size_t instance)
+{
+  enPerspectiveFreeCamera* result = nullptr;
+  enPerspectiveFreeCamera* currentCam = nullptr;
+  m_currentCamIndex = 0u;
+  for( auto& ptrToCameras : m_cameras )
+  {
+    currentCam = dynamic_cast< enPerspectiveFreeCamera* >(ptrToCameras);
+
+    if( currentCam != nullptr )
+    {
+      if( instance == 0 )
+      {
+        result = currentCam;
+        break;
+      }
+
+      --instance;
+    }
+
   }
 
   return result;
