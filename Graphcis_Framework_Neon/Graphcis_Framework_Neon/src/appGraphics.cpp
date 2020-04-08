@@ -910,90 +910,32 @@ appGraphics::handleWindProc(HWND hWnd,
 
       if( wParam == VK_RIGHT )
       {
-
-        if( auto* FreeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
-        {
-          FreeCam->rotateInYaw(-10.0f);
-        }
-
-        if( auto* FirstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
-        {
-          FirstPersonCam->rotateInYaw(-10.0f);
-        }
+        s_CameraManager->rotateInYaw(-10.0f, s_useFreeCam);
       }
 
       if( wParam == VK_LEFT )
       {
-        if( auto* FreeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
-        {
-          FreeCam->rotateInYaw(10.0f);
-        }
-
-        if( auto* FirstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
-        {
-          FirstPersonCam->rotateInYaw(10.0f);
-        }
-        ///s_FirstPersonCamera.rotateInYaw(10.0f);
+        s_CameraManager->rotateInYaw(10.0f, s_useFreeCam);
       }
 
       if( wParam == VK_UP )
       {
-
-        if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
-        {
-          freeCam->rotateInPitch(-10.0f);
-        }
-
-        if( auto* FirstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
-        {
-          FirstPersonCam->rotateInPitch(-10.0f);
-        }
-        //s_FirstPersonCamera.rotateInPitch(-10.0f);
+        s_CameraManager->rotateInPitch(-10.0f, s_useFreeCam);
       }
 
       if( wParam == VK_DOWN )
       {
-        //s_FirstPersonCamera.rotateInPitch(10.0f);
-
-        if( auto* FreeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
-        {
-          FreeCam->rotateInPitch(10.0f);
-        }
-
-        if( auto* FirstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
-        {
-          FirstPersonCam->rotateInPitch(10.0f);
-        }
+        s_CameraManager->rotateInPitch(10.0f, s_useFreeCam);
       }
 
       if( wParam == static_cast<WPARAM>('I') )
       {
-        //s_FirstPersonCamera.rotateInRoll(10.0f);
-
-        if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
-        {
-          freeCam->rotateInRoll(10.0f);
-        }
-
-        if( auto* FirstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
-        {
-          FirstPersonCam->rotateInRoll(10.0f);
-        }
+        s_CameraManager->rotateInRoll(10.0f, s_useFreeCam);
       }
 
       if( wParam == static_cast<WPARAM>('O') )
       {
-        //s_FirstPersonCamera.rotateInRoll(-10.0f);
-
-        if( auto* freeCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
-        {
-          freeCam->rotateInRoll(-10.0f);
-        }
-
-        if( auto* FirstPersonCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
-        {
-          FirstPersonCam->rotateInRoll(-10.0f);
-        }
+        s_CameraManager->rotateInRoll(-10.0f, s_useFreeCam);
       }
 
 
@@ -1031,23 +973,17 @@ appGraphics::handleWindProc(HWND hWnd,
 
         mouseDir.x = -mouseDir.x;
 
-        if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
-        {
-          FirstPersonCam->rotateVector(mouseDir);
-        }
+        s_CameraManager->rotateVector(mouseDir, s_useFreeCam);
 
-        if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
-        {
-          freeCam->rotateVector(mouseDir);
-        }
+        BasePerspectiveCamera const* const currentCamera = s_CameraManager->getLastSelectedCam();
 
         viewMatrix cbNeverChanges;
-        cbNeverChanges.mView = cameraPtr->getView();
+        cbNeverChanges.mView = currentCamera->getView();
         helper::arrangeForApi(cbNeverChanges.mView);
         deviceContext.UpdateSubresource(s_ViewMatrixBuffer, &cbNeverChanges);
 
         projectionMatrix cbChangesOnResize;
-        cbChangesOnResize.mProjection = cameraPtr->getProjection();
+        cbChangesOnResize.mProjection = currentCamera->getProjection();
         helper::arrangeForApi(cbChangesOnResize.mProjection);
         deviceContext.UpdateSubresource(s_ProjectionMatrixBuffer, &cbChangesOnResize);
       }

@@ -12,19 +12,8 @@ enCameraManager::translateRelative(const enVector3& translationVector,
                                    const bool useFreeCam,
                                    const size_t whichInstanceToUse)
 {
-  BasePerspectiveCamera * ptr_cam = nullptr;
-  if( false == useFreeCam )
-  {
-    ptr_cam = this->getNthFreeCamera(whichInstanceToUse);
-  }
-  else
-  {
-    ptr_cam = this->getNthFirstPersonCamera(whichInstanceToUse);
-  }
+  BasePerspectiveCamera* ptr_cam = getCameraInstance(whichInstanceToUse, useFreeCam);
 
-  getCameraInstance(whichInstanceToUse, useFreeCam);
-
- 
   if( ptr_cam == nullptr )
     return false;
 
@@ -32,9 +21,98 @@ enCameraManager::translateRelative(const enVector3& translationVector,
   {
     cam->TranslateRelative(translationVector.x, translationVector.y, translationVector.z);
   }
-  else if( auto cam = dynamic_cast< enFirstPersonCamera* >(ptr_cam))
+  else if( auto cam = dynamic_cast< enFirstPersonCamera* >(ptr_cam) )
   {
     cam->TranslateRelative(translationVector.x, translationVector.y, translationVector.z);
+  }
+
+  return true;
+}
+
+bool
+enCameraManager::rotateVector(const enVector3& rotation,
+                              const bool useFreeCam,
+                              const size_t whichInstanceToUse,
+                              const float deltaTime)
+{
+  BasePerspectiveCamera* ptr_cam = getCameraInstance(whichInstanceToUse, useFreeCam);
+
+  if( ptr_cam == nullptr )
+    return false;
+
+  if( auto cam = dynamic_cast< enPerspectiveFreeCamera* >(ptr_cam) )
+  {
+    cam->rotateVector(enVector2(rotation.x, rotation.y),deltaTime);
+  }
+  else if( auto cam = dynamic_cast< enFirstPersonCamera* >(ptr_cam) )
+  {
+    cam->rotateVector(enVector2(rotation.x, rotation.y),deltaTime);
+  }
+
+  return false;
+}
+
+bool
+enCameraManager::rotateInYaw(const float rotationAngle,
+                             const bool useFreeCam,
+                             const size_t whichInstanceToUse)
+{
+  BasePerspectiveCamera* ptr_cam = getCameraInstance(whichInstanceToUse, useFreeCam);
+
+  if( ptr_cam == nullptr )
+    return false;
+
+
+  if( auto cam = dynamic_cast< enPerspectiveFreeCamera* >(ptr_cam) )
+  {
+    cam->rotateInYaw(rotationAngle);
+  }
+  else if( auto cam = dynamic_cast< enFirstPersonCamera* >(ptr_cam) )
+  {
+    cam->rotateInYaw(rotationAngle);
+  }
+  return true;
+}
+
+bool
+enCameraManager::rotateInPitch(const float rotationAngle, const bool useFreeCam, const size_t whichInstanceToUse)
+{
+  BasePerspectiveCamera* ptr_cam = getCameraInstance(whichInstanceToUse, useFreeCam);
+
+  if( ptr_cam == nullptr )
+    return false;
+
+
+  if( auto cam = dynamic_cast< enPerspectiveFreeCamera* >(ptr_cam) )
+  {
+    cam->rotateInPitch(rotationAngle);
+  }
+  else if( auto cam = dynamic_cast< enFirstPersonCamera* >(ptr_cam) )
+  {
+    cam->rotateInPitch(rotationAngle);
+  }
+
+  return true;
+}
+
+bool
+enCameraManager::rotateInRoll(const float rotationAngle,
+                              const bool useFreeCam,
+                              const size_t whichInstanceToUse)
+{
+  BasePerspectiveCamera* ptr_cam = getCameraInstance(whichInstanceToUse, useFreeCam);
+
+  if( ptr_cam == nullptr )
+    return false;
+
+
+  if( auto cam = dynamic_cast< enPerspectiveFreeCamera* >(ptr_cam) )
+  {
+    cam->rotateInRoll(rotationAngle);
+  }
+  else if( auto cam = dynamic_cast< enFirstPersonCamera* >(ptr_cam) )
+  {
+    cam->rotateInRoll(rotationAngle);
   }
 
   return true;
@@ -44,18 +122,18 @@ enFirstPersonCamera*
 enCameraManager::getFirstPersonCamera()
 {
   enFirstPersonCamera* result = nullptr;
-  m_currentCamIndex = 0u;
+  m_lastUsedCamIndex = 0u;
 
   for( BasePerspectiveCamera* ptrToCamera : m_cameras )
   {
-    result = dynamic_cast<enFirstPersonCamera*> (ptrToCamera);
+    result = dynamic_cast< enFirstPersonCamera* > (ptrToCamera);
 
     if( result != nullptr )
     {
       break;
     }
 
-    ++m_currentCamIndex;
+    ++m_lastUsedCamIndex;
   }
 
   return result;
@@ -65,15 +143,15 @@ enPerspectiveFreeCamera*
 enCameraManager::getFreeCamera()
 {
   enPerspectiveFreeCamera* result = nullptr;
-  m_currentCamIndex = 0u;
+  m_lastUsedCamIndex = 0u;
 
   for( auto& ptrToCamera : m_cameras )
   {
-    result = dynamic_cast<enPerspectiveFreeCamera*> (ptrToCamera);
+    result = dynamic_cast< enPerspectiveFreeCamera* > (ptrToCamera);
 
-    if(result != nullptr ) 
+    if( result != nullptr )
       break;
-    ++m_currentCamIndex;
+    ++m_lastUsedCamIndex;
   }
 
   return result;
@@ -84,7 +162,7 @@ enCameraManager::getNthFirstPersonCamera(size_t instance)
 {
   enFirstPersonCamera* result = nullptr;
   enFirstPersonCamera* currentCam = nullptr;
-  m_currentCamIndex = 0u;
+  m_lastUsedCamIndex = 0u;
   for( auto& ptrToCameras : m_cameras )
   {
     currentCam = dynamic_cast< enFirstPersonCamera* >(ptrToCameras);
@@ -100,7 +178,7 @@ enCameraManager::getNthFirstPersonCamera(size_t instance)
       --instance;
     }
 
-    ++m_currentCamIndex;
+    ++m_lastUsedCamIndex;
   }
 
   return result;
@@ -111,7 +189,7 @@ enCameraManager::getNthFreeCamera(size_t instance)
 {
   enPerspectiveFreeCamera* result = nullptr;
   enPerspectiveFreeCamera* currentCam = nullptr;
-  m_currentCamIndex = 0u;
+  m_lastUsedCamIndex = 0u;
   for( auto& ptrToCameras : m_cameras )
   {
     currentCam = dynamic_cast< enPerspectiveFreeCamera* >(ptrToCameras);
@@ -127,19 +205,19 @@ enCameraManager::getNthFreeCamera(size_t instance)
       --instance;
     }
 
-    ++m_currentCamIndex;
+    ++m_lastUsedCamIndex;
   }
 
   return result;
 }
 
-void 
+void
 enCameraManager::updateCameras(uint32c newWidth, uint32c newHeight)
 {
 
   for( BasePerspectiveCamera* ptrToCamera : m_cameras )
   {
-    ptrToCamera->updateDimensions(static_cast<float>(newWidth), static_cast<float>(newHeight) );
+    ptrToCamera->updateDimensions(static_cast< float >(newWidth), static_cast< float >(newHeight));
   }
 
 }
@@ -150,17 +228,17 @@ enCameraManager::addCamera(BasePerspectiveCamera* ptrToCamera)
   m_cameras.emplace_back(ptrToCamera);
 }
 
-BasePerspectiveCamera* 
+BasePerspectiveCamera*
 enCameraManager::getLastSelectedCam()
 {
-  return m_cameras[m_currentCamIndex];
+  return m_cameras[m_lastUsedCamIndex];
 }
 
-BasePerspectiveCamera* 
+BasePerspectiveCamera*
 enCameraManager::getCameraInstance(size_t const selectedInstance,
                                    bool const useFreeCam)
 {
-  BasePerspectiveCamera * ptr_cam = nullptr;
+  BasePerspectiveCamera* ptr_cam = nullptr;
   if( false == useFreeCam )
   {
     ptr_cam = this->getNthFreeCamera(selectedInstance);
