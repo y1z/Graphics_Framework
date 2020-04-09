@@ -1116,16 +1116,15 @@ appGraphics::GLKeyInput(GLFWwindow* window,
 
   else if( GLFW_KEY_1 == key && GLFW_PRESS == action )
   {
-      (s_useFreeCam)
-        ? s_useFreeCam = false
-        : s_useFreeCam = true;
+    (s_useFreeCam)
+      ? s_useFreeCam = false
+      : s_useFreeCam = true;
   }
-  if(  GLFW_KEY_LEFT_SHIFT == key  )
+  if( GLFW_KEY_LEFT_SHIFT == key )
   {
     (s_pressedShift)
       ? s_pressedShift = false
       : s_pressedShift = true;
-
   }
 
   BasePerspectiveCamera const* const currentCamera = s_CameraManager->getLastSelectedCam();
@@ -1141,7 +1140,6 @@ appGraphics::GLKeyInput(GLFWwindow* window,
   cbChangesOnResize.mProjection = currentCamera->getProjection();
   helper::arrangeForApi(cbChangesOnResize.mProjection);
   deviceContext.UpdateSubresource(s_ProjectionMatrixBuffer, &cbChangesOnResize);
-
 }
 
 #endif // OPENGL
