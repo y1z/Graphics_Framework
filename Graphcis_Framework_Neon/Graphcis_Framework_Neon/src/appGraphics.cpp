@@ -862,15 +862,6 @@ appGraphics::handleWindProc(HWND hWnd,
 {
   PAINTSTRUCT ps;
   HDC hdc;
-  BasePerspectiveCamera* cameraPtr = nullptr;
-  if( s_useFreeCam == false )
-  {
-    cameraPtr = s_CameraManager->getFirstPersonCamera();
-  }
-  else
-  {
-    cameraPtr = s_CameraManager->getFreeCamera();
-  }
 
 
   enDeviceContext& deviceContext = enDeviceContext::getInstance();
@@ -928,26 +919,6 @@ appGraphics::handleWindProc(HWND hWnd,
         s_CameraManager->translateRelative(enVector3(0.0f, -1.0f, 0.0f), s_useFreeCam);
       }
 
-      if( wParam == VK_RIGHT )
-      {
-        s_CameraManager->rotateInYaw(-10.0f, s_useFreeCam);
-      }
-
-      if( wParam == VK_LEFT )
-      {
-        s_CameraManager->rotateInYaw(10.0f, s_useFreeCam);
-      }
-
-      if( wParam == VK_UP )
-      {
-        s_CameraManager->rotateInPitch(-10.0f, s_useFreeCam);
-      }
-
-      if( wParam == VK_DOWN )
-      {
-        s_CameraManager->rotateInPitch(10.0f, s_useFreeCam);
-      }
-
       if( wParam == static_cast<WPARAM>('I') )
       {
         s_CameraManager->rotateInRoll(10.0f, s_useFreeCam);
@@ -958,6 +929,7 @@ appGraphics::handleWindProc(HWND hWnd,
         s_CameraManager->rotateInRoll(-10.0f, s_useFreeCam);
       }
 
+      BasePerspectiveCamera const* const cameraPtr = s_CameraManager->getLastSelectedCam();
 
       viewMatrix cbNeverChanges;
       cbNeverChanges.mView = glm::transpose(cameraPtr->getView());
@@ -1075,18 +1047,11 @@ appGraphics::GLMoveMouse(GLFWwindow* window,
 
     mouseDir.x = -mouseDir.x;
 
-    BasePerspectiveCamera* cameraPtr = s_CameraManager->getLastSelectedCam();
+    s_CameraManager->rotateVector(mouseDir,s_useFreeCam);
 
-    if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
-    {
-      FirstPersonCam->rotateVector(mouseDir);
-    }
-
-    if( auto* freeCam = dynamic_cast<enFirstPersonCamera*>(cameraPtr) )
-    {
-      freeCam->rotateVector(mouseDir);
-    }
     enDeviceContext& deviceContext = enDeviceContext::getInstance();
+
+    BasePerspectiveCamera const * const cameraPtr = s_CameraManager->getLastSelectedCam();
 
     viewMatrix cbNeverChanges;
     cbNeverChanges.mView = cameraPtr->getView();
@@ -1117,13 +1082,13 @@ appGraphics::GLKeyInput(GLFWwindow* window,
                         int mods)
 {
 
-  //if( true == s_useFreeCam )
-  //{
-  //  s_CameraManager->getFreeCamera();
-  //}
-  //else{
-  //  s_CameraManager->getFirstPersonCamera();
-  //}
+  if( true == s_useFreeCam )
+  {
+    s_CameraManager->getFreeCamera();
+  }
+  else{
+    s_CameraManager->getFirstPersonCamera();
+  }
 
   if( GLFW_KEY_W == key )
     s_CameraManager->translateRelative(enVector3(0.0f, 0.0f, 1.0f), s_useFreeCam);
@@ -1134,16 +1099,26 @@ appGraphics::GLKeyInput(GLFWwindow* window,
   else if( GLFW_KEY_A == key )
     s_CameraManager->translateRelative(enVector3(1.0f, 0.0f, 0.0f), s_useFreeCam);
 
-  else if( GLFW_KEY_A == key )
+  else if( GLFW_KEY_D == key )
     s_CameraManager->translateRelative(enVector3(-1.0f, 0.0f, 0.0f), s_useFreeCam);
 
+  else if( GLFW_KEY_E == key )
+    s_CameraManager->translateRelative(enVector3(0.0f, 1.0f, 0.0f), s_useFreeCam);
+
+  else if( GLFW_KEY_Q == key )
+    s_CameraManager->translateRelative(enVector3(0.0f, -1.0f, 0.0f), s_useFreeCam);
+
+  else if( GLFW_KEY_O == key )
+    s_CameraManager->rotateInRoll(10.0f, s_useFreeCam);
+
+  else if( GLFW_KEY_I == key )
+    s_CameraManager->rotateInRoll(-10.0f, s_useFreeCam);
 
   else if( GLFW_KEY_1 == key && GLFW_PRESS == action )
   {
       (s_useFreeCam)
         ? s_useFreeCam = false
         : s_useFreeCam = true;
-        std::cout << "pressing 1 \n";
   }
   if(  GLFW_KEY_LEFT_SHIFT == key  )
   {
