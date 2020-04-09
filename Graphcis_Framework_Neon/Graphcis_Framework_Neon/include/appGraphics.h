@@ -137,12 +137,19 @@ private:
   setShaderAndBuffers();
 
   /**
+  * @brief :
+  * @bug :
+  */
+  void 
+  clearDepthStencilAndRenderTarget(size_t renderTargetIndex);
+
+  /**
   * @brief : draws the scene with the selected 
   * @param[in] renderTargetIndex: which render target to use.
   * @bug : no known bugs.
   */
-  void 
-  drawWithSeletecRenderTarget(size_t renderTargetIndex);
+  void //selected
+  drawWithSelectedRenderTarget(size_t renderTargetIndex);
 
   /**
   * @brief : switches cameras.
@@ -251,6 +258,7 @@ public:
   std::unique_ptr<enModel> m_model = nullptr;
 
   std::unique_ptr<enMultiviewTexture> m_renderTargetAndShaderResource = nullptr;
+
   std::shared_ptr<enShaderResourceView> m_resourceView = nullptr;
 
   static std::unique_ptr<imGuiManager> s_gui; 
@@ -261,9 +269,6 @@ public:
   static enPerspectiveFreeCamera* s_Camera;
   static enFirstPersonCamera* s_FirstPersonCamera;
   static enCameraManager* s_CameraManager;
-
-  static pointerToMethod s_winProcFunctionRedirect;
-
 
   /**************************************************/
   glm::mat4x4 m_World = glm::mat4x4(1.0f);

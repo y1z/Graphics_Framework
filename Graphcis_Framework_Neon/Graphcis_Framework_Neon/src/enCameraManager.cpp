@@ -241,11 +241,11 @@ enCameraManager::getCameraInstance(size_t const selectedInstance,
   BasePerspectiveCamera* ptr_cam = nullptr;
   if( false == useFreeCam )
   {
-    ptr_cam = this->getNthFreeCamera(selectedInstance);
+    ptr_cam = this->getNthFirstPersonCamera(selectedInstance);
   }
   else
   {
-    ptr_cam = this->getNthFirstPersonCamera(selectedInstance);
+    ptr_cam = this->getNthFreeCamera(selectedInstance);
   }
   return ptr_cam;
 }

@@ -33,15 +33,17 @@ enPerspectiveFreeCamera* appGraphics::s_Camera = nullptr;
 enFirstPersonCamera* appGraphics::s_FirstPersonCamera = nullptr;
 enCameraManager* appGraphics::s_CameraManager = nullptr;
 
+// TODO : convert to member variable.
 bool appGraphics::s_initIsFinish = false;
-bool appGraphics::s_useFreeCam = true;
+// TODO : convert to member variable.
 bool appGraphics::s_run = true;
+
+bool appGraphics::s_useFreeCam = true;
 
 enConstBuffer* appGraphics::s_ViewMatrixBuffer = nullptr;
 enConstBuffer* appGraphics::s_ProjectionMatrixBuffer = nullptr;
 
 std::unique_ptr<imGuiManager> appGraphics::s_gui = nullptr;
-appGraphics::pointerToMethod appGraphics::s_winProcFunctionRedirect = nullptr;
 
 static appGraphics* s_pointerToClassInstance = nullptr;;
 
@@ -448,10 +450,6 @@ appGraphics::initForRender()
     return S_FALSE;
   }
 
-  // Set vertex buffer
-  UINT stride = sizeof(SimpleVertex);
-  UINT offset = 0;
-
   deviceContext.IASetVertexBuffers(m_vertexBuffer.get(), 1);
 
   deviceContext.IASetIndexBuffer(*m_indexBuffer, enFormats::uR16);
@@ -666,7 +664,26 @@ appGraphics::setShaderAndBuffers()
 }
 
 void 
-appGraphics::drawWithSeletecRenderTarget(size_t renderTargetIndex)
+appGraphics::clearDepthStencilAndRenderTarget(size_t renderTargetIndex)
+{
+  enRenderTargetView* ptr_renderTarget = nullptr;
+  if( renderTargetIndex == 0 )
+  {
+    ptr_renderTarget = m_renderTargetView.get();
+  }
+  else if(renderTargetIndex == 1  ){
+    ptr_renderTarget = &m_renderTargetAndShaderResource->m_renderView;
+  }
+
+  enDeviceContext& deviceContext = enDeviceContext::getInstance();
+
+  deviceContext.ClearRenderTargetView(*ptr_renderTarget);
+
+  deviceContext.ClearDepthStencilView(*m_depthStencilView);
+}
+
+void 
+appGraphics::drawWithSelectedRenderTarget(size_t renderTargetIndex)
 {
   enRenderTargetView* ptr_renderTarget = nullptr;
   if( renderTargetIndex == 0 )
@@ -740,42 +757,45 @@ appGraphics::Render()
   //float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; // red, green, blue, alpha
   static sColorf ClearColor{ 0.40f,0.50f,1.00f,1.0f };
 
-  deviceContext.ClearRenderTargetView(m_renderTargetAndShaderResource->m_renderView, &ClearColor);
-  //
-  // Clear the depth buffer to 1.0 (max depth)
-  //
-  deviceContext.ClearDepthStencilView(*m_depthStencilView);
+
+  //deviceContext.ClearRenderTargetView(*m_renderTargetView, &ClearColor);
+  ////
+  //// Clear the depth buffer to 1.0 (max depth)
+  ////
+  //deviceContext.ClearDepthStencilView(*m_depthStencilView);
+
+  this->clearDepthStencilAndRenderTarget(0);
 
   this->setShaderAndBuffers();
 
-  this->drawWithSeletecRenderTarget(1);
-/*+++++++++++++++++++++++++++++++++++++++++++++*/
-
-  this->switchCamera();
-  deviceContext.ClearRenderTargetView(*m_renderTargetView);
-  //
-  // Clear the depth buffer to 1.0 (max depth)
-  //
-  deviceContext.ClearDepthStencilView(*m_depthStencilView);
-
-  this->setShaderAndBuffers();
-
-  this->drawWithSeletecRenderTarget(0);
+  this->drawWithSelectedRenderTarget(0);
 
 /*+++++++++++++++++++++++++++++++++++++++++++++*/
 
-  this->switchCamera();
-  deviceContext.ClearRenderTargetView(m_renderTargetAndShaderResource->m_renderView);
-
-  // Clear the depth buffer to 1.0 (max depth)
-
-  deviceContext.ClearDepthStencilView(*m_depthStencilView);
-  this->setShaderAndBuffers();
-
-  this->drawWithSeletecRenderTarget(1);
-
-
-  this->drawWithSeletecRenderTarget(0);
+//  this->switchCamera();
+//  deviceContext.ClearRenderTargetView(*m_renderTargetView);
+//  //
+//  // Clear the depth buffer to 1.0 (max depth)
+//  //
+//  deviceContext.ClearDepthStencilView(*m_depthStencilView);
+//
+//  this->setShaderAndBuffers();
+//
+//  this->drawWithSelectedRenderTarget(0);
+//
+///*+++++++++++++++++++++++++++++++++++++++++++++*/
+//
+//  this->switchCamera();
+//  deviceContext.ClearRenderTargetView(m_renderTargetAndShaderResource->m_renderView);
+//
+//  // Clear the depth buffer to 1.0 (max depth)
+//
+//  deviceContext.ClearDepthStencilView(*m_depthStencilView);
+//  this->setShaderAndBuffers();
+//
+//  this->drawWithSelectedRenderTarget(1);
+//
+//  this->drawWithSelectedRenderTarget(0);
 
 
   ConstBufferWorldColor cb;
@@ -784,11 +804,11 @@ appGraphics::Render()
 
   deviceContext.UpdateSubresource(m_worldMatrix.get(), &cb);
 
-  s_gui->beginFrame("camera view");
-  s_gui->addImage(*m_renderTargetAndShaderResource->m_shaderResource);
-  s_gui->addButton("switch Cam", s_useFreeCam);
+  //s_gui->beginFrame("camera view");
+  //s_gui->addImage(*m_renderTargetAndShaderResource->m_shaderResource);
+  //s_gui->addButton("switch Cam", s_useFreeCam);
 
-  s_gui->endFrame();
+  //s_gui->endFrame();
 
   m_swapchain->Present();
 }
@@ -995,7 +1015,6 @@ appGraphics::handleWindProc(HWND hWnd,
   }
 
   return 0;
-  return 0;
 }
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -1058,7 +1077,6 @@ appGraphics::GLMoveMouse(GLFWwindow* window,
 
     BasePerspectiveCamera* cameraPtr = s_CameraManager->getLastSelectedCam();
 
-
     if( auto* FirstPersonCam = dynamic_cast<enPerspectiveFreeCamera*>(cameraPtr) )
     {
       FirstPersonCam->rotateVector(mouseDir);
@@ -1099,13 +1117,55 @@ appGraphics::GLKeyInput(GLFWwindow* window,
                         int mods)
 {
 
-  if( key == GLFW_KEY_LEFT_SHIFT )
+  //if( true == s_useFreeCam )
+  //{
+  //  s_CameraManager->getFreeCamera();
+  //}
+  //else{
+  //  s_CameraManager->getFirstPersonCamera();
+  //}
+
+  if( GLFW_KEY_W == key )
+    s_CameraManager->translateRelative(enVector3(0.0f, 0.0f, 1.0f), s_useFreeCam);
+
+  else if( GLFW_KEY_S == key )
+    s_CameraManager->translateRelative(enVector3(0.0f, 0.0f, -1.0f), s_useFreeCam);
+
+  else if( GLFW_KEY_A == key )
+    s_CameraManager->translateRelative(enVector3(1.0f, 0.0f, 0.0f), s_useFreeCam);
+
+  else if( GLFW_KEY_A == key )
+    s_CameraManager->translateRelative(enVector3(-1.0f, 0.0f, 0.0f), s_useFreeCam);
+
+
+  else if( GLFW_KEY_1 == key && GLFW_PRESS == action )
   {
-    (s_pressedShift) ?
-      s_pressedShift = false : s_pressedShift = true;
+      (s_useFreeCam)
+        ? s_useFreeCam = false
+        : s_useFreeCam = true;
+        std::cout << "pressing 1 \n";
+  }
+  if(  GLFW_KEY_LEFT_SHIFT == key  )
+  {
+    (s_pressedShift)
+      ? s_pressedShift = false
+      : s_pressedShift = true;
 
   }
 
+  BasePerspectiveCamera const* const currentCamera = s_CameraManager->getLastSelectedCam();
+
+  enDeviceContext& deviceContext = enDeviceContext::getInstance();
+
+  viewMatrix cbNeverChanges;
+  cbNeverChanges.mView = currentCamera->getView();
+  helper::arrangeForApi(cbNeverChanges.mView);
+  deviceContext.UpdateSubresource(s_ViewMatrixBuffer, &cbNeverChanges);
+
+  projectionMatrix cbChangesOnResize;
+  cbChangesOnResize.mProjection = currentCamera->getProjection();
+  helper::arrangeForApi(cbChangesOnResize.mProjection);
+  deviceContext.UpdateSubresource(s_ProjectionMatrixBuffer, &cbChangesOnResize);
 
 }
 
