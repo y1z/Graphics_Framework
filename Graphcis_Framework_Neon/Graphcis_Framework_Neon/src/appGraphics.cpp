@@ -628,6 +628,8 @@ appGraphics::InitWindow(HINSTANCE hInstance, int nCmdShow)
 
   bool isSuccessful = m_window->init(WndProcRedirect,
                                      hInstance,
+                                     1280u / 2,
+                                     720u / 2,
                                      " Graphics window ");
   s_pointerToClassInstance = this;
   

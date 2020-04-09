@@ -159,7 +159,6 @@ private:
   switchCamera();
 
 
-
   /**
   * @brief : takes care of rendering the image to the screen.
   * @bug : no known bugs.

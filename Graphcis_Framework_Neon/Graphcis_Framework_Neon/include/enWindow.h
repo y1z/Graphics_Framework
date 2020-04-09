@@ -21,6 +21,8 @@ public:
   bool
   init(windProcType ptr_proc,
        const HMODULE Instance,
+       uint32 const windowWidth = 720u,
+       uint32 const windowHeight = 1280u,
        const char* windowName = nullptr,
        const char* className = nullptr);
 #if DIRECTX

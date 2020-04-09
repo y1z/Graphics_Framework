@@ -27,6 +27,8 @@ enWindow::~enWindow()
 bool
 enWindow::init(windProcType ptr_proc,
                const HMODULE Instance,
+               uint32 const windowWidth,
+               uint32 const windowHeight,
                const char* windowName,
                const char* className)
 {
@@ -39,6 +41,9 @@ enWindow::init(windProcType ptr_proc,
   {
     m_className = defualClassName;
   }
+
+  m_width = windowWidth;
+  m_height = windowHeight;
 
 #if DIRECTX
   this->mptr_proc = ptr_proc;
@@ -61,11 +66,8 @@ enWindow::init(windProcType ptr_proc,
     return false;
 
   // Create window
-  RECT rc = { 0, 0, 640, 480 };
+  RECT rc = { 0, 0,  m_width , m_height };
   AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
-
-  m_width = rc.right - rc.left;
-  m_height = rc.bottom - rc.top;
 
   m_handle = CreateWindow(m_className.c_str(),
                           m_name.c_str(),
