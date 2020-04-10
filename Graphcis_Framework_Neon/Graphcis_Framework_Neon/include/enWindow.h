@@ -14,17 +14,18 @@ public:
 
  public:
   /*! this starts the window
-  \param ptr_proc [in] a pointer to the wndProc function
-  \param instance [in] a variable used to get an HWND
-  \param windowName [in] give the window a name
-  \param className [in] this is just an identifier for the window */
+  \param[in] ptr_proc  a pointer to the wndProc function
+  \param[in] instance  a variable used to get an HWND
+  \param[in] windowName  give the window a name
+  \param[in] className  this is just an identifier for the window */
   bool
   init(windProcType ptr_proc,
        const HMODULE Instance,
-       uint32 const windowWidth = 720u,
-       uint32 const windowHeight = 1280u,
+       int32 const windowWidth = 720,
+       int32 const windowHeight = 1280,
        const char* windowName = nullptr,
        const char* className = nullptr);
+
 #if DIRECTX
   /*! returns  the window handle */
   HWND
