@@ -21,6 +21,7 @@ enWindow::enWindow()
 enWindow::~enWindow()
 {}
 
+
 bool
 enWindow::init(windProcType ptr_proc,
                const HMODULE Instance,
