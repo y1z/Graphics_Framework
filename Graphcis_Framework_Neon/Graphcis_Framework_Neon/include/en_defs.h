@@ -97,7 +97,7 @@ namespace gvars
   static constexpr const float twoPi = pi * 2.0f;
 
   /**
-  * @brief : 3/4 of pi 
+  * @brief : 3/4 of pi .
   */
   static constexpr const float threeFourthsPi = pi * .75f;
 
@@ -440,25 +440,27 @@ operator &(enMultiViewType const& leftEnum,
 namespace enError
 {
   /*! Present error message to help with debugging */
-  static void ENTROPY_log_error(const char* FunctionName,
-                                std::size_t LineNumber,
-                                const char* FileName)
+  static void 
+  ENTROPY_log_error(const char* FunctionName,
+                    std::size_t LineNumber,
+                    const char* FileName)
   {
     std::cerr << "====================================" <<
       '\n' << "Error occurred in Function :\"" << FunctionName << "\"\n"
       << "On line [" << LineNumber << "]\n"
-      << "In File \"" << FileName << '\"' << '\n';
+      << "In File \"" << FileName << "\" \n";
   }
 
 
-  static void ENTROPY_log_error_code(const char* FunctionName,
-                                     std::size_t LineNumber,
-                                     const char* FileName,
-                                     enErrorCode errorCode = enErrorCode::UnClassified)
+  static void 
+  ENTROPY_log_error_code(const char* FunctionName,
+                         std::size_t LineNumber,
+                         const char* FileName,
+                         enErrorCode errorCode = enErrorCode::UnClassified)
   {
     //this is the format all messages will follow 
     auto messageFormat = [](const char* FuncName, const char* ErrorReport) {
-      std::clog << '\t' << ErrorReport << '\n' << '\t' << "in Function : '" << FuncName << "'\n\n";
+      std::clog << "\n\n" << '\t' << ErrorReport << '\n' << '\t' << "in Function : '" << FuncName << "'\n\n";
     };
 
     ENTROPY_log_error(FunctionName,
@@ -722,12 +724,13 @@ struct sSamplerDesc
   uint32_t addressV{ 0 };//<! how to address the y axis 
   uint32_t addressW{ 0 };//<! how to address the z axis 
 
-  int comparingFunc{ 0 };//<! how to compare 
   uint32_t AnisotropicLevel{ 1 };//<! controls the how anisotropic the texture is 
   int32_t index = 0;
+
   float boderColor[4]{ 0.0f,0.0f,0.0f,0.0f }; //<! is only used in certain modes 
   float minLod{ 0.0f };//<! lowest level of detail 
   float maxLod{ 0.0f };//<! highest level of detail
+  int comparingFunc{ 0 };//<! how to compare 
 };
 
 //! intermediate for using it in multiple API's  
@@ -748,8 +751,6 @@ struct sHardWareInfo
   D3D_FEATURE_LEVEL m_dxApiversion;
   D3D_DRIVER_TYPE m_dxHardwareInfo;
 #elif OPENGL
-    
-    
  union
  {
    struct
@@ -759,11 +760,7 @@ struct sHardWareInfo
    };
    int m_glApiversion[2]{ 0 };
  };
-
 #endif // DIRECTX
-
-
-
 };
 
 
@@ -789,6 +786,7 @@ struct sSwapDesc
   uint8 sampQuality{ 0 };
   bool isWindowd = true;
 };
+
   /**
   * @brief : used to emulate the setting functionality of DirectX 
   * in open-Gl.(in other word remember what was last set.)

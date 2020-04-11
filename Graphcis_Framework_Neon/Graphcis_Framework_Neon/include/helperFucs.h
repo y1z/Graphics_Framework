@@ -3,11 +3,9 @@
 #include <string>
 #include <string_view>
 #include <cstdlib>
-#include <cassert>
 #include <sstream>
 #include <fstream>
 #include <iostream>
-#include <cwchar>
 
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/matrix_access.hpp"
@@ -138,6 +136,7 @@ namespace helper
     uint32 createDeviceFlags = 0;
   #ifdef _DEBUG
     createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+    createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUGGABLE;	
   #endif
 
     D3D_DRIVER_TYPE driverTypes[] =

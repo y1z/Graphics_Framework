@@ -44,7 +44,10 @@ private:
               aiNode* node,
               enDevice& device);
 
-
+  /**
+  * @brief :
+  * @bug :
+  */
   void
   ExtractMesh(const aiMesh* assimpMesh,
               enDevice& device,
@@ -53,6 +56,10 @@ private:
 
 public:
 
+  /**
+  * @brief :
+  * @bug :
+  */
   void
   DrawMeshes(std::vector<enConstBuffer*>& buffers,
              const sColorf& color = { 0.5f,0.5f,0.5f,1.0f });

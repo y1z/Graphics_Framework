@@ -120,7 +120,7 @@ enModel::ExtractMesh(const aiMesh* assimpMesh,
   bool const IndexSuccessful = result.createIndexBuffer();
   bool const VertexSuccessful = result.createVertexBuffer();
 
-  assert((IndexSuccessful && VertexSuccessful, "error with index or vertex buffer creation"));
+  assert(IndexSuccessful && VertexSuccessful && "error with index or vertex buffer creation");
   m_meshes.emplace_back(std::move(result));
 }
 
