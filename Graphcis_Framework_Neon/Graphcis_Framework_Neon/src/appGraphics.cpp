@@ -304,12 +304,6 @@ appGraphics::initForRender()
 
   isSuccessful = device.CreateRenderTargetView(*m_renderTargetView, 1);
 
- //if( !EN_SUCCESS(m_renderTargetAndShaderResource->CreateRenderTarget(windowSize.x, windowSize.y, enFormats::fR16G16B16A16)) )
- //{
- //  EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
- //  return S_FALSE;
- //}
-
   if( !isSuccessful )
   {
     EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
@@ -349,14 +343,6 @@ appGraphics::initForRender()
   deviceContext.OMSetRenderTargets(m_renderTargetView.get(),
                                    m_depthStencilView.get());
                                    //deviceContext.OMSetRenderTargets()
-                                   // Setup the viewport
-  D3D11_VIEWPORT vp;
-  vp.Width = (FLOAT)windowSize.x;
-  vp.Height = (FLOAT)windowSize.y;
-  vp.MinDepth = 0.0f;
-  vp.MaxDepth = 1.0f;
-  vp.TopLeftX = 0;
-  vp.TopLeftY = 0;
 
   sViewportDesc viewDescriptor;
   viewDescriptor.width = static_cast<float>(windowSize.x);
@@ -373,20 +359,20 @@ appGraphics::initForRender()
   constexpr const char* vertexShaderPath = "GraphcisFramework.vert";
 #endif // DIRECTX
 
-{
-  enErrorCode vertexShaderCode = m_vertexShader->compileShaderFromFile(vertexShaderPath,
-                                                                       "VS",
-                                                                       "vs_4_0");
-
-  if( !EN_SUCCESS(vertexShaderCode) )
   {
-    EN_LOG_ERROR_WITH_CODE(vertexShaderCode);
-    MessageBox(NULL,
-               L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.",
-               L"Error",
-               MB_OK);
-    return S_FALSE;
-  }
+    enErrorCode vertexShaderCode = m_vertexShader->compileShaderFromFile(vertexShaderPath,
+                                                                         "VS",
+                                                                         "vs_4_0");
+
+    if( !EN_SUCCESS(vertexShaderCode) )
+    {
+      EN_LOG_ERROR_WITH_CODE(vertexShaderCode);
+      MessageBox(NULL,
+                 L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.",
+                 L"Error",
+                 MB_OK);
+      return S_FALSE;
+    }
 }
 
   // Create the vertex shader
@@ -523,8 +509,7 @@ appGraphics::initForRender()
     return S_FALSE;
   }
 
-  enMultiViewType renderAndShaderView = helper::generateMultiViewType(enMultiViewType::renderTarget |
-                                                                      enMultiViewType::shaderResource);
+  enMultiViewType renderAndShaderView = (enMultiViewType::renderTarget | enMultiViewType::shaderResource);
  
   
   isSuccessful = m_renderTargetAndShaderResource->CreateAll(windowSize.x,

@@ -681,6 +681,7 @@
     <ClInclude Include="include\util\cBaseApp.h" />
     <ClInclude Include="include\util\GraphicsDefines.h" />
     <ClInclude Include="include\util\Header.h" />
+    <ClInclude Include="include\util\helperTemplates.h" />
     <ClInclude Include="include\util\soModule.h" />
   </ItemGroup>
   <ItemGroup>

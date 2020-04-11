@@ -146,17 +146,20 @@ enWindow::init(windProcType ptr_proc,
 }
 
 #if DIRECTX
+
 HWND
 enWindow::getHandle() const
 {
   return m_handle;
 }
 #elif OPENGL
+
 GLFWwindow*
 enWindow::getHandle() const
 {
   return m_handle;
 }
+
 #endif // DIRECTX
 
 HMODULE

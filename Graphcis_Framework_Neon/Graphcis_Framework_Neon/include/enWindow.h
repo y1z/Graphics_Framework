@@ -27,13 +27,20 @@ public:
        const char* className = nullptr);
 
 #if DIRECTX
+
   /*! returns  the window handle */
   HWND
   getHandle()const;
 #elif OPENGL 
+
+  /**
+  * @returns : a handle to the window.
+  * @bug : no known bugs.
+  */
   GLFWwindow*
   getHandle()const;
 #else
+
   void*
   getHandle();
 #endif // DIRECTX
@@ -42,15 +49,23 @@ public:
   HMODULE 
   getInstance() const;
 
+  /**
+  * @returns : the width of the window.
+  * @bug :no known bugs.
+  */
   uint32
   getWidth() const;
 
+  /**
+  * @returns : the height of the window.
+  * @bug :no known bugs.
+  */
   uint32
   getHeight() const;
 
   /**
   * @brief : finds out the current height and width of the window.
-  * @bug : no known bugs
+  * @bug : no known bugs.
   */
   void
   update();
@@ -77,6 +92,13 @@ private:
 #endif // DIRECTX
   HINSTANCE m_instance;
 
+  /**
+  * @brief : the width of the window.
+  */
   uint32 m_width;
+
+  /**
+  * @brief : the height of the window.
+  */
   uint32 m_height;
 };

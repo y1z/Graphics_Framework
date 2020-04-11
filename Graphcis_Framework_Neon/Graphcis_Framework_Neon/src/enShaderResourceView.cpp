@@ -8,8 +8,6 @@ namespace dx = DirectX;
 
 #endif // DIRECTX
 #include "enDevice.h"
-#include "helperFucs.h"
-
 
 
 enShaderResourceView::enShaderResourceView(enShaderResourceView&& other) noexcept

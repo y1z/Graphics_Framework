@@ -48,7 +48,7 @@ namespace helper
     for( auto &element : wideString ){
 
       int status;
-      wctomb_s(&status, &Result[index], sizeof(char), wideString[index]);
+      wctomb_s(&status, &Result[index], sizeof(char), element);
       --index;
       assert(status != -1 && "conversion is not possible give the current local");
     }
@@ -110,7 +110,7 @@ namespace helper
     }
     else
     {
-      std::wcerr << "error with path {" << filePath << "}\n";
+      std::wcerr << "error with path { " << filePath << " }\n";
     }
     return Result;
   }
@@ -146,16 +146,17 @@ namespace helper
         D3D_DRIVER_TYPE_WARP,
         D3D_DRIVER_TYPE_REFERENCE,
     };
-    UINT numDriverTypes = ARRAYSIZE(driverTypes);
+   uint32 const numDriverTypes = ARRAYSIZE(driverTypes);
 
     D3D_FEATURE_LEVEL featureLevels[] =
     {
+        D3D_FEATURE_LEVEL_12_0,
         D3D_FEATURE_LEVEL_11_1,
         D3D_FEATURE_LEVEL_11_0,
         D3D_FEATURE_LEVEL_10_1,
         D3D_FEATURE_LEVEL_10_0,
     };
-    UINT numFeatureLevels = ARRAYSIZE(featureLevels);
+    uint32 const numFeatureLevels = ARRAYSIZE(featureLevels);
 
 
     sSwapDesc swapchainDescriptor;
@@ -219,7 +220,7 @@ namespace helper
     std::cout << "GLFW version : " << "Major [" << majorVersion << "] Minor [" << minorVersion << "]\n"
       << "Open_gl version : " << OpenglVersion << '\n'
       << "Glsl  Shader version : " << GlslVersion << '\n'
-      << "Open_gl renderer : " << OpenglRenderer << '\n';
+      << "Open_gl renderer : " << OpenglRenderer << "\n\n\n";
       //"alignment of sLightData : " << alignof(sLightData) << '\n' <<
       //" size of sLightData : " << sizeof(sLightData) << std::endl;
 
@@ -338,6 +339,7 @@ namespace helper
     result = static_cast<enMultiViewType>(valueOfType);
     return result;
   }
+
 
   /**
   * @brief : creates a 'sUniformDetails'

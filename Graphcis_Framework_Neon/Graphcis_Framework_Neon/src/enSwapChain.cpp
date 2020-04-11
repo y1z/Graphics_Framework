@@ -123,8 +123,9 @@ enSwapChain::ResizeSwapChain(enWindow& currentWindow,
 
   deviceContext.OMSetRenderTargets(&renderTargetView, &DepthStencilView);
 
-  viewport.m_descriptor.width = newSize.x;
-  viewport.m_descriptor.height= newSize.y;
+  viewport.m_descriptor.width = static_cast< uint32 >(newSize.x);
+
+  viewport.m_descriptor.height = static_cast< uint32 >(newSize.y);
   
   deviceContext.RSSetViewports(&viewport);
 

@@ -377,12 +377,14 @@ enum enRenderTargetViewType
 /**
 * @brief : used to determine which type/types is the enMultiviewTexture.
 */
-enum enMultiViewType : int32
+enum class enMultiViewType : int32 
 {
   zeroType = 0b0'0000'0000,
   renderTarget = 0b0'0000'0001,
   depthStencil = 0b0'0000'0010,
   shaderResource =0b0'0000'0100, 
+
+  renderTargetShaderResource = renderTarget | shaderResource, 
 };
 
 /**
@@ -410,6 +412,27 @@ enum class enConstBufferElem :int32
   single_int,
 
 };
+
+/*++++++++++++++++++++++++++++++++++++*/
+/* operator overloads for enums */
+/*++++++++++++++++++++++++++++++++++++*/
+
+static constexpr enMultiViewType 
+operator| (enMultiViewType const& leftEnum,
+           enMultiViewType const& rightEnum)
+{
+  int32 const leftValue = static_cast< int32 const >(leftEnum);
+  int32 const rightValue = static_cast< int32 const >(rightEnum);
+  return  static_cast< enMultiViewType >(leftValue | rightValue);
+}
+
+static constexpr bool const 
+operator &(enMultiViewType const& leftEnum,
+           enMultiViewType const& rightEnum)
+{
+  return  static_cast< int32 >(leftEnum) & static_cast< int32 >(rightEnum);
+}
+
 /*++++++++++++++++++++++++++++++++++++*/
 /* Logger functions */
 /*++++++++++++++++++++++++++++++++++++*/
@@ -791,9 +814,9 @@ struct sDrawData
 */
 struct sUniformDetails
 {
-  std::string name{ "\0" };
-  const void* ptr_data{ nullptr };
-  int32 id{ INT32_MAX };
+  std::string name = "\0";
+  const void* ptr_data = nullptr;
+  int32 id = INT32_MAX;
   enConstBufferElem element = enConstBufferElem::NONE;
 };
 

@@ -1,8 +1,10 @@
 #include "..\include\enMultiviewTexture.h"
 #include "enDevice.h"
 #include "enDeviceContext.h"
-#include  "helperFucs.h"
+#include "helperFucs.h"
+#include "util/helperTemplates.h"
 
+using namespace helper;
 
 enErrorCode
 enMultiviewTexture::CreateDepthStencil(float width,
@@ -97,12 +99,13 @@ enMultiviewTexture::CreateAll(float width,
   enDevice& device = enDevice::getInstance();
   bool const isSuccessful = device.CreateTexture2D(m_sharedTexture.m_desc, m_sharedTexture);
 
+
   if( isSuccessful == false )
   {
     return false;
   }
 
-  if( (m_type & enMultiViewType::depthStencil) )
+  if ( (m_type & enMultiViewType::depthStencil) )
   {
     if( EN_FAIL(this->CreateDepthStencil(width, height, format)) )
     {
@@ -110,7 +113,7 @@ enMultiviewTexture::CreateAll(float width,
     }
   }
 
-  if( (m_type & enMultiViewType::renderTarget) )
+  if( logicalAndComparisonEnum<enMultiViewType>(m_type, enMultiViewType::renderTarget) )
   {
     if( EN_FAIL(this->CreateRenderTarget(width, height, format)) )
     {
@@ -118,7 +121,7 @@ enMultiviewTexture::CreateAll(float width,
     }
   }
 
-  if( (m_type & enMultiViewType::shaderResource) )
+  if( logicalAndComparisonEnum<enMultiViewType>(m_type, enMultiViewType::shaderResource) )
   {
     if( EN_FAIL(this->CreateShaderResource(width, height, format)) )
     {
@@ -132,7 +135,7 @@ enMultiviewTexture::CreateAll(float width,
 bool
 enMultiviewTexture::setRenderTarget()
 {
-  if( m_type & enMultiViewType::zeroType)
+  if( logicalAndComparisonEnum<enMultiViewType>(m_type, enMultiViewType::zeroType) )
   {
     enDeviceContext& deviceContext = enDeviceContext::getInstance();
     deviceContext.OMSetRenderTargets(&m_renderView, nullptr);
@@ -146,7 +149,7 @@ enMultiviewTexture::setRenderTarget()
 bool 
 enMultiviewTexture::setDepthStencil()
 {
-  if( m_type & enMultiViewType::zeroType)
+  if( logicalAndComparisonEnum<enMultiViewType>(m_type, enMultiViewType::zeroType) )
   {
     enDeviceContext& deviceContext = enDeviceContext::getInstance();
     deviceContext.setDepthStencilView(m_depthView);
@@ -160,13 +163,13 @@ enBufferBind
 enMultiviewTexture::getBindingFlagsBasedOnMyType()
 {
   enBufferBind result = enBufferBind::NONE;
-  if( m_type & enMultiViewType::renderTarget )
+  if( logicalAndComparisonEnum<enMultiViewType>(m_type, enMultiViewType::renderTarget) )
     result = static_cast<enBufferBind> (result | enBufferBind::RenderTarget);
 
-  if( m_type & enMultiViewType::depthStencil )
+  if( logicalAndComparisonEnum<enMultiViewType>(m_type, enMultiViewType::depthStencil) )
     result = static_cast<enBufferBind> (result | enBufferBind::DepthStencil);
 
-  if( m_type & enMultiViewType::shaderResource )
+  if( logicalAndComparisonEnum<enMultiViewType>(enMultiViewType::shaderResource, m_type) )
     result = static_cast<enBufferBind> (result | enBufferBind::ShaderResource);
 
   return result;
@@ -182,16 +185,16 @@ enMultiviewTexture::CreateTexture(enMultiViewType type,
   bool isSuccessful = false;
   switch( type )
   {
-    case zeroType:
+    case  enMultiViewType::zeroType:
       break;
-    case renderTarget:
+    case enMultiViewType::renderTarget:
     {
       sTextureDescriptor renderDesc = helper::generateTextureDescForRenderTarget(width, height);
       isSuccessful = device.CreateTexture2D(renderDesc, this->m_sharedTexture);
        
       return  isSuccessful;
     }
-    case depthStencil:
+    case enMultiViewType::depthStencil:
     {
       sTextureDescriptor depthStencilDesc = helper::generateTextureDescForDepthStencil(width, height);
       isSuccessful = device.CreateTexture2D(depthStencilDesc, this->m_sharedTexture);

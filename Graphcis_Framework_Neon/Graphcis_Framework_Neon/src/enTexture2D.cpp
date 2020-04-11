@@ -40,7 +40,6 @@ enTexture2D::Release()
 #if DIRECTX
   if( m_interface != nullptr )
   {
-
     RELEASE_DX_PTR(m_interface);
     return true;
   }
