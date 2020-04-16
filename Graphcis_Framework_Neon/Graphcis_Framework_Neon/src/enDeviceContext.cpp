@@ -429,7 +429,6 @@ enDeviceContext::PSSetShaderResources(enShaderResourceView shaderResources[],
     m_interface->PSSetShaderResources(Slots,
                                       numResources,
                                       ShaderPtrArr);
-
   }
   else
   {
@@ -438,6 +437,28 @@ enDeviceContext::PSSetShaderResources(enShaderResourceView shaderResources[],
   }
 
 #elif OPENGL
+  GlRemoveAllErrors();
+  GLint activeCount = 0;
+  glGetIntegerv(GL_ACTIVE_TEXTURE, &activeCount);
+
+  GLint maxTextures = 0;
+  glGetIntegerv(GL_MAX_TEXTURE_UNITS, &maxTextures);
+
+  GLint activeSamplers = 0;
+  uint32* shaderProgram = cApiComponents::getShaderProgram();
+
+  glGetProgramiv(*shaderProgram, GL_ACTIVE_RESOURCES, &activeSamplers);
+  assert(numResources > maxTextures && "too Many resource being set");
+
+  for( uint32 i = 0; i < numResources; ++i )
+  {
+    glActiveTexture(GL_TEXTURE0 + shaderResources[i].getIndex());
+    //glUniform1i()
+
+  }
+
+  assert(!GlCheckForError() && "there is an error with setting the textures" );
+
 #endif// DIRECTX
 }
 
@@ -471,6 +492,7 @@ enDeviceContext::PSSetShaderResources(std::vector<enShaderResourceView>& shaderR
     EN_LOG_ERROR_WITH_CODE(enErrorCode::UnClassified);
     assert(("Error asking for too many slots", Slot <= D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT - 1));
   }
+#elif OPENGL
 
 #endif // DIRECTX
 

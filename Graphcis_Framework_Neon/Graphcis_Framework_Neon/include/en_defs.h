@@ -9,7 +9,6 @@
 #include <iostream>
 #include <sstream>
 #include <cassert>
-#include "util/GraphicsDefines.h"
 
 
 
@@ -533,7 +532,7 @@ namespace enError
 
 #define EN_FILENAME std::strrchr(__FILE__,'\\')  ?  std::strrchr(__FILE__,'\\') + 1 : __FILE__ 
 
-#ifndef  NDEBUG 
+#ifndef  NDEBUG
 /*! output that an error occurred
 in some function in some file in some line
 does not indicate the error only where it possibly
@@ -621,7 +620,7 @@ GlCheckForError()
 /* define's  utility*/
 /*++++++++++++++++++++++++++++++++++++*/
 
-#define DELETE_PTR(ptr) if(ptr != nullptr) {delete ptr; ptr= nullptr;}
+#define SAFE_RELEASE(ptr) if(ptr != nullptr) {delete ptr; ptr= nullptr;}
 #define RELEASE_DX_PTR(dx_ptr) if(dx_ptr){dx_ptr->Release(); dx_ptr = nullptr;}
 
   /**
@@ -816,6 +815,18 @@ struct sUniformDetails
   const void* ptr_data = nullptr;
   int32 id = INT32_MAX;
   enConstBufferElem element = enConstBufferElem::NONE;
+};
+
+/**
+* @brief : a descriptor for the shader-resource
+* @bug :no known bugs.
+*/
+struct sShaderResourceDesc
+{
+  /*! a pointer to the data */
+  void * mp_data = nullptr;
+  /*! to keep track of where each instance belongs*/
+  int32 m_index = INT32_MAX;
 };
 
 /*+++++++++++++++++++++++++++++++++++*/

@@ -320,10 +320,9 @@ enDevice::CreateShaderResourceFromFile(enShaderResourceView& shaderResourceView,
     printf("SOIL loading error: '%s'\n", SOIL_last_result());
   }
 
-  if( !GlCheckForError() )
-  {
-    return true;
-  }
+  assert(!GlCheckForError() && " Error Creating Shader-Resource from File ");
+  
+  return true;
 
 #endif // DIRECTX
 

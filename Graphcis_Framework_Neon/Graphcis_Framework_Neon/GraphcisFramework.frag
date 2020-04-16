@@ -17,5 +17,6 @@ out vec4 resultColor;
 /** MAIN*/
 void main()
 {
-    resultColor = texture(uTextureSampler,outTexcoords) * outColor;; 
+    
+    resultColor = texture(uTextureSampler, outTexcoords) * outColor;
 }

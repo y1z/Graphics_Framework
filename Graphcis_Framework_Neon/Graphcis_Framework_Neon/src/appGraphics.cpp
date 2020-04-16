@@ -154,11 +154,11 @@ appGraphics::destroy()
   CoUninitialize();
 
 
-  DELETE_PTR(s_Camera);
-  DELETE_PTR(s_FirstPersonCamera);
-  DELETE_PTR(s_CameraManager);
-  DELETE_PTR(s_ViewMatrixBuffer);
-  DELETE_PTR(s_ProjectionMatrixBuffer);
+  SAFE_RELEASE(s_Camera);
+  SAFE_RELEASE(s_FirstPersonCamera);
+  SAFE_RELEASE(s_CameraManager);
+  SAFE_RELEASE(s_ViewMatrixBuffer);
+  SAFE_RELEASE(s_ProjectionMatrixBuffer);
 
   m_ConstBufferContainer.clear();
 
@@ -546,8 +546,6 @@ appGraphics::initForRender()
     }
   }
 
-//************************************//************************************//************************************/************************************/
-//************************************//************************************//************************************/************************************/
   sPerspectiveCameraDesc descriptorCamera;
   descriptorCamera.upDir = enVector3(0.0f, 1.0f, 0.0f);
   descriptorCamera.lookAtPosition = enVector3(0.0f, 0.0f, -1.0f);

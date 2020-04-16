@@ -1,6 +1,6 @@
 #pragma once
 #include "util/Header.h"
-#include <string_view>
+#include <string>
 #include <deque>
 
   /**
@@ -27,15 +27,18 @@ public:
 public:
   std::deque<std::string> m_resourcePaths;
 
-  void *ptr_data = nullptr;
+  sShaderResourceDesc m_descriptor;
+
+//  void *mp_data = nullptr;
 #if DIRECTX
   ID3D11ShaderResourceView* m_interface = nullptr;
 #elif OPENGL
-  uint32 m_interface = 0u;
+  uint32 m_interface = std::numeric_limits<uint32>::max();
 #else
   void* m_interface = nullptr;
 #endif // DIRECTX
-  int32 m_index;
+ // int32 m_index;
+
 
 };
 

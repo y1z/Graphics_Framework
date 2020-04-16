@@ -32,8 +32,8 @@ enMesh::enMesh(enMesh&& mesh) noexcept
 
 enMesh::~enMesh()
 {
-  DELETE_PTR(mptr_indexBuffer);
-  DELETE_PTR(mptr_vertexBuffer);
+  SAFE_RELEASE(mptr_indexBuffer);
+  SAFE_RELEASE(mptr_vertexBuffer);
 }
 
 enMesh&
