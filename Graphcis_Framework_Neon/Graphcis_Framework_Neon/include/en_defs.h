@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef  __glew_h__
-#include "GL/glew.h"
-#endif //__glew_h__
 
 #include <cstdint>
 #include <cstddef>
@@ -11,6 +8,9 @@
 #include <cassert>
 
 
+ #ifndef  __glew_h__
+  #include "GL/glew.h"
+ #endif //__glew_h__
 
 #if DIRECTX
 #include <d3d11.h>
@@ -823,10 +823,41 @@ struct sUniformDetails
 */
 struct sShaderResourceDesc
 {
+  std::string pathToResource = "\0";
   /*! a pointer to the data */
   void * mp_data = nullptr;
   /*! to keep track of where each instance belongs*/
   int32 m_index = INT32_MAX;
+};
+
+/**
+* @brief : contains a index and if it was already used or not.
+*/
+struct sSignedIndexTracker
+{
+  sSignedIndexTracker(int32 index)
+  : m_index(index),m_isUsed(false) {}
+
+  sSignedIndexTracker() 
+  : m_index(0),m_isUsed(false) {}
+
+  int32 m_index;
+  bool m_isUsed;
+};
+
+/**
+* @brief : contains a index and if it was already used or not.
+*/
+struct sUnsignedIndexTracker
+{
+  sUnsignedIndexTracker(uint32 index)
+    : m_index(index), m_isUsed(false) {}
+
+  sUnsignedIndexTracker()
+    : m_index(0), m_isUsed(false) {}
+
+  uint32 m_index;
+  bool m_isUsed;
 };
 
 /*+++++++++++++++++++++++++++++++++++*/

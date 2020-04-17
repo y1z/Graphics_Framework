@@ -32,7 +32,7 @@ public:
 #if DIRECTX
 
   D3D11_BUFFER_DESC
-    getDirectXDesc() override;
+  getDirectXDesc() override;
 #elif OPENGL
   /**
   * @brief : used for when the 'enConstBuffer' handles more that one element.

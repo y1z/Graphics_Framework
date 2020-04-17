@@ -497,7 +497,7 @@ appGraphics::initForRender()
       return S_FALSE;
   }
 
-  m_resourceView->init();
+  assert(m_resourceView->autoInit() && "error with initializing shader Resource View");
 
   // Load the Texture
   isSuccessful = device.CreateShaderResourceFromFile(*m_resourceView,
@@ -509,14 +509,16 @@ appGraphics::initForRender()
     return S_FALSE;
   }
 
-  enMultiViewType renderAndShaderView = (enMultiViewType::renderTarget | enMultiViewType::shaderResource);
+  enMultiViewType renderAndShaderView = (enMultiViewType::renderTarget | 
+                                         enMultiViewType::shaderResource);
  
   
-  isSuccessful = m_renderTargetAndShaderResource->CreateAll(windowSize.x,
-                                                            windowSize.y,
-                                                            enFormats::fR16G16B16A16,
-                                                            enBufferUse::Default,
-                                                            renderAndShaderView);
+  isSuccessful =
+  m_renderTargetAndShaderResource->CreateAll(windowSize.x,
+                                             windowSize.y,
+                                             enFormats::fR16G16B16A16,
+                                             enBufferUse::Default,
+                                             renderAndShaderView);
 
   if( !isSuccessful )
   {
@@ -565,11 +567,6 @@ appGraphics::initForRender()
 
   // Initialize the world matrices
   m_World = glm::identity<glm::mat4x4>();
-
-  // Initialize the view matrix
-  glm::vec3 Eye(0.0f, 3.0f, -6.0f);
-  glm::vec3 At(0.0f, 0.0f, -1.0f);
-  glm::vec3 Up(0.0f, 1.0f, 0.0f);
 
   viewMatrix cbNeverChanges;
   enMatrix4x4 CameraViewMatrix = s_Camera->getView();
@@ -660,6 +657,8 @@ appGraphics::clearDepthStencilAndRenderTarget(size_t renderTargetIndex)
     ptr_renderTarget = &m_renderTargetAndShaderResource->m_renderView;
   }
 
+  assert(ptr_renderTarget != nullptr && "error with clearing render-target");
+
   enDeviceContext& deviceContext = enDeviceContext::getInstance();
 
   deviceContext.ClearRenderTargetView(*ptr_renderTarget);
@@ -678,6 +677,8 @@ appGraphics::drawWithSelectedRenderTarget(size_t renderTargetIndex)
   else if(renderTargetIndex == 1  ){
     ptr_renderTarget = &m_renderTargetAndShaderResource->m_renderView;
   }
+
+  assert(ptr_renderTarget != nullptr && "error with drawing with render-target");
 
   enDeviceContext& deviceContext = enDeviceContext::getInstance();
 

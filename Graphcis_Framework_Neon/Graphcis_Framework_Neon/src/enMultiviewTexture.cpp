@@ -61,10 +61,11 @@ enMultiviewTexture::CreateRenderTarget(float width,
 enErrorCode 
 enMultiviewTexture::CreateShaderResource(float width, float height, int Format)
 {
-
   enDevice& device = enDevice::getInstance();
-  bool const isSuccessful = device.CreateShaderResourceFromTexture(*m_shaderResource,
-                                                                   m_sharedTexture);
+  bool isSuccessful = m_shaderResource->autoInit();
+
+  isSuccessful = device.CreateShaderResourceFromTexture(*m_shaderResource,
+                                                        m_sharedTexture);
 
   if( !isSuccessful )
   {
@@ -163,6 +164,7 @@ enBufferBind
 enMultiviewTexture::getBindingFlagsBasedOnMyType()
 {
   enBufferBind result = enBufferBind::NONE;
+
   if( logicalAndComparisonEnum<enMultiViewType>(m_type, enMultiViewType::renderTarget) )
     result = static_cast<enBufferBind> (result | enBufferBind::RenderTarget);
 

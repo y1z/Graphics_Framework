@@ -278,7 +278,6 @@ enDevice::CreateShaderResourceFromFile(enShaderResourceView& shaderResourceView,
 #if DIRECTX
 
   std::wstring wideFilePath = helper::convertStringToWString(filePath);
-  shaderResourceView.m_resourcePaths.push_back(std::string(filePath));
 
   HRESULT hr = S_FALSE;
   if( filePath.find(".dds") != filePath.npos )
@@ -340,13 +339,13 @@ enDevice::CreateShaderResourceFromTexture(enShaderResourceView& shaderResourceVi
   ViewDescriptor.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;
   ViewDescriptor.Texture2D.MipLevels = texture.m_desc.Mips;
 
-  HRESULT hr = m_interface->CreateShaderResourceView(texture.m_interface,
-                                                     &ViewDescriptor,
-                                                     &shaderResourceView.m_interface);
+  HRESULT const hr = 
+  m_interface->CreateShaderResourceView(texture.m_interface,
+                                        &ViewDescriptor,
+                                        &shaderResourceView.m_interface);
 
   if( !FAILED(hr) )
   {
-
     return true;
   }
 
