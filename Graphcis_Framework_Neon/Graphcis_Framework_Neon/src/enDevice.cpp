@@ -317,6 +317,11 @@ enDevice::CreateShaderResourceFromFile(enShaderResourceView& shaderResourceView,
   {
     printf("SOIL loading error: '%s'\n", SOIL_last_result());
   }
+  else
+  {
+    glBindTexture(GL_TEXTURE_2D, shaderResourceView.m_interface);
+
+  }
 
   if( GlCheckForError() )
   {

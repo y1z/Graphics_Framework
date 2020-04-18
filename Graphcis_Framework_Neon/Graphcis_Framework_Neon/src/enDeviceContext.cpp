@@ -424,8 +424,12 @@ enDeviceContext::PSSetSingleShaderResource(enShaderResourceView& shaderResource)
                                           1,
                                           &resourcePtr);
 #elif OPENGL
+  GlRemoveAllErrors();
 
+  glActiveTexture(GL_TEXTURE0 + shaderResource.getIndex());
+  glBindTexture(GL_TEXTURE_2D, shaderResource.m_interface);
 
+  assert(!GlCheckForError());
 #endif // DIRECTX
 }
 
