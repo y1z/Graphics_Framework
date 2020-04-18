@@ -1,12 +1,4 @@
 #include "enShaderResourceView.h"
-#if DIRECTX
-#include "DirectXTK/include/DDSTextureLoader.h"
-#include "DirectXTK/include/WICTextureLoader.h"
-namespace dx = DirectX;
-#elif OPENGL
-#include "SOIL2/include/SOIL2.h"
-#endif // DIRECTX
-#include "enDevice.h"
 
 std::array<sSignedIndexTracker, enShaderResourceView::s_maxIndexes>
 enShaderResourceView::s_indexes {

@@ -282,7 +282,10 @@ enDevice::CreateShaderResourceFromFile(enShaderResourceView& shaderResourceView,
   HRESULT hr = S_FALSE;
   if( filePath.find(".dds") != filePath.npos )
   {
-    hr = dx::CreateDDSTextureFromFile(m_interface, wideFilePath.c_str(), nullptr, &shaderResourceView.m_interface);
+    hr = dx::CreateDDSTextureFromFile(m_interface,
+                                      wideFilePath.c_str(),
+                                      nullptr,
+                                      &shaderResourceView.m_interface);
     if( FAILED(hr) )
     {
       EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
@@ -291,7 +294,10 @@ enDevice::CreateShaderResourceFromFile(enShaderResourceView& shaderResourceView,
   }
   else
   {
-    hr = dx::CreateWICTextureFromFile(m_interface, wideFilePath.c_str(), nullptr, &shaderResourceView.m_interface);
+    hr = dx::CreateWICTextureFromFile(m_interface,
+                                      wideFilePath.c_str(),
+                                      nullptr,
+                                      &shaderResourceView.m_interface);
 
     if( FAILED(hr) )
     {
@@ -303,24 +309,24 @@ enDevice::CreateShaderResourceFromFile(enShaderResourceView& shaderResourceView,
 #elif OPENGL
   GlRemoveAllErrors();
   std::string const imagePath(filePath);
+  unsigned int flags = SOIL_FLAG_NTSC_SAFE_RGB; 
+  if( imagePath.rfind(".png") != imagePath.npos )
+  {
+    flags |= SOIL_FLAG_INVERT_Y;
+  }
 
   shaderResourceView.m_interface = SOIL_load_OGL_texture
   (
     imagePath.c_str(),
     SOIL_LOAD_AUTO,
     SOIL_CREATE_NEW_ID,
-    SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB 
+    flags
   );
 
   /* check for an error during the load process */
   if( 0 == shaderResourceView.m_interface )
   {
     printf("SOIL loading error: '%s'\n", SOIL_last_result());
-  }
-  else
-  {
-    glBindTexture(GL_TEXTURE_2D, shaderResourceView.m_interface);
-
   }
 
   if( GlCheckForError() )

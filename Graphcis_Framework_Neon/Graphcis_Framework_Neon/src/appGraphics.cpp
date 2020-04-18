@@ -501,7 +501,7 @@ appGraphics::initForRender()
 
   // Load the Texture
   isSuccessful = device.CreateShaderResourceFromFile(*m_resourceView,
-                                                     "neon light.jpg");
+                                                     "neon light.dds");
 
   if( !isSuccessful )
   {
@@ -790,11 +790,11 @@ appGraphics::Render()
 
   deviceContext.UpdateSubresource(m_worldMatrix.get(), &cb);
 
-  //s_gui->beginFrame("camera view");
-  //s_gui->addImage(*m_renderTargetAndShaderResource->m_shaderResource);
-  //s_gui->addButton("switch Cam", s_useFreeCam);
+  s_gui->beginFrame("camera view");
+  s_gui->addImage(*m_resourceView);
+  s_gui->addButton("switch Cam", s_useFreeCam);
 
-  //s_gui->endFrame();
+  s_gui->endFrame();
 
   m_swapchain->Present();
 }
