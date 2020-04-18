@@ -111,7 +111,7 @@ enMesh::setMesh()
   deviceContext.IASetPrimitiveTopology((int)m_topology);
   if( mptr_resource )
   {
-    deviceContext.PSSetShaderResources(&*mptr_resource);
+    deviceContext.PSSetSingleShaderResource(*mptr_resource);
   }
 }
 
