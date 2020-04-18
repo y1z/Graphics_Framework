@@ -424,6 +424,8 @@ enDeviceContext::PSSetSingleShaderResource(enShaderResourceView& shaderResource)
                                           1,
                                           &resourcePtr);
 #elif OPENGL
+
+
 #endif // DIRECTX
 }
 
@@ -455,6 +457,8 @@ enDeviceContext::PSSetShaderResources(enShaderResourceView shaderResources[],
   }
 
 #elif OPENGL
+
+
   GlRemoveAllErrors();
   GLint activeCount = 0;
   glGetIntegerv(GL_ACTIVE_TEXTURE, &activeCount);

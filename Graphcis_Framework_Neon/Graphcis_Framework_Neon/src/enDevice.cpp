@@ -300,7 +300,6 @@ enDevice::CreateShaderResourceFromFile(enShaderResourceView& shaderResourceView,
     }
   }
 
-  return true;
 #elif OPENGL
   GlRemoveAllErrors();
   std::string const imagePath(filePath);
@@ -319,13 +318,15 @@ enDevice::CreateShaderResourceFromFile(enShaderResourceView& shaderResourceView,
     printf("SOIL loading error: '%s'\n", SOIL_last_result());
   }
 
-  assert(!GlCheckForError() && " Error Creating Shader-Resource from File ");
-  
-  return true;
+  if( GlCheckForError() )
+  {
+    EN_LOG_DB(" Error Creating Shader-Resource from File ");
+    return false;
+  }
 
 #endif // DIRECTX
 
-  return false;
+  return true;
 }
 
 bool
