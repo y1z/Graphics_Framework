@@ -340,13 +340,13 @@ enDevice::CreateShaderResourceFromTexture(enShaderResourceView& shaderResourceVi
   ViewDescriptor.Texture2D.MipLevels = texture.m_desc.Mips;
 
   HRESULT const hr = 
-  m_interface->CreateShaderResourceView(texture.m_interface,
+  m_interface->CreateShaderResourceView(texture.getInterface(),
                                         &ViewDescriptor,
                                         &shaderResourceView.m_interface);
 
-  if( !FAILED(hr) )
+  if( FAILED(hr) )
   {
-    return true;
+    return false;
   }
 
 #elif OPENGL

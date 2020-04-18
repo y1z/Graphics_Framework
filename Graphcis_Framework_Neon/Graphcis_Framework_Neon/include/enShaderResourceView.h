@@ -63,10 +63,9 @@ private:
   static bool
   checkIfIndexIsAlreadyUsed(int32 index);
 
-protected:
+private:
   constexpr static size_t s_maxIndexes = 11u;
 
-private:
   static std::array<sSignedIndexTracker , s_maxIndexes> s_indexes; 
 
 

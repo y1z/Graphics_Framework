@@ -475,8 +475,8 @@ appGraphics::initForRender()
 
   if( !isSuccessful )
   {
-    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation)
-      return S_FALSE;
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
+    return S_FALSE;
   }
 
   sBufferDesc worldMatrixDescriptor;
@@ -606,11 +606,11 @@ appGraphics::InitWindow(HINSTANCE hInstance, int nCmdShow)
 
 #endif // OPENGL
 
-  bool isSuccessful = m_window->init(WndProcRedirect,
-                                     hInstance,
-                                     800,
-                                     600,
-                                     " Graphics window ");
+  bool const isSuccessful = m_window->init(WndProcRedirect,
+                                           hInstance,
+                                           800,
+                                           600,
+                                           " Graphics window ");
   s_pointerToClassInstance = this;
   
 
@@ -641,7 +641,7 @@ appGraphics::setShaderAndBuffers()
   deviceContext.PSSetShader(*m_pixelShader);
 
   deviceContext.PSSetConstantBuffers(*m_worldMatrix, m_worldMatrix->getIndex());
-  deviceContext.PSSetShaderResources(m_resourceView.get(), 1);
+  deviceContext.PSSetSingleShaderResource(*m_resourceView);
   deviceContext.PSSetSampler(*m_sampler);
 }
 

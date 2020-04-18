@@ -123,6 +123,14 @@ public:// functions
   void//! set's the pixel shader 
   PSSetShader(enPixelShader& pixelShader);
 
+  /**
+  * @brief : Set's the shader-resource-view for rendering
+  * @bug : no known bugs.
+  */
+  void
+  PSSetSingleShaderResource(enShaderResourceView & shaderResource);
+
+
   void/*! set's the resources for the pixel shader (can set multiple)*/
   PSSetShaderResources(enShaderResourceView  ShaderResources[],
                        uint32_t numResources = 1,

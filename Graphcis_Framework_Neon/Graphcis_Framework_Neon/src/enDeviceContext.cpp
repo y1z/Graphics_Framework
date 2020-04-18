@@ -86,7 +86,7 @@ enDeviceContext::OMSetRenderTargets(enRenderTargetView renderTargetsViews[],
   }
   else
   {
-    assert(("Error two many render targets", numRenderTargets <= c_MaxRenderTargets));
+    assert("Error two many render targets" && numRenderTargets <= c_MaxRenderTargets);
   }
 #elif OPENGL
 #endif // DIRECTX
@@ -128,7 +128,7 @@ enDeviceContext::OMSetRenderTargets(std::vector<enRenderTargetView>& renderTrage
   }
   else
   {
-    assert(("Error two many render targets", totalElements <= c_MaxRenderTargets));
+    assert("Error two many render targets" && totalElements <= c_MaxRenderTargets);
   }
 #elif OPENGL
 #endif // DIRECTX
@@ -194,7 +194,7 @@ enDeviceContext::IASetVertexBuffers(enVertexBuffer vertexBuffer[], uint32_t numB
   }
   else
   {
-    assert(("Error too many vertex buffer ", numBuffers <= c_MaxVertexBuffers));
+    assert("Error too many vertex buffer " && numBuffers <= c_MaxVertexBuffers);
   }
 
 #elif OPENGL
@@ -406,6 +406,24 @@ enDeviceContext::PSSetShader(enPixelShader& pixelShader)
                                  nullptr,
                                  0);
 
+#elif OPENGL
+#endif // DIRECTX
+}
+
+void 
+enDeviceContext::PSSetSingleShaderResource(enShaderResourceView& shaderResource)
+{
+#if DIRECTX
+  UINT const index = static_cast< UINT >(shaderResource.getIndex());
+  assert(index <= D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT - 1 &&
+         "Error index is greater than the amount available of slots");
+  
+  ID3D11ShaderResourceView* const resourcePtr = shaderResource.m_interface;
+
+  this->m_interface->PSSetShaderResources(index,
+                                          1,
+                                          &resourcePtr);
+#elif OPENGL
 #endif // DIRECTX
 }
 
@@ -433,7 +451,7 @@ enDeviceContext::PSSetShaderResources(enShaderResourceView shaderResources[],
   else
   {
     EN_LOG_ERROR_WITH_CODE(enErrorCode::UnClassified);
-    assert(("Error asking for too many slots", Slots <= D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT - 1));
+    assert("Error asking for too many slots" && Slots <= D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT - 1);
   }
 
 #elif OPENGL
@@ -447,15 +465,14 @@ enDeviceContext::PSSetShaderResources(enShaderResourceView shaderResources[],
   GLint activeSamplers = 0;
   uint32* shaderProgram = cApiComponents::getShaderProgram();
 
-  glGetProgramiv(*shaderProgram, GL_ACTIVE_RESOURCES, &activeSamplers);
-  assert(numResources > maxTextures && "too Many resource being set");
+  assert(numResources <= maxTextures && "too Many resource being set");
 
-  for( uint32 i = 0; i < numResources; ++i )
-  {
-    glActiveTexture(GL_TEXTURE0 + shaderResources[i].getIndex());
-    //glUniform1i()
+  //for( uint32 i = 0; i < numResources; ++i )
+  //{
+  //  glActiveTexture(GL_TEXTURE0 + shaderResources[i].getIndex());
+  //  //glUniform1i()
 
-  }
+  //}
 
   assert(!GlCheckForError() && "there is an error with setting the textures" );
 
@@ -490,7 +507,7 @@ enDeviceContext::PSSetShaderResources(std::vector<enShaderResourceView>& shaderR
   else
   {
     EN_LOG_ERROR_WITH_CODE(enErrorCode::UnClassified);
-    assert(("Error asking for too many slots", Slot <= D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT - 1));
+    assert( "Error asking for too many slots" && Slot <= D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT - 1);
   }
 #elif OPENGL
 
@@ -512,9 +529,10 @@ enDeviceContext::PSSetConstantBuffers(enConstBuffer& Buffer,
   }
   else
   {
-    assert(("Error setting PSSetConstantBuffer ", Slots <= D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT - 1));
+    assert("Error setting PSSetConstantBuffer " && Slots <= D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT - 1);
   }
 
+#elif OPENGL
 #endif // DIRECTX
 }
 
@@ -538,9 +556,10 @@ enDeviceContext::PSSetSamplers(enSampler samplers[],
   }
   else
   {
-    assert(("Error setting Sampler PSSetSamplers", slot <= D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT - 1));
+    assert("Error setting Sampler PSSetSamplers"&& slot <= D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT - 1);
   }
 
+#elif OPENGL
 #endif // DIRECTX
 }
 
@@ -558,11 +577,12 @@ enDeviceContext::PSSetSampler(enSampler& sampler)
   }
   else
   {
-    assert(("Error setting Sampler PSSetSamplers", sampler.getIndex() <= D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT - 1));
+    assert("Error setting Sampler PSSetSamplers" && sampler.getIndex() <= D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT - 1);
   }
 
+#elif OPENGL
 #endif // DIRECTX
-  }
+}
 
 void
 enDeviceContext::DrawIndexed(uint32_t indexCount)
@@ -620,10 +640,9 @@ enDeviceContext::SetShaders(enVertexShader& vertexShader,
   this->VSSetShader(vertexShader);
   this->PSSetShader(pixelShader);
 
-  return true;
 #elif OPENGL
 #endif // DIRECTX
-  return false;
+  return true;
 }
 
 
