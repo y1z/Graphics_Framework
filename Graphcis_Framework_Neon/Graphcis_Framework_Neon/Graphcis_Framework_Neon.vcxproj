@@ -679,7 +679,7 @@
     <ClInclude Include="include\MacroslessWindow.h" />
     <ClInclude Include="include\Resource.h" />
     <ClInclude Include="include\util\cBaseApp.h" />
-    <ClInclude Include="include\util\enRangeIndexTarcker.h" />
+    <ClInclude Include="include\util\enRangeIndexTracker.h" />
     <ClInclude Include="include\util\Header.h" />
     <ClInclude Include="include\util\helperTemplates.h" />
     <ClInclude Include="include\util\soModule.h" />

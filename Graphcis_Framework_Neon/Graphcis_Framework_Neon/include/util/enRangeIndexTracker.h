@@ -24,7 +24,7 @@ template<class integralType,
   size_t sizeOfRange,
   std::enable_if_t<std::is_integral_v<integralType>
   , int> = 0 >
-class enRangeIndexTracker
+class enRangeIndexTracker//tracker
 {
 public:
 
