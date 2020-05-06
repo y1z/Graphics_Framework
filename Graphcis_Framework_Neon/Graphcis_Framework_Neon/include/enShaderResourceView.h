@@ -3,6 +3,8 @@
 #include <string>
 #include <deque>
 #include <array>
+#include "util/enRangeIndexTracker.h"
+
   /**
   * @brief : defines a view into a resource that can be used by the shader.
   */
@@ -43,32 +45,11 @@ public:
 
 private:
   /**
-  * @brief :
-  * @bug :
+  * @brief : controls the maximum number of indexes.
   */
-  static void
-  registerIndexAsBeingUsed(int32 index);
-
-  /**
-  * @returns : a index thats not used.
-  * @bug : no known bugs.
-  */
-  static int32 
-  getLeatestUnusedIndex();
-
-  /**
-  * @returns : true when a index is already being used false otherwise.
-  * @bug : no known bugs.
-  */
-  static bool
-  checkIfIndexIsAlreadyUsed(int32 index);
-
-private:
   constexpr static size_t s_maxIndexes = 11u;
 
-  static std::array<sSignedIndexTracker , s_maxIndexes> s_indexes; 
-
-
+  static enRangeIndexTracker<int32, s_maxIndexes> s_indexes;
 public:
 
   /**

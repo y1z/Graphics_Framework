@@ -595,19 +595,27 @@ GlCheckForError()
     std::string Message = "\n ---- ERROR HAS OCURRED :< ";
 
     Message += ConvertToHex.str();
-    Message += "> \n";
+    Message += " > \n";
 
-    std::cout << Message.c_str();
+    std::cout << Message;
     if( Error == GL_INVALID_ENUM )
     {
-      std::cout << "invalid Enum \n";
+      EN_LOG_DB("invalid Enum ");
     }
-    if( Error == GL_INVALID_OPERATION )
+    else if( Error == GL_INVALID_OPERATION )
     {
-
-      std::cout << "invalid operation \n";
+      EN_LOG_DB("invalid operation ");
+    }
+    else if( Error == GL_INVALID_VALUE )
+    {
+      EN_LOG_DB("invalid value ");
+    }
+    else
+    {
+      EN_LOG_DB(" unknown error ");
     }
 
+    EN_LOG_DB("======================================\n\n");
 
   }
   return IsErrorResult;

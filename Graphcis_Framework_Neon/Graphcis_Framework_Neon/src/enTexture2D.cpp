@@ -48,7 +48,15 @@ enTexture2D::Release()
     return false;
   }
 #elif OPENGL
-  this->deleteTexture();
+  if( m_interface == std::numeric_limits<uint32>::max() )
+  {
+    return false;
+  }
+  else
+  {
+    this->deleteTexture();
+    return true;
+  }
 #endif // DIRECTX
   return false;
 }
@@ -96,24 +104,19 @@ enTexture2D::deleteTexture()
   if( m_interface != std::numeric_limits<uint32>::max() )
   {
     // this is done because a texture can be used for many things 
-    if( glIsBuffer(m_interface) == GL_TRUE )
-    {
-      glDeleteBuffers(1, &m_interface);
-    }
-
     if( glIsTexture(m_interface) == GL_TRUE )
     {
       glDeleteTextures(1, &m_interface);
     }
 
-    if( glIsRenderbuffer(m_interface) == GL_TRUE )
-    {
-      glDeleteRenderbuffers(1, &m_interface);
-    }
-
-    if( glIsFramebuffer(m_interface) == GL_TRUE )
+    else if( glIsFramebuffer(m_interface) == GL_TRUE )
     {
       glDeleteFramebuffers(1, &m_interface);
+    }
+
+    else if( glIsRenderbuffer(m_interface) == GL_TRUE )
+    {
+      glDeleteRenderbuffers(1, &m_interface);
     }
 
     m_interface = std::numeric_limits<uint32>::max();

@@ -89,6 +89,7 @@ enDeviceContext::OMSetRenderTargets(enRenderTargetView renderTargetsViews[],
     assert("Error two many render targets" && numRenderTargets <= c_MaxRenderTargets);
   }
 #elif OPENGL
+
 #endif // DIRECTX
 
 }
@@ -104,6 +105,7 @@ enDeviceContext::setDepthStencilView(enDepthStencilView& depthStencilView,
                                   depthStencilView.m_interface);
 
 #elif OPENGL
+  glEnable(GL_DEPTH_TEST);
 #endif // DIRECTX
 }
 
@@ -429,7 +431,7 @@ enDeviceContext::PSSetSingleShaderResource(enShaderResourceView& shaderResource)
   glActiveTexture(GL_TEXTURE0 + shaderResource.getIndex());
   glBindTexture(GL_TEXTURE_2D, shaderResource.m_interface);
 
-  assert(!GlCheckForError());
+  (!GlCheckForError());
 #endif // DIRECTX
 }
 

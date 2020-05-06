@@ -56,7 +56,8 @@ static bool s_pressedShift = false;
 bool
 appGraphics::init()
 {
-  BOOL checkIfSucceeded = GetModuleHandleEx(0x00, NULL, &m_moduleInstance);
+  BOOL const checkIfSucceeded =
+    GetModuleHandleEx(0x00, NULL, &m_moduleInstance);
 
   if( checkIfSucceeded == FALSE )
     return false;
@@ -80,7 +81,7 @@ appGraphics::init()
     return false;
   }
 
-  if( FAILED(InitWindow(m_moduleInstance, SW_SHOWDEFAULT)) )
+  if( FAILED(InitWindow(m_moduleInstance)) )
   {
     this->destroy();
     return false;
@@ -98,19 +99,11 @@ appGraphics::init()
     return false;
   }
 
-  if( initForRender() == S_FALSE )
+  if( S_FALSE == initForRender())
   {
     this->destroy();
     return false;
   }
-  //enVector2 newSize = enVector2(2000, 2000);
-  //bool isSuccessful = this->m_swapchain->ResizeSwapChain(*m_window,
-  //                                                       *m_renderTargetView,
-  //                                                       *m_depthStencilView,
-  //                                                       newSize,
-  //                                                       *m_viewport);
-
-  //assert(isSuccessful);
 
   s_initIsFinish = true;
 
@@ -122,10 +115,9 @@ appGraphics::run()
 {
   // Main message loop
   MSG msg = { 0 };
-  static glm::vec2 windowSize = helper::getWindowSize(*m_window);
+
   while( WM_QUIT != msg.message )
   {
-    //glm::vec2 currentWindowSize = helper::getWindowSize(*m_window);
     if( PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) )
     {
       TranslateMessage(&msg);
@@ -185,7 +177,6 @@ appGraphics::InitStatics()
     return false;
   }
 
-
   return true;
 }
 
@@ -206,7 +197,8 @@ appGraphics::initApi()
 {
 #if OPENGL
   glewExperimental = true;
-  if( glewInit() != GLEW_OK ) {
+  if( glewInit() != GLEW_OK )
+  {
     assert((true == false) && " failed to start glew");
   }
 
@@ -217,14 +209,14 @@ appGraphics::initApi()
     return enErrorCode::FailedCreation;
   }
 
- appGraphics::SetCallBackFunctions(*m_window);
+  appGraphics::SetCallBackFunctions(*m_window);
 
 #endif // OPENGL
 
 
-  enErrorCode checkForError = helper::CreateDeviceAndSwapchain(*m_swapchain,
-                                                               *m_window,
-                                                               m_hardwareInfo);
+  enErrorCode const checkForError = helper::CreateDeviceAndSwapchain(*m_swapchain,
+                                                                     *m_window,
+                                                                     m_hardwareInfo);
 
 
   if( !s_gui->is_initialized )
@@ -287,7 +279,6 @@ appGraphics::initForRender()
   enDeviceContext& deviceContext = enDeviceContext::getInstance();
   bool isSuccessful = false;
 
-  HRESULT hr = S_FALSE;
 
   enVector2 windowSize = helper::getWindowSize(*m_window);
 
@@ -360,9 +351,10 @@ appGraphics::initForRender()
 #endif // DIRECTX
 
   {
-    enErrorCode vertexShaderCode = m_vertexShader->compileShaderFromFile(vertexShaderPath,
-                                                                         "VS",
-                                                                         "vs_4_0");
+    enErrorCode const vertexShaderCode = 
+      m_vertexShader->compileShaderFromFile(vertexShaderPath,
+                                            "VS",
+                                            "vs_4_0");
 
     if( !EN_SUCCESS(vertexShaderCode) )
     {
@@ -373,10 +365,9 @@ appGraphics::initForRender()
                  MB_OK);
       return S_FALSE;
     }
-}
+  }
 
   // Create the vertex shader
-  //hr = device.getInterface()->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), NULL, &m_vertexShader->m_interface);
   isSuccessful = device.CreateVertexShader(*m_vertexShader);
   if( !isSuccessful )
   {
@@ -396,7 +387,6 @@ appGraphics::initForRender()
     return S_FALSE;
   }
   // Set the input layout
-  //p_ImmediateContext->IASetInputLayout(m_inputLayout->getInterface());
   deviceContext.IASetInputLayout(*m_inputLayout);
 
 #if DIRECTX
@@ -405,19 +395,19 @@ appGraphics::initForRender()
   constexpr const char* pixelShaderPath = "GraphcisFramework.frag";
 #endif // DIRECTX
 
- enErrorCode pixelShaderCode = m_pixelShader->compileShaderFromFile(pixelShaderPath,
-                                                                    "PS",
-                                                                    "ps_4_0");
+ enErrorCode const pixelShaderCode = 
+   m_pixelShader->compileShaderFromFile(pixelShaderPath,
+                                        "PS",
+                                        "ps_4_0");
 
   if( EN_FAIL(pixelShaderCode) )
   {
-   
     MessageBox(NULL,
                L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.",
                L"Error",
                MB_OK);
 
-    return hr;
+    return S_FALSE;
   }
 
   // Create the pixel shader
@@ -594,7 +584,7 @@ appGraphics::initForRender()
 
 
 HRESULT
-appGraphics::InitWindow(HINSTANCE hInstance, int nCmdShow)
+appGraphics::InitWindow(HINSTANCE hInstance)
 {
 
 #if OPENGL
@@ -980,8 +970,6 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam
 LRESULT
 appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-  PAINTSTRUCT ps;
-  HDC hdc;
 
   if( ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam) )
     return true;
@@ -1006,6 +994,7 @@ appGraphics::SetCallBackFunctions(enWindow & window)
   glfwSetInputMode(window.getHandle(), GLFW_STICKY_KEYS, GLFW_TRUE);
   glfwSetCursorPosCallback(window.getHandle(), GLMoveMouse);
   glfwSetWindowCloseCallback(window.getHandle(), GLCloseWindow);
+  glfwSetWindowPosCallback(window.getHandle(), GLWindowMove);
 
   glfwSetKeyCallback(window.getHandle(), GLKeyInput);
 }
@@ -1126,6 +1115,12 @@ appGraphics::GLKeyInput(GLFWwindow* window,
   cbChangesOnResize.mProjection = currentCamera->getProjection();
   helper::arrangeForApi(cbChangesOnResize.mProjection);
   deviceContext.UpdateSubresource(s_ProjectionMatrixBuffer, &cbChangesOnResize);
+}
+
+void 
+appGraphics::GLWindowMove(GLFWwindow* window, int xPos, int yPos)
+{
+
 }
 
 #endif // OPENGL

@@ -123,11 +123,11 @@ private:
   HRESULT
   initForRender();
 
- /**
- * @brief : creates a window
- */
+  /**
+  * @brief : creates a window
+  */
   HRESULT
-  InitWindow(HINSTANCE hInstance, int nCmdShow);
+  InitWindow(HINSTANCE hInstance);
 
   /**
   * @brief : sets the shader and buffers.
@@ -226,6 +226,14 @@ private:
              int action,
              int mods);
 
+  /**
+  * @brief : controls what happens when the window is moved.
+  * @bug : no known bugs.
+  */
+  static void
+  GLWindowMove(GLFWwindow* window,
+               int xPos,
+               int yPos);
 
 #endif // OPENGL
 

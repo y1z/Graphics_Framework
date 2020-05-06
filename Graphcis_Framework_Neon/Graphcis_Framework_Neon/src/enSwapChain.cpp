@@ -95,8 +95,9 @@ enSwapChain::ResizeSwapChain(enWindow& currentWindow,
   this->m_descriptor.buffWidth = newSize.x;
   this->m_descriptor.buffHeight = newSize.y;
 
-  sTextureDescriptor const DepthDesc = helper::generateTextureDescForDepthStencil(newSize.x,
-                                                                        newSize.y);
+  sTextureDescriptor const DepthDesc = 
+    helper::generateTextureDescForDepthStencil(newSize.x,
+                                               newSize.y);
 
   DepthStencilView.m_texture.m_desc = DepthDesc;
 
@@ -104,6 +105,16 @@ enSwapChain::ResizeSwapChain(enWindow& currentWindow,
   HRESULT hr = m_interface->ResizeBuffers(0, newSize.x, newSize.y, DXGI_FORMAT_UNKNOWN, 0);
   assert(!FAILED(hr) && " Error when Resizing the swap chain");
 #elif OPENGL
+  GlRemoveAllErrors();
+  glfwSetWindowSize(currentWindow.getHandle(),
+                    m_descriptor.buffWidth,
+                    m_descriptor.buffHeight);
+
+  if( GlCheckForError() )
+  {
+    return false;
+  }
+                    
 #endif // DIRECTX
   isSuccessful = this->ReciveBuckBuffer(renderTargetView);
 

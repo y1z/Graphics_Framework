@@ -1,10 +1,9 @@
 #include "appGraphics.h"
-#include "util/enRangeIndexTracker.h"
+#include <memory>
 
 int
 main()
 {
-
   std::unique_ptr<cBaseApp> app = std::make_unique<appGraphics>();
   if( app->init() )
   {

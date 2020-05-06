@@ -17,8 +17,8 @@ enDepthStencilView::enDepthStencilView(enDepthStencilView&& other)noexcept
 
 #if DIRECTX
   other.m_interface = nullptr;
-  #elif OPENGL
-
+#elif OPENGL
+  other.m_interface = std::numeric_limits<uint32>::max();
 #endif // DIRECTX
 }
 
@@ -37,8 +37,7 @@ enDepthStencilView::~enDepthStencilView()
 bool
 enDepthStencilView::ReleaseStencil()
 {
-  bool isSuccessful = m_texture.Release();
-  return isSuccessful;
+  return  m_texture.Release();
 }
 
 bool
@@ -56,10 +55,11 @@ enDepthStencilView::ReleaseAllInterfaces()
   else { EN_LOG_DB("depth Stencil is not initialized created\n"); }
 #elif OPENGL
 
-  if( m_interface == std::numeric_limits<uint32>::max() )
+  if( std::numeric_limits<uint32>::max() != m_interface )
   {
     glDeleteRenderbuffers(1, &m_interface);
     ReleasedDepth = true;
+    m_interface = std::numeric_limits<uint32>::max();
   }
   else { EN_LOG_DB("depth Stencil is not initialized created\n"); }
 

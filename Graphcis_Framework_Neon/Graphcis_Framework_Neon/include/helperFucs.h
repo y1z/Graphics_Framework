@@ -212,18 +212,20 @@ namespace helper
 
     glfwGetVersion(&majorVersion, &minorVersion, NULL);
 
+    hardwareInfo.majorVersion = majorVersion;
+    hardwareInfo.minorVersion = minorVersion;
+
     const unsigned char* OpenglVersion = glGetString(GL_VERSION);
     const unsigned char* GlslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
     const unsigned char* OpenglRenderer = glGetString(GL_RENDERER);
+    const unsigned char* OpenglVender = glGetString(GL_VENDOR);
 
     std::cout << "GLFW version : " << "Major [" << majorVersion << "] Minor [" << minorVersion << "]\n"
       << "Open_gl version : " << OpenglVersion << '\n'
+      << "open_gl Vendor : "<< OpenglVender <<'\n'
       << "Glsl  Shader version : " << GlslVersion << '\n'
-      << "Open_gl renderer : " << OpenglRenderer << "\n\n\n";
-      //"alignment of sLightData : " << alignof(sLightData) << '\n' <<
-      //" size of sLightData : " << sizeof(sLightData) << std::endl;
+      << "Open_gl renderer : " << OpenglRenderer <<"\n\n\n";
 
-    cApiComponents apiComponent;
 
     uint32* ptr_vertexArrayObject = cApiComponents::getvertexArrayObject();
 
@@ -265,7 +267,7 @@ namespace helper
     windowHeight = widowDimensions.bottom - widowDimensions.top;
 
   #elif OPENGL
-    glfwGetWindowSize(window.getHandle(), &windowWidth, &windowHeight);
+    glfwGetFramebufferSize(window.getHandle(), &windowWidth, &windowHeight);
 
   #endif // DIRECTX
     return enVector2(windowWidth, windowHeight);
@@ -275,7 +277,7 @@ namespace helper
   * @returns : a matrix that may or may not be transposed ( depends on the api).
   * @bug : no known bugs.
   */
-  EN_NODISCARD static enMatrix4x4 
+  static enMatrix4x4 
   arrangeForApi(enMatrix4x4& mat)
   {
   #if DIRECTX

@@ -3,7 +3,7 @@
 #include <array>
 
   /**
-  * @brief : contains an index and if that index is being used.
+  * @brief : contains an index, and if that index is being used.
   * @tpara IndexType : the integer type of the index.
   * @bug : no known bugs.
   */
@@ -53,7 +53,7 @@ public:
 
   /**
   * @brief : find and gets the first Unused index.
-  * @returns -1 if there are no indexes available.
+  * @returns -1 if there are no indexes available, otherwise returns the index found.
   * @param[in] registerTheIndex : to know if the index should be registered if 
   * one is available found.
   * @bug : no known bugs.

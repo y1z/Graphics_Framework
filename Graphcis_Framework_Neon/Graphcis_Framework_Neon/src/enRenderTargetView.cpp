@@ -73,6 +73,6 @@ enRenderTargetView::ReleaseAllInterfaces()
   }
   else { return false; }
 #endif // DIRECTX
-  return false;
+  return true;
 }
 
