@@ -823,6 +823,19 @@ struct sUniformDetails
   const void* ptr_data = nullptr;
   int32 id = INT32_MAX;
   enConstBufferElem element = enConstBufferElem::NONE;
+public:
+  /**
+  * @brief  Creates a instance of a uniform-detail .
+  * @bug  No known bugs
+  */
+  EN_NODISCARD static sUniformDetails
+  Generate(std::string_view InName, enConstBufferElem InElementType)
+  {
+    sUniformDetails  result;
+    result.name = InName;
+    result.element = InElementType;
+    return result;
+  }
 };
 
 /**

@@ -343,20 +343,6 @@ namespace helper
 
 
   /**
-  * @brief : creates a 'sUniformDetails'
-  * @bug : no known bugs.
-  */
-  EN_NODISCARD static sUniformDetails
-  GlCreateUniformDetail(std::string_view name, enConstBufferElem type)
-  {
-    sUniformDetails result;
-    result.name = name;
-    result.element = type;
-
-    return result;
-  }
-
-  /**
   * @brief : updates the uniform variables in the glsl shader
   * @param[in] details : contains the type of the variable and the values
   * that the variable should contain.

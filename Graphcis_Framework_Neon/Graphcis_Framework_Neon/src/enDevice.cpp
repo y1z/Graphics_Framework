@@ -769,19 +769,19 @@ enDevice::CreateConstBuffer(enConstBuffer& constBuffer)
 
   if( constBuffer.getIndex() == 0 )
   {
-    refToContainer->push_back(helper::GlCreateUniformDetail("u_view", enConstBufferElem::mat4x4));
+    refToContainer->push_back(sUniformDetails::Generate("u_view", enConstBufferElem::mat4x4));
     FindAndAddUniformID(shaderProgram);
 
   }
   else if( constBuffer.getIndex() == 1 )
   {
-    refToContainer->push_back(helper::GlCreateUniformDetail("u_projection", enConstBufferElem::mat4x4));
+    refToContainer->push_back(sUniformDetails::Generate("u_projection", enConstBufferElem::mat4x4));
     FindAndAddUniformID(shaderProgram);
   }
   else if( constBuffer.getIndex() == 2 )
   {
-    refToContainer->push_back(helper::GlCreateUniformDetail("u_world", enConstBufferElem::mat4x4));
-    refToContainer->push_back(helper::GlCreateUniformDetail("uColor", enConstBufferElem::vec4));
+    refToContainer->push_back(sUniformDetails::Generate("u_world", enConstBufferElem::mat4x4));
+    refToContainer->push_back(sUniformDetails::Generate("uColor", enConstBufferElem::vec4));
     FindAndAddUniformID(shaderProgram);
   }
 
