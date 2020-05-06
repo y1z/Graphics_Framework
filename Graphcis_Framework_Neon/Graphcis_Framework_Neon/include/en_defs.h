@@ -838,35 +838,6 @@ struct sShaderResourceDesc
   int32 m_index = INT32_MAX;
 };
 
-/**
-* @brief : contains a index and if it was already used or not.
-*/
-struct sSignedIndexTracker
-{
-  sSignedIndexTracker(int32 index)
-  : m_index(index),m_isUsed(false) {}
-
-  sSignedIndexTracker() 
-  : m_index(0),m_isUsed(false) {}
-
-  int32 m_index;
-  bool m_isUsed;
-};
-
-/**
-* @brief : contains a index and if it was already used or not.
-*/
-struct sUnsignedIndexTracker
-{
-  sUnsignedIndexTracker(uint32 index)
-    : m_index(index), m_isUsed(false) {}
-
-  sUnsignedIndexTracker()
-    : m_index(0), m_isUsed(false) {}
-
-  uint32 m_index;
-  bool m_isUsed;
-};
 
 /*+++++++++++++++++++++++++++++++++++*/
 
