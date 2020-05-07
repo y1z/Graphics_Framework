@@ -191,7 +191,7 @@ enMultiviewTexture::CreateTexture(enMultiViewType type,
       break;
     case enMultiViewType::renderTarget:
     {
-      sTextureDescriptor renderDesc = enTexture2D::GenerateRenderTargetDesc(width, height);
+      sTextureDescriptor renderDesc = enRenderTargetView::GenerateDesc(width, height);
       isSuccessful = device.CreateTexture2D(renderDesc, this->m_sharedTexture);
        
       return  isSuccessful;

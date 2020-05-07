@@ -120,8 +120,8 @@ enWindow::init(windProcType ptr_proc,
     m_handle = glfwCreateWindow(m_width,
                                 m_height,
                                 convertedName.c_str(),
-                                NULL,
-                                NULL);
+                                nullptr,
+                                nullptr);
   #else
 
     m_handle = glfwCreateWindow(m_width,

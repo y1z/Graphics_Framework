@@ -26,10 +26,12 @@ enSwapChain::~enSwapChain()
 enSwapChain&
 enSwapChain::operator=(enSwapChain&& other) noexcept
 {
-#if DIRECTX
   this->m_interface = other.m_interface;
-  other.m_interface = nullptr;
   this->m_descriptor = std::move(other.m_descriptor);
+#if DIRECTX
+  other.m_interface = nullptr;
+#elif OPENGL 
+  other.m_interface = std::numeric_limits<uint32>::max();
 #endif // DIRECTX
 
   return *this;
@@ -105,9 +107,9 @@ enSwapChain::ResizeSwapChain(enWindow& currentWindow,
   assert(!FAILED(hr) && " Error when Resizing the swap chain");
 #elif OPENGL
   GlRemoveAllErrors();
-  glfwSetWindowSize(currentWindow.getHandle(),
-                    m_descriptor.buffWidth,
-                    m_descriptor.buffHeight);
+  //glfwSetWindowSize(currentWindow.getHandle(),
+  //                  m_descriptor.buffWidth,
+  //                  m_descriptor.buffHeight);
 
   if( GlCheckForError() )
   {
