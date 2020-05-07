@@ -22,14 +22,14 @@ namespace helper
   static constexpr float
   radiansToDegrees(float radians)
   {
-    return radians *= (180.0f / 3.14159f);
+    return radians * (180.0f / 3.14159f);
   }
 
   /*!converts degrees to radians*/
   static constexpr float
   degreesToRadians(float degrees)
   {
-    return  degrees *= (3.14159f / 180.0f);
+    return  degrees * (3.14159f / 180.0f);
   }
 
 
@@ -287,44 +287,6 @@ namespace helper
 
      return mat ;
   #endif // DIRECTX
-  }
-
-  /**
-  * @returns : descriptor that used for a DepthStencil .
-  * @bug :no known bugs.
-  */
-  EN_NODISCARD static constexpr sTextureDescriptor
-  generateTextureDescForDepthStencil(float const Width,
-                                     float const Height)
-  {
-    sTextureDescriptor result;
-    result.texWidth = Width;
-    result.texHeight = Height;
-    result.CpuAccess = 0;
-    result.texFormat = static_cast<int>(enFormats::depthStencil_format);
-    result.Usage = enBufferUse::Default;
-    result.BindFlags = enBufferBind::DepthStencil;
-    result.arraySize = 1;
-    return result;
-  }
-
-  /**
-  * @returns : descriptor that used for a render-Target.
-  * @bug :no known bugs.
-  */
-  EN_NODISCARD static constexpr sTextureDescriptor
-  generateTextureDescForRenderTarget(float const Width,
-                                     float const Height)
-  {
-    sTextureDescriptor result;
-    result.texWidth = Width;
-    result.texHeight = Height;
-    result.CpuAccess = 0;
-    result.BindFlags = enBufferBind::RenderTarget;
-    result.texFormat = static_cast<int>(enFormats::renderTarget_format);
-    result.Usage = enBufferUse::Default;
-    result.arraySize = 1;
-    return result;
   }
 
   /**

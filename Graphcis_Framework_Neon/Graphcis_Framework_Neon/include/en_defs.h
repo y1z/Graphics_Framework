@@ -785,7 +785,7 @@ struct sSwapDesc
   uint32 buffHeight = 1;
   int buffUsage = 0;
   int buffFormat = 0;
-//! controls the refresh rate  buffNumaretor / buffDenominator
+  //! controls the refresh rate  buffNumaretor / buffDenominator
   uint16 buffRefershNumaretor = 60;
   uint16 buffRefershDenominator = 1;
   uint8 buffCount{ 0 };
@@ -829,7 +829,7 @@ public:
   * @bug  No known bugs
   */
   EN_NODISCARD static sUniformDetails
-  Generate(std::string_view InName, enConstBufferElem InElementType)
+  Generate(std::string_view const InName, enConstBufferElem const InElementType)
   {
     sUniformDetails  result;
     result.name = InName;

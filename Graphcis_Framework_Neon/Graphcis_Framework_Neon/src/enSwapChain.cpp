@@ -95,9 +95,8 @@ enSwapChain::ResizeSwapChain(enWindow& currentWindow,
   this->m_descriptor.buffWidth = newSize.x;
   this->m_descriptor.buffHeight = newSize.y;
 
-  sTextureDescriptor const DepthDesc = 
-    helper::generateTextureDescForDepthStencil(newSize.x,
-                                               newSize.y);
+  sTextureDescriptor const DepthDesc = enDepthStencilView::GenerateDesc(newSize.x,
+                                                                        newSize.y);
 
   DepthStencilView.m_texture.m_desc = DepthDesc;
 

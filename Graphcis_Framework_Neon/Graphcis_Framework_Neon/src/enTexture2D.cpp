@@ -38,7 +38,7 @@ bool
 enTexture2D::Release()
 {
 #if DIRECTX
-  if( m_interface != nullptr )
+  if( nullptr != m_interface )
   {
     RELEASE_DX_PTR(m_interface);
     return true;
@@ -48,7 +48,7 @@ enTexture2D::Release()
     return false;
   }
 #elif OPENGL
-  if( m_interface == std::numeric_limits<uint32>::max() )
+  if( std::numeric_limits<uint32>::max() == m_interface )
   {
     return false;
   }

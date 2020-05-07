@@ -191,14 +191,14 @@ enMultiviewTexture::CreateTexture(enMultiViewType type,
       break;
     case enMultiViewType::renderTarget:
     {
-      sTextureDescriptor renderDesc = helper::generateTextureDescForRenderTarget(width, height);
+      sTextureDescriptor renderDesc = enTexture2D::GenerateRenderTargetDesc(width, height);
       isSuccessful = device.CreateTexture2D(renderDesc, this->m_sharedTexture);
        
       return  isSuccessful;
     }
     case enMultiViewType::depthStencil:
     {
-      sTextureDescriptor depthStencilDesc = helper::generateTextureDescForDepthStencil(width, height);
+      sTextureDescriptor depthStencilDesc = enDepthStencilView::GenerateDesc(width, height);
       isSuccessful = device.CreateTexture2D(depthStencilDesc, this->m_sharedTexture);
       return  isSuccessful;
     }
