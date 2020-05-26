@@ -107,6 +107,7 @@ enSwapChain::ResizeSwapChain(enWindow& currentWindow,
   assert(!FAILED(hr) && " Error when Resizing the swap chain");
 #elif OPENGL
   GlRemoveAllErrors();
+  // TODO
   //glfwSetWindowSize(currentWindow.getHandle(),
   //                  m_descriptor.buffWidth,
   //                  m_descriptor.buffHeight);

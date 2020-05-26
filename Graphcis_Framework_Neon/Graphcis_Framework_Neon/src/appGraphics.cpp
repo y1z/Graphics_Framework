@@ -235,8 +235,6 @@ appGraphics::createMyClasses()
     m_vertexShader = make_unique<enVertexShader>();
     m_pixelShader = make_unique<enPixelShader>();
 
-    m_vertexBuffer = make_unique<enVertexBuffer>();
-    m_indexBuffer = make_unique<enIndexBuffer>();
 
     m_renderTargetView = make_unique<enRenderTargetView>();
     m_inputLayout = make_unique<enInputLayout>();
@@ -386,9 +384,9 @@ appGraphics::initForRender()
     EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
     return S_FALSE;
   }
+
   // Set the input layout
   deviceContext.IASetInputLayout(*m_inputLayout);
-
 #if DIRECTX
   constexpr const char* pixelShaderPath = "GraphcisFramework.fx";
 #elif OPENGL
@@ -420,15 +418,11 @@ appGraphics::initForRender()
   }
 
 
-  if( m_model->LoadModelFromFile("scene.fbx") == false )
+  if( m_model->LoadModelFromFile("ryuko.fbx") == false )
   {
     EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
     return S_FALSE;
   }
-
-  deviceContext.IASetVertexBuffers(m_vertexBuffer.get(), 1);
-
-  deviceContext.IASetIndexBuffer(*m_indexBuffer, enFormats::uR16);
 
   deviceContext.IASetPrimitiveTopology(static_cast<int>(enTopology::TriList));
 
@@ -734,6 +728,8 @@ appGraphics::Render()
   static sColorf ClearColor{ 0.40f,0.50f,1.00f,1.0f };
 
 
+  // Set the input layout
+  deviceContext.IASetInputLayout(*m_inputLayout);
   //deviceContext.ClearRenderTargetView(*m_renderTargetView, &ClearColor);
   ////
   //// Clear the depth buffer to 1.0 (max depth)
@@ -745,7 +741,6 @@ appGraphics::Render()
   this->setShaderAndBuffers();
 
   this->drawWithSelectedRenderTarget(0);
-
 /*+++++++++++++++++++++++++++++++++++++++++++++*/
 
 //  this->switchCamera();

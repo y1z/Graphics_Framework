@@ -365,6 +365,10 @@ enDeviceContext::ClearDepthStencilView(enDepthStencilView& depthStencilView,
                                      DepthClearValue,
                                      StencilClearValues);
 #elif OPENGL
+  GLbitfield GlClearFlags = 0x00;
+  if( ClearStencil ) { GlClearFlags |= GL_STENCIL_BUFFER_BIT; }
+  if( ClearDepth ) { GlClearFlags |= GL_DEPTH_BUFFER_BIT; }
+  glClear(GlClearFlags);
 
 
 #endif // DIRECTX
@@ -429,7 +433,7 @@ enDeviceContext::PSSetSingleShaderResource(enShaderResourceView& shaderResource)
   GlRemoveAllErrors();
 
 
-  if( std::numeric_limits<uint32>::max() != shaderResource.m_interface )
+  if( GL_TRUE == glIsTexture(shaderResource.m_interface) )
   {
     glActiveTexture(GL_TEXTURE0 + shaderResource.getIndex());
 

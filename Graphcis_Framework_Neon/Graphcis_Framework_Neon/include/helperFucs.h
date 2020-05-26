@@ -268,6 +268,7 @@ namespace helper
 
   #elif OPENGL
     glfwGetFramebufferSize(window.getHandle(), &windowWidth, &windowHeight);
+   //glfwGetWindowSize(window.getHandle(), &windowWidth, &windowHeight);//( )
 
   #endif // DIRECTX
     return enVector2(windowWidth, windowHeight);
@@ -398,6 +399,20 @@ namespace helper
 
   }
 
+  constexpr int
+  cx_stringCompare(char const* leftChar,
+                   char const* rightChar)
+  {
+    int result = 0;
+    while( '\0' != (*leftChar) && '\0' != (*rightChar) )
+    {
+      result += (*leftChar) - (*rightChar);
+      ++leftChar;
+      ++rightChar;
+    }
+
+    return result;
+  }
 
 }
 

@@ -25,6 +25,7 @@ public:
 
 public:// operators 
   enMesh& operator =(enMesh&& mesh) noexcept;
+  enMesh& operator =(const enMesh& mesh) = delete;
 
 public:// functions 
   //! set up the index buffer for creation
@@ -33,7 +34,7 @@ public:// functions
 
   //! set up the vertex buffer for creation
   void
-  initVertexBuffer(std::unique_ptr<std::vector<SimpleVertex>>&& vertexes);
+  initVertexBuffer(std::unique_ptr<std::vector<ActiveVertex_t>>&& vertexes);
 
   //! creates the vertex buffer 
   bool
@@ -55,7 +56,7 @@ public:// functions
   void
   setTopology(enTopology topology);
 
-  //! returns the type of topology the mesh contians 
+  //! returns the type of topology the mesh contains 
   enTopology
   getTopology() const;
 
@@ -95,11 +96,11 @@ public: // functions
   confInt
   getIndicesCount()const;
 
-/*! returns a vector that contains all data related with vertexes of the mesh */
-  const std::vector< SimpleVertex>*
+  /*! returns a vector that contains all data related with vertexes of the mesh */
+  const std::vector<ActiveVertex_t >*
   getVertexData() const;
 
-/*! returns a vector that contains all data related with indices of the mesh */
+  /*! returns a vector that contains all data related with indices of the mesh */
   const std::vector<uint16>*
   getIndiceData() const;
 
@@ -130,7 +131,7 @@ private:
   //! this is so a mesh can share a texture with a another mesh 
   std::shared_ptr<enTexture2D> mptr_texture;
   /*! this contains the values that consist of the vertex data */
-  std::unique_ptr<std::vector< SimpleVertex >> m_vertexDataContainer;
+  std::unique_ptr<std::vector< ActiveVertex_t>> m_vertexDataContainer;
   /*! this contains the values that represent the indices */
   std::unique_ptr<std::vector<uint16>> m_indexDataContainer;
 public:

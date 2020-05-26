@@ -7,6 +7,7 @@
 #include "glm/glm.hpp"
 
 using enMatrix4x4 = glm::mat4x4;
+using enMatrix3x3 = glm::mat3x3;
 using enVector4 = glm::vec4;
 using enVector3 = glm::vec3;
 using enVector2 = glm::vec2;
@@ -35,10 +36,22 @@ operator <<(std::ostream& Stream, const enVector4& vec4) {
 * Struct type defines
 */
 
+#define ActiveVertex_t sFullVertex
+
+
 struct SimpleVertex
 {
   glm::vec4 Pos;
   glm::vec2 Tex;
+};
+
+
+
+struct /*alignas(sizeof(glm::vec4)) */sFullVertex
+{
+  glm::vec4 Pos;
+  glm::vec2 Tex;
+  glm::vec3 Normal;
 };
 
 struct viewMatrix
@@ -56,3 +69,4 @@ struct ConstBufferWorldColor
   glm::mat4x4 mWorld;
   glm::vec4 vMeshColor;
 };
+

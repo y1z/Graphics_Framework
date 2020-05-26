@@ -255,9 +255,6 @@ public:
   std::unique_ptr<enInputLayout> m_inputLayout = nullptr;
 
   std::unique_ptr<enViewport> m_viewport = nullptr;
-
-  std::unique_ptr<enVertexBuffer> m_vertexBuffer = nullptr;
-  std::unique_ptr<enIndexBuffer> m_indexBuffer = nullptr;
   
   std::unique_ptr<enConstBuffer> m_worldMatrix = nullptr;
 

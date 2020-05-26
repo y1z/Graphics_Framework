@@ -16,7 +16,7 @@ enRenderTargetView::~enRenderTargetView()
 #if DIRECTX
   RELEASE_DX_PTR(m_interface);
 #elif OPENGL
-  if( m_interface == std::numeric_limits<uint32>::max() )
+  if( std::numeric_limits<uint32>::max() != m_interface )
   {
     glDeleteFramebuffers(1,&m_interface);
     m_interface = std::numeric_limits<uint32>::max();
@@ -31,9 +31,9 @@ enRenderTargetView::operator=(enRenderTargetView&& other) noexcept
 #if DIRECTX
   other.m_interface = nullptr;
 #elif OPENGL
+  other.m_interface = std::numeric_limits<uint32>::max();
 #else
   other.m_interface = nullptr;
-
 #endif // DIRECTX
   return *this;
 }
@@ -70,6 +70,13 @@ enRenderTargetView::ReleaseAllInterfaces()
   {
     RELEASE_DX_PTR(m_interface);
     return true;
+  }
+  else { return false; }
+#elif OPENGL
+  if( std::numeric_limits<uint32>::max() != m_interface )
+  {
+    glDeleteBuffers(1, &m_interface);
+    m_interface = std::numeric_limits<uint32>::max();
   }
   else { return false; }
 #endif // DIRECTX

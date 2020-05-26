@@ -62,11 +62,11 @@ enMesh::initIndexBuffer(std::unique_ptr<std::vector<uint16>>&& indexes)
 }
 
 void
-enMesh::initVertexBuffer(std::unique_ptr<std::vector<SimpleVertex>>&& vertexes)
+enMesh::initVertexBuffer(std::unique_ptr<std::vector<ActiveVertex_t>>&& vertexes)
 {
   m_vertexDataContainer = std::move(vertexes);
-
-  mptr_vertexBuffer->init(sizeof(SimpleVertex),
+  auto container = *m_vertexDataContainer;
+  mptr_vertexBuffer->init(sizeof(container[0]),
                           m_vertexDataContainer->size(),
                           0,
                           m_vertexDataContainer->data());
@@ -170,7 +170,7 @@ enMesh::getIndicesCount() const
   return mptr_indexBuffer->getElementCount();
 }
 
-const std::vector<SimpleVertex>*
+const std::vector< ActiveVertex_t>*
 enMesh::getVertexData() const
 {
   return &*m_vertexDataContainer;

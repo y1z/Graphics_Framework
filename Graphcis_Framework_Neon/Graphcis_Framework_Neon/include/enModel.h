@@ -45,7 +45,7 @@ private:
               enDevice& device);
 
   /**
-  * @brief :
+  * @brief : Read the geometry data from the mesh.
   * @bug :
   */
   void

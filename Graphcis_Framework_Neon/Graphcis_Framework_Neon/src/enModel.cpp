@@ -70,7 +70,7 @@ enModel::ExtractMesh(const aiMesh* assimpMesh,
                      const aiScene* scene)
 {
   std::unique_ptr<std::vector<uint16>> ptr_indices = std::make_unique<std::vector<uint16>>();
-  std::unique_ptr<std::vector<SimpleVertex>> ptr_vertices = std::make_unique<std::vector<SimpleVertex>>();
+  std::unique_ptr<std::vector< ActiveVertex_t >> ptr_vertices = std::make_unique<std::vector<ActiveVertex_t >>();
 
 
   ptr_indices->reserve(size_t(assimpMesh->mNumFaces) * 3);
@@ -92,7 +92,7 @@ enModel::ExtractMesh(const aiMesh* assimpMesh,
   // get the vertices of the model
   for( uint32_t i = 0; i < assimpMesh->mNumVertices; ++i )
   {
-    SimpleVertex vertex;
+    ActiveVertex_t vertex;
     vertex.Pos.x = assimpMesh->mVertices[i].x;
     vertex.Pos.y = assimpMesh->mVertices[i].y;
     vertex.Pos.z = assimpMesh->mVertices[i].z;
@@ -110,7 +110,21 @@ enModel::ExtractMesh(const aiMesh* assimpMesh,
       vertex.Tex.y = 0.0f;
     }
 
+    //if( assimpMesh->HasNormals() )
+    //{
+    //  vertex.Normal.x = assimpMesh->mNormals[i].x;
+    //  vertex.Normal.y = assimpMesh->mNormals[i].y;
+    //  vertex.Normal.z = assimpMesh->mNormals[i].z;
+    //}
+    //else
+    //{
+    vertex.Normal.x = 0.0f;
+    vertex.Normal.y = 0.0f;
+    vertex.Normal.z = 0.0f;
+    //}
+
     ptr_vertices->emplace_back(vertex);
+
   }
 
   enMesh result;

@@ -55,10 +55,21 @@ public:
             enMultiViewType typeOfView);
 
 
+  /**
+  * @brief set a render-target
+  * @bug no known bugs.
+  * @returns 'true' if the multiView is a renderTarget, 'false' otherwise.
+  * @param[in] 
+  */
   bool 
   setRenderTarget();
 
-
+  /**
+  * @brief set a render-target
+  * @bug no known bugs.
+  * @returns 'true' if the multiView is a Depth-stencil, 'false' otherwise.
+  * @param[in] 
+  */
   bool 
   setDepthStencil();
 
