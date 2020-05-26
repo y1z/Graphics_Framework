@@ -610,25 +610,33 @@ enDeviceContext::DrawIndexed(uint32_t indexCount)
   this->m_interface->DrawIndexed(indexCount, 0u, 0);
 #elif OPENGL
   GlRemoveAllErrors();
+  size_t OffSetOfMember = 0;
 
-  glBindBuffer(GL_ARRAY_BUFFER,m_drawingData.currentVertexBuffer);// m_drawingData.currentVertexBuffer);
-  size_t OffSetOfFirst = offsetof(SimpleVertex, Pos);
+  glBindBuffer(GL_ARRAY_BUFFER, m_drawingData.currentVertexBuffer);// m_drawingData.currentVertexBuffer);
+  OffSetOfMember = offsetof(ActiveVertex_t, Pos);
   glVertexAttribPointer(0,
                         4,
                         GL_FLOAT,
                         GL_FALSE,
-                        sizeof(SimpleVertex),
-                        reinterpret_cast<const void*>(OffSetOfFirst));
+                        sizeof(ActiveVertex_t),
+                        reinterpret_cast< const void* >(OffSetOfMember));
 
 
-  glBindBuffer(GL_ARRAY_BUFFER, m_drawingData.currentVertexBuffer);
-  size_t OffSetOfSecond = offsetof(SimpleVertex, Tex);
+  OffSetOfMember = offsetof(ActiveVertex_t, Tex);
   glVertexAttribPointer(1,
                         2,
                         GL_FLOAT,
                         GL_FALSE,
-                        sizeof(SimpleVertex),
-                        reinterpret_cast<const void*>(OffSetOfSecond));
+                        sizeof(ActiveVertex_t),
+                        reinterpret_cast< const void* >(OffSetOfMember));
+
+  OffSetOfMember = offsetof(ActiveVertex_t, Normal);
+  glVertexAttribPointer(2,
+                        3,
+                        GL_FLOAT,
+                        GL_FALSE,
+                        sizeof(ActiveVertex_t),
+                        reinterpret_cast< const void* >(OffSetOfMember));
 
   if( GlCheckForError() )
   {

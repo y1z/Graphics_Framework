@@ -13,6 +13,7 @@ struct Vertex{
 /** LAYOUT */
 layout(location = 0) in vec4 la_position; 
 layout(location = 1) in vec2 la_texcoords;
+layout(location = 2) in vec3 la_normal;
 
 /** UNIFORM  VARIABLES */
 
