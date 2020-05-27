@@ -239,7 +239,7 @@ void imGuiManager::addImage(enShaderResourceView& ResourceView, uint32 SizeInX, 
 
 
 void 
-imGuiManager::addSliderFloat(std::string_view NameOfValue, float & Value, float lowerRange, float upperRange)
+imGuiManager::addSliderFloat(std::string_view NameOfValue, float &Value, float lowerRange, float upperRange)
 {
   ig::SliderFloat(NameOfValue.data(), &Value, lowerRange, upperRange);
 }

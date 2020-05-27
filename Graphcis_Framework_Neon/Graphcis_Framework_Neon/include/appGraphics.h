@@ -117,6 +117,14 @@ private:
   initContainers();
 
   /**
+  * @brief Creates the constant buffer.
+  * @returns 'true' if it was successful, 'false' otherwise.
+  * @bug no known bugs.
+  */
+  bool 
+  createConstBuffers();
+
+  /**
   * @brief : prepares the app for rendering 
   * @bug : no known bugs
   */
@@ -257,6 +265,10 @@ public:
   std::unique_ptr<enViewport> m_viewport = nullptr;
   
   std::unique_ptr<enConstBuffer> m_worldMatrix = nullptr;
+  glm::mat4x4 m_World = glm::mat4x4(1.0f);
+
+  std::unique_ptr<enConstBuffer> m_lightDirsBuffer = nullptr;
+  sLightDirs m_lightDirData; 
 
   std::unique_ptr<enSampler> m_sampler = nullptr;
   std::unique_ptr<enModel> m_model = nullptr;
@@ -275,7 +287,6 @@ public:
   static enCameraManager* s_CameraManager;
 
   /**************************************************/
-  glm::mat4x4 m_World = glm::mat4x4(1.0f);
 
   std::vector<enConstBuffer*> m_ConstBufferContainer;
   const std::filesystem::path m_initPath = std::filesystem::current_path();

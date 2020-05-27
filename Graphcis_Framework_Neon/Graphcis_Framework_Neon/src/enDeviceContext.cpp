@@ -300,6 +300,18 @@ enDeviceContext::UpdateSubresource(enBaseBuffer* Buffer,
 
     }
 
+    else if( 3 == ptr_buffer->getIndex() )
+    {
+      sLightDirs const * light =
+        reinterpret_cast<sLightDirs const *>(originOfData);
+
+      for( sUniformDetails& uni : ptr_buffer->m_containedVariables )
+      {
+        //AddDataToUniformDetail(uni,"")
+      }
+    }
+    
+
   }
 
 

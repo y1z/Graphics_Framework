@@ -110,18 +110,18 @@ enModel::ExtractMesh(const aiMesh* assimpMesh,
       vertex.Tex.y = 0.0f;
     }
 
-    //if( assimpMesh->HasNormals() )
-    //{
-    //  vertex.Normal.x = assimpMesh->mNormals[i].x;
-    //  vertex.Normal.y = assimpMesh->mNormals[i].y;
-    //  vertex.Normal.z = assimpMesh->mNormals[i].z;
-    //}
-    //else
-    //{
-    vertex.Normal.x = 0.0f;
-    vertex.Normal.y = 0.0f;
-    vertex.Normal.z = 0.0f;
-    //}
+    if( assimpMesh->HasNormals() )
+    {
+      vertex.Normal.x = assimpMesh->mNormals[i].x;
+      vertex.Normal.y = assimpMesh->mNormals[i].y;
+      vertex.Normal.z = assimpMesh->mNormals[i].z;
+    }
+    else
+    {
+      vertex.Normal.x = 0.0f;
+      vertex.Normal.y = 0.0f;
+      vertex.Normal.z = 0.0f;
+    }
 
     ptr_vertices->emplace_back(vertex);
 

@@ -19,6 +19,7 @@
 #include "enDeviceContext.h"
 #include "enShaderResourceView.h"
 #include "enModel.h"
+#include "enTypes.h"
 
 //--------------------------------------------------------------------------------------
 // standard  includes 
@@ -243,6 +244,7 @@ appGraphics::createMyClasses()
     m_viewport = make_unique<enViewport>();
 
     m_worldMatrix = make_unique<enConstBuffer>();
+    m_lightDirsBuffer = make_unique<enConstBuffer>();
 
     m_resourceView = make_shared<enShaderResourceView>();
     m_sampler = make_unique<enSampler>();
@@ -268,6 +270,71 @@ appGraphics::initContainers()
   m_ConstBufferContainer.push_back(s_ProjectionMatrixBuffer);
 
   return true;
+}
+
+bool 
+appGraphics::createConstBuffers()
+{
+  enDevice& device = enDevice::getInstance();
+  sBufferDesc viewBuffer;
+  viewBuffer.bindFlags = enBufferBind::Const;
+  viewBuffer.stride = sizeof(viewMatrix);
+  viewBuffer.elementCount = 1;
+  viewBuffer.cpuAccess = 0;
+  viewBuffer.index = 0;
+
+  s_ViewMatrixBuffer->init(viewBuffer);
+
+  bool isSuccessful = device.CreateConstBuffer(*s_ViewMatrixBuffer);
+
+  if( !isSuccessful )
+  {
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation)
+      return S_FALSE;
+  }
+
+
+  sBufferDesc ProjectionDescriptor;
+  ProjectionDescriptor.bindFlags = enBufferBind::Const;
+  ProjectionDescriptor.elementCount = 1;
+  ProjectionDescriptor.stride = sizeof(projectionMatrix);
+  ProjectionDescriptor.index = 1;
+
+  s_ProjectionMatrixBuffer->init(ProjectionDescriptor);
+
+
+  isSuccessful = device.CreateConstBuffer(*s_ProjectionMatrixBuffer);
+
+  if( !isSuccessful )
+  {
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
+    return S_FALSE;
+  }
+
+  sBufferDesc worldMatrixDescriptor;
+  worldMatrixDescriptor.elementCount = 1;
+  worldMatrixDescriptor.stride = sizeof(ConstBufferWorldColor);
+  worldMatrixDescriptor.bindFlags = enBufferBind::Const;
+  worldMatrixDescriptor.usage = enBufferUse::Default;
+  worldMatrixDescriptor.index = 2;
+
+  m_worldMatrix->init(worldMatrixDescriptor);
+
+  isSuccessful = device.CreateConstBuffer(*m_worldMatrix);
+
+  sBufferDesc LightDirDescriptor;
+  LightDirDescriptor.elementCount = 1;
+  LightDirDescriptor.stride = sizeof(sLightDirs);
+  LightDirDescriptor.bindFlags = enBufferBind::Const;
+  LightDirDescriptor.usage = enBufferUse::Default;
+  LightDirDescriptor.index = 3;
+
+  m_lightDirsBuffer->init(LightDirDescriptor);
+
+
+  isSuccessful = device.CreateConstBuffer(*m_lightDirsBuffer);
+
+  return isSuccessful;
 }
 
 HRESULT
@@ -426,54 +493,8 @@ appGraphics::initForRender()
 
   deviceContext.IASetPrimitiveTopology(static_cast<int>(enTopology::TriList));
 
-  // Create the constant buffers
-  sBufferDesc viewBuffer;
-  viewBuffer.bindFlags = enBufferBind::Const;
-  viewBuffer.stride = sizeof(viewMatrix);
-  viewBuffer.elementCount = 1;
-  viewBuffer.cpuAccess = 0;
-  viewBuffer.index = 0;
 
-  s_ViewMatrixBuffer->init(viewBuffer);
-
-  device.CreateConstBuffer(*s_ViewMatrixBuffer);
-
-  if( !isSuccessful )
-  {
-    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation)
-      return S_FALSE;
-  }
-
-
-  sBufferDesc ProjectionDescriptor;
-  ProjectionDescriptor.bindFlags = enBufferBind::Const;
-  ProjectionDescriptor.elementCount = 1;
-  ProjectionDescriptor.stride = sizeof(projectionMatrix);
-  ProjectionDescriptor.index = 1;
-
-  s_ProjectionMatrixBuffer->init(ProjectionDescriptor);
-
-
-  isSuccessful = device.CreateConstBuffer(*s_ProjectionMatrixBuffer);
-
-
-  if( !isSuccessful )
-  {
-    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
-    return S_FALSE;
-  }
-
-  sBufferDesc worldMatrixDescriptor;
-  worldMatrixDescriptor.elementCount = 1;
-  worldMatrixDescriptor.stride = sizeof(ConstBufferWorldColor);
-  worldMatrixDescriptor.bindFlags = enBufferBind::Const;
-  worldMatrixDescriptor.usage = enBufferUse::Default;
-  worldMatrixDescriptor.index = 2;
-
-  m_worldMatrix->init(worldMatrixDescriptor);
-
-  isSuccessful = device.CreateConstBuffer(*m_worldMatrix);
-
+  isSuccessful = this->createConstBuffers();
 
   if( !isSuccessful )
   {
@@ -567,6 +588,7 @@ appGraphics::initForRender()
 
   deviceContext.UpdateSubresource(s_ProjectionMatrixBuffer, &cbChangesOnResize);
 
+  m_lightDirData.m_lambertDir = enVector3(0.0f, 1.0f, 0.0f);
 
   for( auto& mesh : m_model->m_meshes )
   {
@@ -622,9 +644,13 @@ appGraphics::setShaderAndBuffers()
   deviceContext.VSSetConstantBuffer(*m_worldMatrix,
                                     m_worldMatrix->getIndex());
 
+
   deviceContext.PSSetShader(*m_pixelShader);
 
   deviceContext.PSSetConstantBuffers(*m_worldMatrix, m_worldMatrix->getIndex());
+
+  deviceContext.PSSetConstantBuffers(*m_lightDirsBuffer,
+                                     m_lightDirsBuffer->getIndex());
   deviceContext.PSSetSingleShaderResource(*m_resourceView);
   deviceContext.PSSetSampler(*m_sampler);
 }
@@ -775,10 +801,20 @@ appGraphics::Render()
 
   deviceContext.UpdateSubresource(m_worldMatrix.get(), &cb);
 
+
+  deviceContext.UpdateSubresource(m_lightDirsBuffer.get(), &m_lightDirData);
+
   s_gui->beginFrame("camera view");
   s_gui->addImage(*m_resourceView);
   s_gui->addButton("switch Cam", s_useFreeCam);
+  s_gui->beginChild("Light direction");
+    
+  s_gui->addSliderFloat("X Axis",m_lightDirData.m_lambertDir.x);
+  s_gui->addSliderFloat("Y Axis",m_lightDirData.m_lambertDir.y);
+  s_gui->addSliderFloat("Z Axis",m_lightDirData.m_lambertDir.z);
 
+
+  s_gui->endAllChildren();
   s_gui->endFrame();
 
   m_swapchain->Present();

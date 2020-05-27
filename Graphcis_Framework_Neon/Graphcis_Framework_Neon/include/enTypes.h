@@ -70,3 +70,12 @@ struct ConstBufferWorldColor
   glm::vec4 vMeshColor;
 };
 
+struct alignas(sizeof(float) * 4) sLightDirs
+{
+  enVector3 m_lambertDir;
+};
+
+struct /*alignas(sizeof(float) * 4)*/ sLightIntensity 
+{
+  float m_lambertIntensity = 0.5f;
+};

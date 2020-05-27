@@ -24,8 +24,11 @@ uniform mat4x4 u_world;
 
 uniform vec4 uColor;
 
+uniform vec3 u_lambertLightDir;
+
 /** OUT VARIABLES */ 
 out vec2 outTexcoords;
+out vec3 outNormal;
 out vec4 outColor;
 
 /** MAIN */
@@ -34,7 +37,7 @@ void main()
   //mat4 mv = u_view * u_projection;
   //mat4 mvp = mv * u_world;
     gl_Position = la_position * (u_world * u_view * u_projection); 
-
+    outNormal = normalize(la_normal) * u_world; 
     outTexcoords = la_texcoords;
     outColor = uColor; 
 } 

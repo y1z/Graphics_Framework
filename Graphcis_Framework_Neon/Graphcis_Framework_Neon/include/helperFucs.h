@@ -136,20 +136,20 @@ namespace helper
     uint32 createDeviceFlags = 0;
   #ifdef _DEBUG
     createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
-    createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUGGABLE;	
+    //createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUGGABLE;	
   #endif
 
     D3D_DRIVER_TYPE driverTypes[] =
     {
         D3D_DRIVER_TYPE_HARDWARE,
-        D3D_DRIVER_TYPE_WARP,
         D3D_DRIVER_TYPE_REFERENCE,
+        D3D_DRIVER_TYPE_WARP,
     };
    uint32 const numDriverTypes = ARRAYSIZE(driverTypes);
 
     D3D_FEATURE_LEVEL featureLevels[] =
     {
-        D3D_FEATURE_LEVEL_12_0,
+        //D3D_FEATURE_LEVEL_12_0,
         D3D_FEATURE_LEVEL_11_1,
         D3D_FEATURE_LEVEL_11_0,
         D3D_FEATURE_LEVEL_10_1,

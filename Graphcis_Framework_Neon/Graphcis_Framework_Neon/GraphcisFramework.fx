@@ -26,6 +26,11 @@ cbuffer cbChangesEveryFrame : register( b2 )
     float4 c_MeshColor;
 };
 
+cbuffer cbLightDir : register ( b3 )
+{
+    float3 g_lambertDir;
+};
+
 
 //--------------------------------------------------------------------------------------
 struct VS_INPUT
@@ -39,7 +44,7 @@ struct PS_INPUT
 {
     float4 Pos : SV_POSITION;
     float2 Tex : TEXCOORD;
-    //float3 Norm : NORMAL;
+    float3 Norm : NORMAL;
 };
 
 
@@ -54,8 +59,7 @@ PS_INPUT VS( VS_INPUT input )
     output.Pos = mul( output.Pos, View );
     output.Pos = mul( output.Pos, Projection );
     output.Tex = input.Tex;
-   // output.Norm = mul( float4(input.Norm.xyz,1.0f),World  );
-    
+    output.Norm = mul(normalize(float4(input.Norm.xyz,0.0f)),World  );
     return output;
 }
 
@@ -64,5 +68,8 @@ PS_INPUT VS( VS_INPUT input )
 //--------------------------------------------------------------------------------------
 float4 PS( PS_INPUT input) : SV_Target
 {
-    return txDiffuse.Sample( samLinear, input.Tex ) *  c_MeshColor;
+    float3 light = -normalize(g_lambertDir);
+    float checkForLightColision = dot(input.Norm,light);
+
+    return txDiffuse.Sample( samLinear, input.Tex ) * checkForLightColision ; //* c_MeshColor; //* checkForLightColision;
 }

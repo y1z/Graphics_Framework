@@ -68,6 +68,7 @@ enSwapChain::getdxSawpChainDesc() const
   result.SampleDesc.Count = m_descriptor.sampCount;
   result.SampleDesc.Quality = m_descriptor.sampQuality;
   result.Windowed = m_descriptor.isWindowd;
+  result.SwapEffect = DXGI_SWAP_EFFECT_SEQUENTIAL;
   return  result;
 }
 
