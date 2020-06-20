@@ -290,7 +290,7 @@ enDeviceContext::UpdateSubresource(enBaseBuffer* Buffer,
       for( sUniformDetails& uni : ptr_buffer->m_containedVariables )
       {
         AddDataToUniformDetail(uni, "u_world", &worldMatrix->mWorld);
-        AddDataToUniformDetail(uni, "uColor", &worldMatrix->vMeshColor);
+        AddDataToUniformDetail(uni, "u_meshColor", &worldMatrix->vMeshColor);
 
         if( uni.ptr_data != nullptr && uni.id != UINT32_MAX )
         {
@@ -307,7 +307,30 @@ enDeviceContext::UpdateSubresource(enBaseBuffer* Buffer,
 
       for( sUniformDetails& uni : ptr_buffer->m_containedVariables )
       {
-        //AddDataToUniformDetail(uni,"")
+
+        AddDataToUniformDetail(uni,"u_lambertLightDir",&light->m_lambertDir);
+
+        if( uni.ptr_data != nullptr && uni.id != UINT32_MAX )
+        {
+          helper::GlUpdateUniform(uni);
+        }
+      }
+    }
+
+    else if( 4 == ptr_buffer->getIndex() )
+    {
+      sLightPos const* lightPos =
+        reinterpret_cast< sLightPos const* >(originOfData);
+
+      for( sUniformDetails& uni : ptr_buffer->m_containedVariables )
+      {
+
+        AddDataToUniformDetail(uni,"u_lightPosition",&lightPos->m_pointLight);
+
+        if( uni.ptr_data != nullptr && uni.id != UINT32_MAX )
+        {
+          helper::GlUpdateUniform(uni);
+        }
       }
     }
     
@@ -354,7 +377,7 @@ enDeviceContext::ClearRenderTargetView(enRenderTargetView& renderTargetView,
     glClearColor(OpenGlColor.red, OpenGlColor.green, OpenGlColor.blue, OpenGlColor.alpha);
   }
 
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT);
 
 #endif // DIRECTX
 }
@@ -395,6 +418,9 @@ enDeviceContext::VSSetShader(enVertexShader& vertexShaderPath)
                            0);
 
 #elif OPENGL
+
+  cApiComponents::setCurrentProgram(*vertexShaderPath.getProgramPtr());
+
 #endif // DIRECTX
 }
 
@@ -425,6 +451,7 @@ enDeviceContext::PSSetShader(enPixelShader& pixelShader)
                                  0);
 
 #elif OPENGL
+  cApiComponents::setCurrentProgram(*pixelShader.getProgramPtr());
 #endif // DIRECTX
 }
 
@@ -650,6 +677,25 @@ enDeviceContext::DrawIndexed(uint32_t indexCount)
                         sizeof(ActiveVertex_t),
                         reinterpret_cast< const void* >(OffSetOfMember));
 
+
+  OffSetOfMember = offsetof(ActiveVertex_t, Tangent);
+  glVertexAttribPointer(3,
+                        3,
+                        GL_FLOAT,
+                        GL_FALSE,
+                        sizeof(ActiveVertex_t),
+                        reinterpret_cast< const void* >(OffSetOfMember));
+
+  OffSetOfMember = offsetof(ActiveVertex_t, Color);
+  glVertexAttribPointer(4,
+                        4,
+                        GL_FLOAT,
+                        GL_FALSE,
+                        sizeof(ActiveVertex_t),
+                        reinterpret_cast< const void* >(OffSetOfMember));
+
+
+
   if( GlCheckForError() )
   {
     assert(true == false && " Error when drawing ");
@@ -674,13 +720,8 @@ bool
 enDeviceContext::SetShaders(enVertexShader& vertexShader,
                             enPixelShader& pixelShader)
 {
-#if DIRECTX
-
   this->VSSetShader(vertexShader);
   this->PSSetShader(pixelShader);
-
-#elif OPENGL
-#endif // DIRECTX
   return true;
 }
 

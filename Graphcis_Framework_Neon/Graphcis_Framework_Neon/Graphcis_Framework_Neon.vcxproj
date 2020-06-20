@@ -510,6 +510,9 @@
     <ClCompile Include="dependencies\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="dependencies\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="dependencies\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\enMultiShader.cpp" />
+    <ClCompile Include="src\enRenderManager.cpp" />
+    <ClCompile Include="src\enShaderPathTracker.cpp" />
     <ClCompile Include="src\appGraphics.cpp" />
     <ClCompile Include="src\BasePerspectiveCamera.cpp" />
     <ClCompile Include="src\cApiComponent.cpp" />
@@ -661,11 +664,14 @@
     <ClInclude Include="include\enInputLayout.h" />
     <ClInclude Include="include\enMesh.h" />
     <ClInclude Include="include\enModel.h" />
+    <ClInclude Include="include\enMultiShader.h" />
     <ClInclude Include="include\enMultiviewTexture.h" />
     <ClInclude Include="include\enPerspectiveFreeCamera.h" />
     <ClInclude Include="include\enPixelShader.h" />
+    <ClInclude Include="include\enRenderManager.h" />
     <ClInclude Include="include\enRenderTargetView.h" />
     <ClInclude Include="include\enSampler.h" />
+    <ClInclude Include="include\enShaderPathTracker.h" />
     <ClInclude Include="include\enShaderResourceView.h" />
     <ClInclude Include="include\enSwapChain.h" />
     <ClInclude Include="include\enTexture2D.h" />

@@ -52,6 +52,8 @@ struct /*alignas(sizeof(glm::vec4)) */sFullVertex
   glm::vec4 Pos;
   glm::vec2 Tex;
   glm::vec3 Normal;
+  glm::vec3 Tangent;
+  glm::vec4 Color = glm::vec4(0, 0, 0, 1.0f);
 };
 
 struct viewMatrix
@@ -73,6 +75,11 @@ struct ConstBufferWorldColor
 struct alignas(sizeof(float) * 4) sLightDirs
 {
   enVector3 m_lambertDir;
+};
+
+struct alignas(sizeof(float) * 4) sLightPos
+{
+  enVector3 m_pointLight;
 };
 
 struct /*alignas(sizeof(float) * 4)*/ sLightIntensity 

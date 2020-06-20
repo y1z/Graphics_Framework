@@ -123,6 +123,19 @@ enModel::ExtractMesh(const aiMesh* assimpMesh,
       vertex.Normal.z = 0.0f;
     }
 
+    if(assimpMesh->HasTangentsAndBitangents() )
+    {
+      vertex.Tangent.x = assimpMesh->mBitangents[i].x;
+      vertex.Tangent.y = assimpMesh->mBitangents[i].y;
+      vertex.Tangent.z = assimpMesh->mBitangents[i].z;
+    }
+    else
+    {
+      vertex.Tangent.x = 0;
+      vertex.Tangent.y = 0;
+      vertex.Tangent.z = 0;
+    }
+
     ptr_vertices->emplace_back(vertex);
 
   }

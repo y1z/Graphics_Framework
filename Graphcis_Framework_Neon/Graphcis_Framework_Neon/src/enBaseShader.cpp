@@ -23,31 +23,45 @@ enBaseShader::~enBaseShader()
 #if DIRECTX
   RELEASE_DX_PTR(m_infoOfShader);
 #elif OPENGL
+  if( GL_TRUE == glIsShader(m_infoOfShader) )
+  {
+    glDeleteShader(m_infoOfShader);
+    m_infoOfShader = std::numeric_limits<uint32>::max();
+  }
 #endif // DIRECTX
 };
 
 enErrorCode
-enBaseShader::compileShaderFromFile(std::string_view PathToShaderFile,
-                                    std::string_view EntryPoint,
-                                    std::string_view ShaderModel)
+enBaseShader::compileShaderFromFile(std::string_view const PathToShaderFile,
+                                    std::string_view const EntryPoint,
+                                    std::string_view const ShaderModel)
 {
-  m_shader = (helper::loadFileToString(PathToShaderFile));
-  m_entryPoint = (EntryPoint);
-  m_shaderModel = (ShaderModel);
-  if( !m_shader.compare("Error") )
+  std::string const loadedShader = helper::loadFileToString(PathToShaderFile);
+  if( !loadedShader.compare("Error") )
   {
     EN_LOG_DB("did not managed to load the shader");
     return enErrorCode::InvalidPath;
   }
+  return this->compileShader(loadedShader, EntryPoint, ShaderModel);
+}
+
+enErrorCode
+enBaseShader::compileShader(std::string const& ShaderSource,
+                            std::string_view const& EntryPoint,
+                            std::string_view const& ShaderModel)
+{
+  m_shader = ShaderSource;
+  m_entryPoint = EntryPoint;
+  m_shaderModel = (ShaderModel);
 #if DIRECTX
   uint32 dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
-  #if defined( DEBUG ) || defined( _DEBUG )
-  // Set the D3DCOMPILE_DEBUG flag to embed debug information in the shaders.
-  // Setting this flag improves the shader debugging experience, but still allows 
-  // the shaders to be optimized and to run exactly the way they will run in 
-  // the release configuration of this program.
+#if defined( DEBUG ) || defined( _DEBUG )
+// Set the D3DCOMPILE_DEBUG flag to embed debug information in the shaders.
+// Setting this flag improves the shader debugging experience, but still allows 
+// the shaders to be optimized and to run exactly the way they will run in 
+// the release configuration of this program.
   dwShaderFlags |= D3DCOMPILE_DEBUG;
-  #endif
+#endif
 
   ID3DBlob* pErrorBlob = nullptr;
 
@@ -67,7 +81,7 @@ enBaseShader::compileShaderFromFile(std::string_view PathToShaderFile,
   {
     if( pErrorBlob != NULL )
     {
-      std::cerr << (char*)pErrorBlob->GetBufferPointer();
+      std::cerr << ( char* )pErrorBlob->GetBufferPointer();
     }
     if( pErrorBlob ) pErrorBlob->Release();
     return  enErrorCode::ShaderComplieError;
@@ -77,7 +91,6 @@ enBaseShader::compileShaderFromFile(std::string_view PathToShaderFile,
   return enErrorCode::NoError;
 #elif OPENGL
   GlRemoveAllErrors();
-  uint32* shaderProgram = cApiComponents::getShaderProgram();
   uint32_t shaderType = 0u;
 
   if( m_type == enShaderTypes::vertexType )
@@ -120,6 +133,7 @@ enBaseShader::compileShaderFromFile(std::string_view PathToShaderFile,
   return enErrorCode::NoError;
 #endif // DIRECTX
 
+
   return enErrorCode::UnClassified;
 }
 
@@ -138,6 +152,18 @@ enBaseShader::getShaderInfoRef()
 }
 #elif OPENGL
 
+
+void 
+enBaseShader::setProgramPtr(uint32* ptr)
+{
+  m_programPtr = ptr; 
+}
+
+uint32* 
+enBaseShader::getProgramPtr()
+{
+  return m_programPtr;
+}
 
 uint32
 enBaseShader::getShaderInfo()

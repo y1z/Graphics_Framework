@@ -19,7 +19,6 @@ struct aiMesh;
 
   /**
   * @brief : contains all the meshes related with the model.
-  * @bug :
   */
 class enModel
 {

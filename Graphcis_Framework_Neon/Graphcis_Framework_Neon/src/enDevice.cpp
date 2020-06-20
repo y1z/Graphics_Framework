@@ -11,8 +11,9 @@
 #include "enRenderTargetView.h"
 #include "enDepthStencilView.h"
 #include "enTexture2D.h"
-#include "helperFucs.h"
+#include "enMultiShader.h"
 
+#include "helperFucs.h"
 #if DIRECTX
 #include "DirectXTK/include/DDSTextureLoader.h"
 #include "DirectXTK/include/WICTextureLoader.h"
@@ -67,8 +68,8 @@ enDevice::CreateRenderTargetView(enRenderTargetView& renderTraget,
   HRESULT hr = S_FALSE;
   D3D11_RENDER_TARGET_VIEW_DESC directXDesc;
   std::memset(&directXDesc, 0, sizeof(directXDesc));
-  directXDesc.Format = static_cast<DXGI_FORMAT>(Desc.format);
-  directXDesc.ViewDimension = static_cast<D3D11_RTV_DIMENSION> (Desc.renderTargetType);
+  directXDesc.Format = static_cast< DXGI_FORMAT >(Desc.format);
+  directXDesc.ViewDimension = static_cast< D3D11_RTV_DIMENSION > (Desc.renderTargetType);
   directXDesc.Texture2D.MipSlice = Desc.mip;
 
   hr = m_interface->CreateRenderTargetView(texture.m_interface,
@@ -91,7 +92,7 @@ enDevice::CreateRenderTargetView(enRenderTargetView& renderTraget,
   glGenRenderbuffers(1, &ptrTexture->m_interface);
 
   glBindRenderbuffer(GL_RENDERBUFFER,
-                     static_cast<GLuint>(ptrTexture->getInterface()));
+                     static_cast< GLuint >(ptrTexture->getInterface()));
 
   glRenderbufferStorage(GL_RENDERBUFFER,
                         enFormats::renderTarget_format,
@@ -108,7 +109,7 @@ enDevice::CreateRenderTargetView(enRenderTargetView& renderTraget,
   glFramebufferRenderbuffer(GL_FRAMEBUFFER,
                             GL_COLOR_ATTACHMENT0,
                             GL_RENDERBUFFER,
-                            static_cast<GLuint>(ptrTexture->getInterface()));
+                            static_cast< GLuint >(ptrTexture->getInterface()));
 
 
   GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -167,7 +168,7 @@ enDevice::CreateRenderTargetView(enRenderTargetView& renderTraget,
   glGenRenderbuffers(1, &ptrTexture->m_interface);
 
   glBindRenderbuffer(GL_RENDERBUFFER,
-                     static_cast<GLuint>(ptrTexture->getInterface()));
+                     static_cast< GLuint >(ptrTexture->getInterface()));
 
   glRenderbufferStorage(GL_RENDERBUFFER,
                         enFormats::renderTarget_format,
@@ -184,7 +185,7 @@ enDevice::CreateRenderTargetView(enRenderTargetView& renderTraget,
   glFramebufferRenderbuffer(GL_FRAMEBUFFER,
                             GL_COLOR_ATTACHMENT0,
                             GL_RENDERBUFFER,
-                            static_cast<GLuint>(ptrTexture->getInterface()));
+                            static_cast< GLuint >(ptrTexture->getInterface()));
 
 
   GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -232,7 +233,7 @@ enDevice::CreateRenderTargetView(enRenderTargetView& renderTragetView,
   glGenRenderbuffers(1, &ptrTexture->m_interface);
 
   glBindRenderbuffer(GL_RENDERBUFFER,
-                     static_cast<GLuint>(ptrTexture->getInterface()));
+                     static_cast< GLuint >(ptrTexture->getInterface()));
 
   glRenderbufferStorage(GL_RENDERBUFFER,
                         enFormats::renderTarget_format,
@@ -248,7 +249,7 @@ enDevice::CreateRenderTargetView(enRenderTargetView& renderTragetView,
   glFramebufferRenderbuffer(GL_FRAMEBUFFER,
                             GL_COLOR_ATTACHMENT0,
                             GL_RENDERBUFFER,
-                            static_cast<GLuint>(ptrTexture->getInterface()));
+                            static_cast< GLuint >(ptrTexture->getInterface()));
 
 
 
@@ -309,7 +310,7 @@ enDevice::CreateShaderResourceFromFile(enShaderResourceView& shaderResourceView,
 #elif OPENGL
   GlRemoveAllErrors();
   std::string const imagePath(filePath);
-  unsigned int flags = SOIL_FLAG_NTSC_SAFE_RGB; 
+  unsigned int flags = SOIL_FLAG_NTSC_SAFE_RGB;
   if( imagePath.rfind(".png") != imagePath.npos )
   {
     flags |= SOIL_FLAG_INVERT_Y;
@@ -347,14 +348,14 @@ enDevice::CreateShaderResourceFromTexture(enShaderResourceView& shaderResourceVi
 #if DIRECTX
   D3D11_SHADER_RESOURCE_VIEW_DESC  ViewDescriptor;
   std::memset(&ViewDescriptor, 0, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
-  ViewDescriptor.Format = static_cast<DXGI_FORMAT>(texture.m_desc.texFormat);
+  ViewDescriptor.Format = static_cast< DXGI_FORMAT >(texture.m_desc.texFormat);
   ViewDescriptor.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;
   ViewDescriptor.Texture2D.MipLevels = texture.m_desc.Mips;
 
-  HRESULT const hr = 
-  m_interface->CreateShaderResourceView(texture.getInterface(),
-                                        &ViewDescriptor,
-                                        &shaderResourceView.m_interface);
+  HRESULT const hr =
+    m_interface->CreateShaderResourceView(texture.getInterface(),
+                                          &ViewDescriptor,
+                                          &shaderResourceView.m_interface);
 
   if( FAILED(hr) )
   {
@@ -381,10 +382,10 @@ enDevice::CreateTexture2D(sTextureDescriptor& Description,
   descDepth.Height = Description.texHeight;
   descDepth.MipLevels = 1;
   descDepth.ArraySize = 1;
-  descDepth.Format = static_cast<DXGI_FORMAT> (Description.texFormat);//DXGI_FORMAT_D24_UNORM_S8_UINT;//DXGI_FORMAT_D24_UNORM_S8_UINT
+  descDepth.Format = static_cast< DXGI_FORMAT > (Description.texFormat);//DXGI_FORMAT_D24_UNORM_S8_UINT;//DXGI_FORMAT_D24_UNORM_S8_UINT
   descDepth.SampleDesc.Count = 1;
   descDepth.SampleDesc.Quality = 0;
-  descDepth.Usage = static_cast<D3D11_USAGE> (Description.Usage);
+  descDepth.Usage = static_cast< D3D11_USAGE > (Description.Usage);
   descDepth.BindFlags = Description.BindFlags;
   descDepth.CPUAccessFlags = Description.CpuAccess;
   descDepth.MiscFlags = 0;
@@ -438,8 +439,8 @@ enDevice::CreateDepthStencilView(enDepthStencilView& DepthView)
   HRESULT hr;
   D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
   SecureZeroMemory(&descDSV, sizeof(descDSV));
-  descDSV.Format = static_cast<DXGI_FORMAT>(DepthView.m_desc.Format);
-  descDSV.ViewDimension = static_cast<D3D11_DSV_DIMENSION>(DepthView.m_desc.Dimension);
+  descDSV.Format = static_cast< DXGI_FORMAT >(DepthView.m_desc.Format);
+  descDSV.ViewDimension = static_cast< D3D11_DSV_DIMENSION >(DepthView.m_desc.Dimension);
   descDSV.Texture2D.MipSlice = DepthView.m_desc.Mip;
 
   hr = m_interface->CreateDepthStencilView(DepthView.m_texture.m_interface,
@@ -481,8 +482,8 @@ enDevice::CreateDepthStencilView(enDepthStencilView& DepthView,
   HRESULT hr;
   D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
   SecureZeroMemory(&descDSV, sizeof(descDSV));
-  descDSV.Format = static_cast<DXGI_FORMAT>(DepthView.m_desc.Format);
-  descDSV.ViewDimension = static_cast<D3D11_DSV_DIMENSION>(DepthView.m_desc.Dimension);
+  descDSV.Format = static_cast< DXGI_FORMAT >(DepthView.m_desc.Format);
+  descDSV.ViewDimension = static_cast< D3D11_DSV_DIMENSION >(DepthView.m_desc.Dimension);
   descDSV.Texture2D.MipSlice = DepthView.m_desc.Mip;
 
   hr = m_interface->CreateDepthStencilView(Texture.m_interface,
@@ -497,6 +498,58 @@ enDevice::CreateDepthStencilView(enDepthStencilView& DepthView,
 #elif OPENGL
 #endif // DIRECTX
   return false;
+}
+
+bool
+enDevice::CreateMultiShader(enMultiShader& multiShader)
+{
+
+#if OPENGL
+  auto* originalShaderProgram = cApiComponents::getShaderProgram();
+
+  for( auto& shaderPair : multiShader.m_shaderPairs )
+  {
+    bool const isProgramCreated = cApiComponents::createProgram(shaderPair.m_shaderProgramIndex);
+    auto* currentProgram = cApiComponents::getShaderProgram();
+    bool const isProgramSet = cApiComponents::setCurrentProgram(*currentProgram);
+    if( isProgramCreated && isProgramSet )
+    {
+      bool const isVertexSuccessful = this->CreateVertexShader(*shaderPair.m_vertexShader);
+      bool const isPixelSuccessful = this->CreatePixelShader(*shaderPair.m_pixelShader);
+
+      if( !(isVertexSuccessful && isPixelSuccessful) )
+      {
+        EN_LOG_ERROR;
+        return false;
+      }
+
+    }
+    else
+    {
+      EN_LOG_ERROR;
+      return false;
+    }
+  }
+
+  cApiComponents::setCurrentProgram(*originalShaderProgram);
+#elif DIRECTX
+
+  for( auto& shaderPair : multiShader.m_shaderPairs )
+  {
+    bool const isVertexSuccessful = this->CreateVertexShader(*shaderPair.m_vertexShader);
+    bool const isPixelSuccessful = this->CreatePixelShader(*shaderPair.m_pixelShader);
+
+    if( !(isVertexSuccessful && isPixelSuccessful) )
+    {
+      EN_LOG_ERROR;
+      return false;
+    }
+
+  }
+#endif // OPENGL
+
+
+  return true;
 }
 
 bool
@@ -527,12 +580,9 @@ enDevice::CreateVertexShader(enVertexShader& vertexShader)
     EN_LOG_ERROR_WITH_CODE(enErrorCode::ShaderLinkError);
   }
 
-  if( GlCheckForError() )
-  {
-    return false;
-  }
+  vertexShader.setProgramPtr(cApiComponents::getShaderProgram());
 
-  return true;
+  return  !GlCheckForError();
 #endif // DIRECTX
   return false;
 }
@@ -564,6 +614,8 @@ enDevice::CreatePixelShader(enPixelShader& pixelShader)
     EN_LOG_ERROR_WITH_CODE(enErrorCode::ShaderLinkError);
   }
 
+  pixelShader.setProgramPtr(cApiComponents::getShaderProgram());
+
   if( GlCheckForError() )
   {
     return false;
@@ -589,12 +641,12 @@ enDevice::CreateInputLayout(enInputLayout& inputLayout,
   for( const sInputDescriptor& intermidate : intermidateLayout )
   {
     D3D11_INPUT_ELEMENT_DESC directxDesc;
-    directxDesc.Format = static_cast<DXGI_FORMAT>(intermidate.Format);
-    directxDesc.AlignedByteOffset = static_cast<UINT>(intermidate.Alignment);
+    directxDesc.Format = static_cast< DXGI_FORMAT >(intermidate.Format);
+    directxDesc.AlignedByteOffset = static_cast< UINT >(intermidate.Alignment);
     directxDesc.SemanticIndex = intermidate.Index;
     directxDesc.SemanticName = intermidate.Name.c_str();
     directxDesc.InputSlot = intermidate.Slot;
-    directxDesc.InputSlotClass = static_cast<D3D11_INPUT_CLASSIFICATION> (intermidate.SlotClass);
+    directxDesc.InputSlotClass = static_cast< D3D11_INPUT_CLASSIFICATION > (intermidate.SlotClass);
     directxDesc.InstanceDataStepRate = intermidate.InstanceData;
     directxInputLayout.emplace_back(directxDesc);
   }
@@ -611,8 +663,14 @@ enDevice::CreateInputLayout(enInputLayout& inputLayout,
 
 #elif OPENGL  
   GlRemoveAllErrors();
-  glEnableVertexAttribArray(0);// position 
-  glEnableVertexAttribArray(1);// normals 
+  uint32* shader = cApiComponents::getShaderProgram();
+  int32 count = 0;
+  glGetProgramiv(*shader, GL_ACTIVE_ATTRIBUTES, &count);
+
+  for( uint32 i = 0; i < count; ++i )
+  {
+    glEnableVertexAttribArray(i);
+  }
 
   if( GlCheckForError() )
   {
@@ -760,7 +818,7 @@ enDevice::CreateConstBuffer(enConstBuffer& constBuffer)
 
   auto FindAndAddUniformID = [&refToContainer](uint32* ShaderProgram) {
 
-    for(size_t i = 0; i < refToContainer->size(); ++i )
+    for( size_t i = 0; i < refToContainer->size(); ++i )
     {
       refToContainer->at(i).id = glGetUniformLocation(*ShaderProgram,
                                                       refToContainer->at(i).name.c_str());
@@ -781,7 +839,14 @@ enDevice::CreateConstBuffer(enConstBuffer& constBuffer)
   else if( constBuffer.getIndex() == 2 )
   {
     refToContainer->push_back(sUniformDetails::Generate("u_world", enConstBufferElem::mat4x4));
-    refToContainer->push_back(sUniformDetails::Generate("uColor", enConstBufferElem::vec4));
+    refToContainer->push_back(sUniformDetails::Generate("u_meshColor", enConstBufferElem::vec4));
+    FindAndAddUniformID(shaderProgram);
+  }
+  else if( 3 == constBuffer.getIndex() )
+  {
+    refToContainer->push_back(sUniformDetails::Generate("u_lambertLightDir", enConstBufferElem::vec3));
+    refToContainer->push_back(sUniformDetails::Generate("u_lightPosition", enConstBufferElem::vec3));
+
     FindAndAddUniformID(shaderProgram);
   }
 

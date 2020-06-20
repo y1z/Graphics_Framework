@@ -1,4 +1,4 @@
-#include "..\include\enInputLayout.h"
+#include "../include/enInputLayout.h"
 #include "enVertexShader.h"
 #include "cApiComponent.h"
 

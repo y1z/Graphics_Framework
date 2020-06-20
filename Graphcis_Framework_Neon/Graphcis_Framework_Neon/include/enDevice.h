@@ -17,6 +17,7 @@ class enShaderResourceView;
 class enRenderTargetView;
 class enDepthStencilView;
 class enTexture2D;
+class enMultiShader;
 
 
   /**
@@ -133,10 +134,15 @@ public:
                          enTexture2D& Texture);
 
   bool
+  CreateMultiShader(enMultiShader& multiShader);
+
+  bool
   CreateVertexShader(enVertexShader& vertexShader);
 
   bool
   CreatePixelShader(enPixelShader& pixelShader);
+
+
 
   bool 
   CreateInputLayout(enInputLayout& inputLayout,

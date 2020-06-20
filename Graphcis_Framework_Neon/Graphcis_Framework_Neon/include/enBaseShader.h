@@ -25,9 +25,15 @@ public:
   * @bug :no known bugs.
   */
   enErrorCode
-  compileShaderFromFile(std::string_view PathToShaderFile,
-                        std::string_view EntryPoint,
-                        std::string_view ShaderModel);
+  compileShaderFromFile(std::string_view const PathToShaderFile,
+                        std::string_view const EntryPoint,
+                        std::string_view const ShaderModel);
+
+  enErrorCode
+  compileShader(std::string const& ShaderSource,
+                 std::string_view const& EntryPoint,
+                 std::string_view const& ShaderModel);
+
 
 #if DIRECTX
   ID3DBlob * 
@@ -37,6 +43,12 @@ public:
   ID3DBlob **
   getShaderInfoRef();
 #elif OPENGL
+
+  void
+  setProgramPtr(uint32* ptr);
+
+  uint32*
+  getProgramPtr();
 
   uint32
   getShaderInfo();
@@ -92,6 +104,7 @@ private:
 #elif OPENGL
   uint32 m_infoOfShader = std::numeric_limits<uint32>::max();
   uint32 m_interface = std::numeric_limits<uint32>::max();
+  uint32* m_programPtr = nullptr ;
 #endif // DIRECTX
 protected:
   enShaderTypes m_type = enShaderTypes::noType;

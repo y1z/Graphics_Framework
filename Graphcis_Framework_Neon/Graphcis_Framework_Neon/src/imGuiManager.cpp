@@ -244,6 +244,13 @@ imGuiManager::addSliderFloat(std::string_view NameOfValue, float &Value, float l
   ig::SliderFloat(NameOfValue.data(), &Value, lowerRange, upperRange);
 }
 
+void 
+imGuiManager::addSliderInt(std::string_view NameOfValue, int32& Value, int32 lowerRange, int32 upperRange)
+{
+  ig::SliderInt(NameOfValue.data(),
+                &Value,lowerRange,upperRange);
+}
+
 void
 imGuiManager::addCounter(int32_t& CounterValue, std::string_view nameOfValue)
 {

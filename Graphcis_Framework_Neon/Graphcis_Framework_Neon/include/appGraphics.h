@@ -20,6 +20,9 @@
 #include "enModel.h"
 #include "imGuiManager.h"
 #include "enMultiviewTexture.h"
+#include "enShaderPathTracker.h"
+#include "enMultiShader.h"
+#include "enRenderManager.h"
 
 #include <filesystem>
 #include <memory>
@@ -30,7 +33,6 @@
 class enPerspectiveFreeCamera;
 class enFirstPersonCamera;
 class enCameraManager;
-class enShaderResourceView;
 
 
   /**
@@ -123,6 +125,18 @@ private:
   */
   bool 
   createConstBuffers();
+
+  /**
+  * @brief creates the shader.
+  * @returns 'true' if it was successful, 'false' otherwise.
+  * @bug no known bugs.
+  */
+  bool
+  initShaders();
+
+
+  bool
+  initInputLayout();
 
   /**
   * @brief : prepares the app for rendering 
@@ -270,10 +284,18 @@ public:
   std::unique_ptr<enConstBuffer> m_lightDirsBuffer = nullptr;
   sLightDirs m_lightDirData; 
 
+  std::unique_ptr<enConstBuffer> m_lightPosBuffer = nullptr;
+  sLightPos m_lightPosData; 
+
   std::unique_ptr<enSampler> m_sampler = nullptr;
+
   std::unique_ptr<enModel> m_model = nullptr;
 
   std::unique_ptr<enMultiviewTexture> m_renderTargetAndShaderResource = nullptr;
+
+  std::unique_ptr<enShaderPathTracker> m_shaderNameTracker = nullptr;
+
+  std::unique_ptr<enRenderManager> m_renderManager = nullptr;
 
   std::shared_ptr<enShaderResourceView> m_resourceView = nullptr;
 

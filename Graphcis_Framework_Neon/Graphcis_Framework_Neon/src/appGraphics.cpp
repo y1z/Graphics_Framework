@@ -25,7 +25,6 @@
 // standard  includes 
 //--------------------------------------------------------------------------------------
 #include <iostream>
-namespace dx = DirectX;
 using std::make_unique;
 using std::make_shared;
 
@@ -88,7 +87,7 @@ appGraphics::init()
     return false;
   }
 
-  if( initContainers() == false )
+  if( !initContainers() )
   {
     this->destroy();
     return false;
@@ -100,7 +99,19 @@ appGraphics::init()
     return false;
   }
 
-  if( S_FALSE == initForRender())
+  if( !initShaders() )
+  {
+    this->destroy();
+    return false;
+  }
+
+  if( !initInputLayout() )
+  {
+    this->destroy();
+    return false;
+  }
+
+  if( S_FALSE == initForRender() )
   {
     this->destroy();
     return false;
@@ -126,19 +137,19 @@ appGraphics::run()
     }
     else
     {
-      if( s_run == false )
+      if( !s_run )
       {
         break;
       }
-      else{
+      else
+      {
         this->Render();
         this->Update();
-
       }
     }
   }
 
-  return (int)msg.wParam;
+  return ( int )msg.wParam;
 }
 
 void
@@ -172,7 +183,7 @@ appGraphics::InitStatics()
     s_ProjectionMatrixBuffer = new enConstBuffer();
     s_gui = std::make_unique<imGuiManager>();
   }
-  catch( const std::bad_alloc & allocError )
+  catch( const std::bad_alloc& allocError )
   {
     std::cout << allocError.what() << std::endl;
     return false;
@@ -204,11 +215,6 @@ appGraphics::initApi()
   }
 
   cApiComponents::startupShaderPrograms();
-
-  if( !cApiComponents::createProgram(0u) )
-  {
-    return enErrorCode::FailedCreation;
-  }
 
   appGraphics::SetCallBackFunctions(*m_window);
 
@@ -245,6 +251,7 @@ appGraphics::createMyClasses()
 
     m_worldMatrix = make_unique<enConstBuffer>();
     m_lightDirsBuffer = make_unique<enConstBuffer>();
+    m_lightPosBuffer = make_unique<enConstBuffer>();
 
     m_resourceView = make_shared<enShaderResourceView>();
     m_sampler = make_unique<enSampler>();
@@ -254,8 +261,11 @@ appGraphics::createMyClasses()
 
     m_model = make_unique<enModel>();
     m_renderTargetAndShaderResource = make_unique<enMultiviewTexture>();
+
+    m_shaderNameTracker = make_unique<enShaderPathTracker>();
+    m_renderManager = make_unique<enRenderManager>();
   }
-  catch( const std::exception & e )
+  catch( const std::exception& e )
   {
     std::cerr << e.what() << std::endl;
     return false;
@@ -272,7 +282,7 @@ appGraphics::initContainers()
   return true;
 }
 
-bool 
+bool
 appGraphics::createConstBuffers()
 {
   enDevice& device = enDevice::getInstance();
@@ -289,8 +299,8 @@ appGraphics::createConstBuffers()
 
   if( !isSuccessful )
   {
-    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation)
-      return S_FALSE;
+    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
+    return false;
   }
 
 
@@ -308,7 +318,7 @@ appGraphics::createConstBuffers()
   if( !isSuccessful )
   {
     EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
-    return S_FALSE;
+    return false;
   }
 
   sBufferDesc worldMatrixDescriptor;
@@ -332,9 +342,67 @@ appGraphics::createConstBuffers()
   m_lightDirsBuffer->init(LightDirDescriptor);
 
 
-  isSuccessful = device.CreateConstBuffer(*m_lightDirsBuffer);
+  sBufferDesc LightPosDescriptor;
+  LightDirDescriptor.elementCount = 1;
+  LightDirDescriptor.stride = sizeof(sLightPos);
+  LightDirDescriptor.bindFlags = enBufferBind::Const;
+  LightDirDescriptor.usage = enBufferUse::Default;
+  LightDirDescriptor.index = 4;
+
+  isSuccessful = device.CreateConstBuffer(*m_lightPosBuffer);
 
   return isSuccessful;
+}
+
+bool
+appGraphics::initShaders()
+{
+  bool isSuccessful = m_shaderNameTracker->init("GraphcisFramework",
+                                                "GraphcisFramework");
+
+  if( !isSuccessful )
+    return false;
+
+  static std::vector<std::string> shaderDefines =
+  {
+    {" "},
+    {"#define VERT_LIGHT "},
+    {"#define PIXEL_LIGHT "},
+  };
+
+
+  isSuccessful = m_renderManager->m_multiShader->createEveryShaderVersion(*m_shaderNameTracker,
+                                                                          shaderDefines);
+
+  if( !isSuccessful )
+    return false;
+
+  enDevice& device = enDevice::getInstance();
+  isSuccessful = device.CreateMultiShader(*m_renderManager->getMultiShaderPtr());
+
+  return isSuccessful;
+}
+
+bool
+appGraphics::initInputLayout()
+{
+  auto& vertexShader = m_renderManager->m_multiShader->getVertexShaderRef(0);
+  bool isSuccessful = m_inputLayout->ReadShaderData(vertexShader);
+
+  if( !isSuccessful )
+    return false;
+
+  enDevice& device = enDevice::getInstance();
+  isSuccessful = device.CreateInputLayout(*m_inputLayout, vertexShader);
+
+  if( !isSuccessful )
+    return false;
+
+  enDeviceContext& deviceContext = enDeviceContext::getInstance();
+
+  deviceContext.IASetInputLayout(*m_inputLayout);
+
+  return true;
 }
 
 HRESULT
@@ -366,16 +434,16 @@ appGraphics::initForRender()
     return S_FALSE;
   }
 
-  sTextureDescriptor descriptoDepth;
-  descriptoDepth.texWidth = windowSize.x;
-  descriptoDepth.texHeight = windowSize.y;
-  descriptoDepth.CpuAccess = 0;
-  descriptoDepth.texFormat = static_cast<int>(enFormats::depthStencil_format);
-  descriptoDepth.Usage = enBufferUse::Default;
-  descriptoDepth.BindFlags = enBufferBind::DepthStencil;
-  descriptoDepth.arraySize = 1;
+  sTextureDescriptor descDepthTex;
+  descDepthTex.texWidth = windowSize.x;
+  descDepthTex.texHeight = windowSize.y;
+  descDepthTex.CpuAccess = 0;
+  descDepthTex.texFormat = static_cast< int >(enFormats::depthStencil_format);
+  descDepthTex.Usage = enBufferUse::Default;
+  descDepthTex.BindFlags = enBufferBind::DepthStencil;
+  descDepthTex.arraySize = 1;
 
-  isSuccessful = device.CreateTexture2D(descriptoDepth, m_depthStencilView->m_texture);
+  isSuccessful = device.CreateTexture2D(descDepthTex, m_depthStencilView->m_texture);
   if( !isSuccessful )
   {
     EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
@@ -383,7 +451,7 @@ appGraphics::initForRender()
   }
 
   sDepthStencilDescriptor DepthStencilDesc;
-  DepthStencilDesc.Format = descriptoDepth.texFormat;
+  DepthStencilDesc.Format = descDepthTex.texFormat;
   DepthStencilDesc.Dimension = DepthStencilFormat::two_dimention;
   DepthStencilDesc.Mip = 0;
 
@@ -401,97 +469,78 @@ appGraphics::initForRender()
                                    //deviceContext.OMSetRenderTargets()
 
   sViewportDesc viewDescriptor;
-  viewDescriptor.width = static_cast<float>(windowSize.x);
-  viewDescriptor.height = static_cast<float>(windowSize.y);
+  viewDescriptor.width = static_cast< float >(windowSize.x);
+  viewDescriptor.height = static_cast< float >(windowSize.y);
   viewDescriptor.maxDepth = 1.0f;
 
   m_viewport->init(viewDescriptor);
 
   deviceContext.RSSetViewports(m_viewport.get());
 
-#if DIRECTX
-  constexpr const char* vertexShaderPath = "GraphcisFramework.fx";
-#elif OPENGL
-  constexpr const char* vertexShaderPath = "GraphcisFramework.vert";
-#endif // DIRECTX
+  //{
+  //  enErrorCode const vertexShaderCode =
+  //    m_vertexShader->compileShaderFromFile(m_shaderNameTracker->getVertexShaderName(),
+  //                                          "VS",
+  //                                          "vs_4_0");
 
-  {
-    enErrorCode const vertexShaderCode = 
-      m_vertexShader->compileShaderFromFile(vertexShaderPath,
-                                            "VS",
-                                            "vs_4_0");
+  //  if( !EN_SUCCESS(vertexShaderCode) )
+  //  {
+  //    EN_LOG_ERROR_WITH_CODE(vertexShaderCode);
+  //    MessageBox(NULL,
+  //               L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.",
+  //               L"Error",
+  //               MB_OK);
+  //    return S_FALSE;
+  //  }
+  //}
 
-    if( !EN_SUCCESS(vertexShaderCode) )
-    {
-      EN_LOG_ERROR_WITH_CODE(vertexShaderCode);
-      MessageBox(NULL,
-                 L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.",
-                 L"Error",
-                 MB_OK);
-      return S_FALSE;
-    }
-  }
-
-  // Create the vertex shader
-  isSuccessful = device.CreateVertexShader(*m_vertexShader);
-  if( !isSuccessful )
-  {
-    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
-    return S_FALSE;
-  }
-
-  m_inputLayout->ReadShaderData(*m_vertexShader);
+  //// Create the vertex shader
+  //isSuccessful = device.CreateVertexShader(*m_vertexShader);
+  //if( !isSuccessful )
+  //{
+  //  EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
+  //  return S_FALSE;
+  //}
+  //m_inputLayout->ReadShaderData(*m_vertexShader);
 
 
-  isSuccessful = device.CreateInputLayout(*m_inputLayout,
-                                          *m_vertexShader);
+  //isSuccessful = device.CreateInputLayout(*m_inputLayout,
+  //                                        *m_vertexShader);
 
-  if( !isSuccessful )
-  {
-    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
-    return S_FALSE;
-  }
+  //if( !isSuccessful )
+  //{
+  //  EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
+  //  return S_FALSE;
+  //}
 
-  // Set the input layout
-  deviceContext.IASetInputLayout(*m_inputLayout);
-#if DIRECTX
-  constexpr const char* pixelShaderPath = "GraphcisFramework.fx";
-#elif OPENGL
-  constexpr const char* pixelShaderPath = "GraphcisFramework.frag";
-#endif // DIRECTX
+  //// Set the input layout
+  //deviceContext.IASetInputLayout(*m_inputLayout);
 
- enErrorCode const pixelShaderCode = 
-   m_pixelShader->compileShaderFromFile(pixelShaderPath,
-                                        "PS",
-                                        "ps_4_0");
+  //enErrorCode const pixelShaderCode =
+  //  m_pixelShader->compileShaderFromFile(m_shaderNameTracker->getPixelShaderName(),
+  //                                       "PS",
+  //                                       "ps_4_0");
 
-  if( EN_FAIL(pixelShaderCode) )
-  {
-    MessageBox(NULL,
-               L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.",
-               L"Error",
-               MB_OK);
+  //if( EN_FAIL(pixelShaderCode) )
+  //{
+  //  MessageBox(NULL,
+  //             L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.",
+  //             L"Error",
+  //             MB_OK);
 
-    return S_FALSE;
-  }
+  //  return S_FALSE;
+  //}
 
-  // Create the pixel shader
-  isSuccessful = device.CreatePixelShader(*m_pixelShader);
+  //// Create the pixel shader
+  // isSuccessful = device.CreatePixelShader(*m_pixelShader);
 
-  if( !isSuccessful )
+  if( !(m_model->LoadModelFromFile("ryuko.fbx")) )
   {
     EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
     return S_FALSE;
   }
 
-
-  if( m_model->LoadModelFromFile("ryuko.fbx") == false )
-  {
-    EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
-    return S_FALSE;
-  }
-
-  deviceContext.IASetPrimitiveTopology(static_cast<int>(enTopology::TriList));
+  deviceContext.IASetPrimitiveTopology(static_cast< int >(enTopology::TriList));
 
 
   isSuccessful = this->createConstBuffers();
@@ -514,16 +563,16 @@ appGraphics::initForRender()
     return S_FALSE;
   }
 
-  enMultiViewType renderAndShaderView = (enMultiViewType::renderTarget | 
+  enMultiViewType renderAndShaderView = (enMultiViewType::renderTarget |
                                          enMultiViewType::shaderResource);
- 
-  
+
+
   isSuccessful =
-  m_renderTargetAndShaderResource->CreateAll(windowSize.x,
-                                             windowSize.y,
-                                             enFormats::fR16G16B16A16,
-                                             enBufferUse::Default,
-                                             renderAndShaderView);
+    m_renderTargetAndShaderResource->CreateAll(windowSize.x,
+                                               windowSize.y,
+                                               enFormats::fR16G16B16A16,
+                                               enBufferUse::Default,
+                                               renderAndShaderView);
 
   if( !isSuccessful )
   {
@@ -534,11 +583,11 @@ appGraphics::initForRender()
 
   {
     sSamplerDesc samplerDescriptor;
-    samplerDescriptor.filter = static_cast<uint32_t>(enFilter::MinMagMip_Linear);
-    samplerDescriptor.addressU = static_cast<uint32_t>(enAddress::Wrap);
-    samplerDescriptor.addressV = static_cast<uint32_t>(enAddress::Wrap);
-    samplerDescriptor.addressW = static_cast<uint32_t>(enAddress::Wrap);
-    samplerDescriptor.comparingFunc = static_cast<int>(enComparison::Never);
+    samplerDescriptor.filter = static_cast< uint32_t >(enFilter::MinMagMip_Linear);
+    samplerDescriptor.addressU = static_cast< uint32_t >(enAddress::Wrap);
+    samplerDescriptor.addressV = static_cast< uint32_t >(enAddress::Wrap);
+    samplerDescriptor.addressW = static_cast< uint32_t >(enAddress::Wrap);
+    samplerDescriptor.comparingFunc = static_cast< int >(enComparison::Never);
     samplerDescriptor.minLod = 0.0f;
     samplerDescriptor.maxLod = std::numeric_limits<float>::max();
     samplerDescriptor.AnisotropicLevel = 1u;
@@ -618,7 +667,7 @@ appGraphics::InitWindow(HINSTANCE hInstance)
                                            600,
                                            " Graphics window ");
   s_pointerToClassInstance = this;
-  
+
 
   if( isSuccessful )
   {
@@ -631,11 +680,14 @@ appGraphics::InitWindow(HINSTANCE hInstance)
 
 }
 
-void 
+void
 appGraphics::setShaderAndBuffers()
 {
   enDeviceContext& deviceContext = enDeviceContext::getInstance();
-  deviceContext.VSSetShader(*m_vertexShader);
+  //deviceContext.VSSetShader(*m_vertexShader);
+
+  m_renderManager->setSelectedShader();
+
   deviceContext.VSSetConstantBuffer(*s_ViewMatrixBuffer, s_ViewMatrixBuffer->getIndex());
 
   deviceContext.VSSetConstantBuffer(*s_ProjectionMatrixBuffer,
@@ -645,7 +697,7 @@ appGraphics::setShaderAndBuffers()
                                     m_worldMatrix->getIndex());
 
 
-  deviceContext.PSSetShader(*m_pixelShader);
+//  deviceContext.PSSetShader(*m_pixelShader);
 
   deviceContext.PSSetConstantBuffers(*m_worldMatrix, m_worldMatrix->getIndex());
 
@@ -655,7 +707,7 @@ appGraphics::setShaderAndBuffers()
   deviceContext.PSSetSampler(*m_sampler);
 }
 
-void 
+void
 appGraphics::clearDepthStencilAndRenderTarget(size_t renderTargetIndex)
 {
   enRenderTargetView* ptr_renderTarget = nullptr;
@@ -663,11 +715,12 @@ appGraphics::clearDepthStencilAndRenderTarget(size_t renderTargetIndex)
   {
     ptr_renderTarget = m_renderTargetView.get();
   }
-  else if(renderTargetIndex == 1  ){
+  else if( renderTargetIndex == 1 )
+  {
     ptr_renderTarget = &m_renderTargetAndShaderResource->m_renderView;
   }
 
-  assert(ptr_renderTarget != nullptr && "error with clearing render-target");
+  assert(ptr_renderTarget != nullptr && "error pointer is nullptr.");
 
   enDeviceContext& deviceContext = enDeviceContext::getInstance();
 
@@ -676,7 +729,7 @@ appGraphics::clearDepthStencilAndRenderTarget(size_t renderTargetIndex)
   deviceContext.ClearDepthStencilView(*m_depthStencilView);
 }
 
-void 
+void
 appGraphics::drawWithSelectedRenderTarget(size_t renderTargetIndex)
 {
   enRenderTargetView* ptr_renderTarget = nullptr;
@@ -684,7 +737,8 @@ appGraphics::drawWithSelectedRenderTarget(size_t renderTargetIndex)
   {
     ptr_renderTarget = m_renderTargetView.get();
   }
-  else if(renderTargetIndex == 1  ){
+  else if( renderTargetIndex == 1 )
+  {
     ptr_renderTarget = &m_renderTargetAndShaderResource->m_renderView;
   }
 
@@ -693,12 +747,12 @@ appGraphics::drawWithSelectedRenderTarget(size_t renderTargetIndex)
   enDeviceContext& deviceContext = enDeviceContext::getInstance();
 
   deviceContext.OMSetRenderTargets(ptr_renderTarget, m_depthStencilView.get());
-  
+
   m_model->DrawMeshes(m_ConstBufferContainer);
 
 }
 
-void 
+void
 appGraphics::switchCamera()
 {
   BasePerspectiveCamera* ptr_camera = nullptr;
@@ -751,7 +805,6 @@ appGraphics::Render()
   // Clear the back buffer
   //
   //float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; // red, green, blue, alpha
-  static sColorf ClearColor{ 0.40f,0.50f,1.00f,1.0f };
 
 
   // Set the input layout
@@ -801,17 +854,21 @@ appGraphics::Render()
 
   deviceContext.UpdateSubresource(m_worldMatrix.get(), &cb);
 
-
   deviceContext.UpdateSubresource(m_lightDirsBuffer.get(), &m_lightDirData);
 
   s_gui->beginFrame("camera view");
   s_gui->addImage(*m_resourceView);
   s_gui->addButton("switch Cam", s_useFreeCam);
   s_gui->beginChild("Light direction");
-    
-  s_gui->addSliderFloat("X Axis",m_lightDirData.m_lambertDir.x);
-  s_gui->addSliderFloat("Y Axis",m_lightDirData.m_lambertDir.y);
-  s_gui->addSliderFloat("Z Axis",m_lightDirData.m_lambertDir.z);
+
+  s_gui->addSliderFloat("X Axis", m_lightDirData.m_lambertDir.x);
+  s_gui->addSliderFloat("Y Axis", m_lightDirData.m_lambertDir.y);
+  s_gui->addSliderFloat("Z Axis", m_lightDirData.m_lambertDir.z);
+
+  s_gui->addSliderInt("ShaderIndex",
+                      m_renderManager->m_selectedShader,
+                      0,
+                      m_renderManager->getShaderCount() - 1);
 
 
   s_gui->endAllChildren();
@@ -875,18 +932,18 @@ appGraphics::handleWindProc(HWND hWnd,
   switch( message )
   {
     case WM_PAINT:
-      hdc = BeginPaint(hWnd, &ps);
-      EndPaint(hWnd, &ps);
-      break;
+    hdc = BeginPaint(hWnd, &ps);
+    EndPaint(hWnd, &ps);
+    break;
 
     case WM_DESTROY:
-      PostQuitMessage(0);
-      break;
+    PostQuitMessage(0);
+    break;
 
     case WM_KEYDOWN:
     {
 
-      if( (WPARAM)'1' == wParam )
+      if( ( WPARAM )'1' == wParam )
       {
         if( s_useFreeCam )
         {
@@ -921,17 +978,17 @@ appGraphics::handleWindProc(HWND hWnd,
         s_CameraManager->translateRelative(enVector3(0.0f, 1.0f, 0.0f), s_useFreeCam);
       }
 
-      if( wParam == static_cast<WPARAM>('Q') )
+      if( wParam == static_cast< WPARAM >('Q') )
       {
         s_CameraManager->translateRelative(enVector3(0.0f, -1.0f, 0.0f), s_useFreeCam);
       }
 
-      if( wParam == static_cast<WPARAM>('I') )
+      if( wParam == static_cast< WPARAM >('I') )
       {
         s_CameraManager->rotateInRoll(10.0f, s_useFreeCam);
       }
 
-      if( wParam == static_cast<WPARAM>('O') )
+      if( wParam == static_cast< WPARAM >('O') )
       {
         s_CameraManager->rotateInRoll(-10.0f, s_useFreeCam);
       }
@@ -990,7 +1047,7 @@ appGraphics::handleWindProc(HWND hWnd,
     break;
 
     default:
-      return DefWindowProc(hWnd, message, wParam, lParam);
+    return DefWindowProc(hWnd, message, wParam, lParam);
   }
 
   return 0;
@@ -1019,8 +1076,8 @@ appGraphics::WndProcRedirect(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
 #if OPENGL
 
-void 
-appGraphics::SetCallBackFunctions(enWindow & window)
+void
+appGraphics::SetCallBackFunctions(enWindow& window)
 {
   glfwSetInputMode(window.getHandle(), GLFW_STICKY_KEYS, GLFW_TRUE);
   glfwSetCursorPosCallback(window.getHandle(), GLMoveMouse);
@@ -1030,7 +1087,7 @@ appGraphics::SetCallBackFunctions(enWindow & window)
   glfwSetKeyCallback(window.getHandle(), GLKeyInput);
 }
 
-void 
+void
 appGraphics::GLMoveMouse(GLFWwindow* window,
                          double xPos,
                          double yPos)
@@ -1053,11 +1110,11 @@ appGraphics::GLMoveMouse(GLFWwindow* window,
 
     mouseDir.x = -mouseDir.x;
 
-    s_CameraManager->rotateVector(mouseDir,s_useFreeCam);
+    s_CameraManager->rotateVector(mouseDir, s_useFreeCam);
 
     enDeviceContext& deviceContext = enDeviceContext::getInstance();
 
-    BasePerspectiveCamera const * const cameraPtr = s_CameraManager->getLastSelectedCam();
+    BasePerspectiveCamera const* const cameraPtr = s_CameraManager->getLastSelectedCam();
 
     viewMatrix cbNeverChanges;
     cbNeverChanges.mView = cameraPtr->getView();
@@ -1073,7 +1130,7 @@ appGraphics::GLMoveMouse(GLFWwindow* window,
 
 }
 
-void 
+void
 appGraphics::GLCloseWindow(GLFWwindow* window)
 {
   s_run = false;
@@ -1092,7 +1149,8 @@ appGraphics::GLKeyInput(GLFWwindow* window,
   {
     s_CameraManager->getFreeCamera();
   }
-  else{
+  else
+  {
     s_CameraManager->getFirstPersonCamera();
   }
 
@@ -1148,7 +1206,7 @@ appGraphics::GLKeyInput(GLFWwindow* window,
   deviceContext.UpdateSubresource(s_ProjectionMatrixBuffer, &cbChangesOnResize);
 }
 
-void 
+void
 appGraphics::GLWindowMove(GLFWwindow* window, int xPos, int yPos)
 {
 

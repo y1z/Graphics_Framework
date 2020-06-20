@@ -2,11 +2,11 @@
 #include <type_traits>
 #include <array>
 
-  /**
-  * @brief : contains an index, and if that index is being used.
-  * @tpara IndexType : the integer type of the index.
-  * @bug : no known bugs.
-  */
+/**
+* @brief : contains an index, and if that index is being used.
+* @tpara IndexType : the integer type of the index.
+* @bug : no known bugs.
+*/
 template <class IndexType, std::enable_if_t<std::is_integral_v<IndexType>, int> = 0 >
 struct sIndexData 
 {
@@ -14,12 +14,12 @@ struct sIndexData
   bool m_isUsed = false;
 };
 
-  /**
-  * @brief : defines a range of indexes that go's from 0..n-1 and if they are being used.
-  * @tparam integralType : defines the type of the index.
-  * @tparam sizeOfRange : how big is the range.
-  * @bug : no known bugs.
-  */
+/**
+* @brief : defines a range of indexes that go's from 0..n-1 and if they are being used.
+* @tparam integralType : defines the type of the index.
+* @tparam sizeOfRange : how big is the range.
+* @bug : no known bugs.
+*/
 template<class integralType,
   size_t sizeOfRange,
   std::enable_if_t<std::is_integral_v<integralType>
@@ -38,6 +38,15 @@ public:
     {
       index.m_index = currentIndex;
       currentIndex++;
+    }
+
+  }
+
+  explicit enRangeIndexTracker(const integralType& defaultValue)
+  {
+    for( auto& index : m_indexes )
+    {
+      index.m_index = defaultValue;
     }
 
   }

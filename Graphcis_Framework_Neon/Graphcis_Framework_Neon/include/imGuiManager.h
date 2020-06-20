@@ -87,6 +87,16 @@ public:
                  float lowerRange = -1.0f,
                  float upperRange = 1.0f);
 
+  /**
+  * @brief Creates a slider controlled by a 4 byte integer.
+  * @bug no known bugs.
+  */
+  void
+  addSliderInt(std::string_view NameOfValue,
+                int32& Value,
+                int32 lowerRange = 0,
+                int32 upperRange = std::numeric_limits<int32>::max());
+
   //! adds 2 buttons used to represent a counter
   void 
   addCounter(int32_t &CounterValue,
