@@ -60,8 +60,7 @@ public:
   * @bug :
   */
   void
-  DrawMeshes(std::vector<enConstBuffer*>& buffers,
-             const sColorf& color = { 0.5f,0.5f,0.5f,1.0f });
+  DrawMeshes( const sColorf& color = { 0.5f,0.5f,0.5f,1.0f });
 
 public:
   std::string m_pathToModelFile;

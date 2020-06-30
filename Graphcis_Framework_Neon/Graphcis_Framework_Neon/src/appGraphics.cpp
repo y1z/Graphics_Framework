@@ -341,7 +341,8 @@ appGraphics::createConstBuffers()
 
   m_lightDirsBuffer->init(LightDirDescriptor);
 
-
+  isSuccessful = device.CreateConstBuffer(*m_lightDirsBuffer);
+#if OPENGL
   sBufferDesc LightPosDescriptor;
   LightDirDescriptor.elementCount = 1;
   LightDirDescriptor.stride = sizeof(sLightPos);
@@ -349,8 +350,11 @@ appGraphics::createConstBuffers()
   LightDirDescriptor.usage = enBufferUse::Default;
   LightDirDescriptor.index = 4;
 
+  m_lightPosBuffer->init(LightPosDescriptor);
   isSuccessful = device.CreateConstBuffer(*m_lightPosBuffer);
 
+
+#endif // OPENGL
   return isSuccessful;
 }
 
@@ -663,8 +667,8 @@ appGraphics::InitWindow(HINSTANCE hInstance)
 
   bool const isSuccessful = m_window->init(WndProcRedirect,
                                            hInstance,
-                                           800,
-                                           600,
+                                           1600,
+                                           1600,
                                            " Graphics window ");
   s_pointerToClassInstance = this;
 
@@ -748,7 +752,7 @@ appGraphics::drawWithSelectedRenderTarget(size_t renderTargetIndex)
 
   deviceContext.OMSetRenderTargets(ptr_renderTarget, m_depthStencilView.get());
 
-  m_model->DrawMeshes(m_ConstBufferContainer);
+  m_model->DrawMeshes();
 
 }
 

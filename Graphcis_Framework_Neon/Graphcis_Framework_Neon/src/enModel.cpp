@@ -1,5 +1,4 @@
-#include "..\include\enModel.h"
-
+#include "enModel.h"
 
 #include "assimp/cimport.h"
 #include "assimp/Importer.hpp"
@@ -151,11 +150,8 @@ enModel::ExtractMesh(const aiMesh* assimpMesh,
   m_meshes.emplace_back(std::move(result));
 }
 
-
-
-void
-enModel::DrawMeshes(std::vector<enConstBuffer*>& buffers,
-                    const sColorf& color)
+void 
+enModel::DrawMeshes(const sColorf& color)
 {
   enDeviceContext& deviceContext = enDeviceContext::getInstance();
 
@@ -181,8 +177,5 @@ enModel::DrawMeshes(std::vector<enConstBuffer*>& buffers,
   helper::arrangeForApi(temp);
   Cb.mWorld = temp;
   Cb.vMeshColor = resultingColor;
-  //deviceContext.UpdateSubresource(buffers[0], &Cb);
-
 }
-
 

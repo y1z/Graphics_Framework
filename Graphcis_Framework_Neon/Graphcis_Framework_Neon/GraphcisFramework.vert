@@ -34,7 +34,7 @@ uniform mat4x4 u_world;
 uniform vec4 u_meshColor;
 
 uniform vec3 u_lambertLightDir;
-uniform vec3 m_lightPosition;
+uniform vec3 u_lightPosition;
 
 /** OUT VARIABLES */
 out vec2 outTexcoords;

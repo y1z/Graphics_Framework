@@ -31,6 +31,11 @@ cbuffer cbLightDir : register ( b3 )
     float3 g_lambertDir;
 };
 
+cbuffer cbLightDir : register ( b4 )
+{
+    float3 g_lamberPos;
+};
+
 
 //--------------------------------------------------------------------------------------
 struct VS_INPUT
@@ -53,9 +58,11 @@ struct PS_INPUT
 //--------------------------------------------------------------------------------------
 PS_INPUT VS( VS_INPUT input )
 {
+    // input.Pos;
+    float3 temp = g_lamberPos;
     PS_INPUT output = (PS_INPUT)0;
     input.Pos.w = 1.0f;
-    output.Pos = mul( input.Pos, World );
+    output.Pos = mul(input.Pos , World );
     output.Pos = mul( output.Pos, View );
     output.Pos = mul( output.Pos, Projection );
     output.Tex = input.Tex;
