@@ -8,13 +8,6 @@
 enRangeIndexTracker<uint32, enMultiShader::s_max >
 enMultiShader::s_trackedPrograms;
 
-
-enMultiShader&
-enMultiShader::operator=(enMultiShader&& other) noexcept
-{
-  return *this = enMultiShader(std::move(other));
-}
-
 bool
 enMultiShader::createEveryShaderVersion(enShaderPathTracker const& shaderTracker,
                                         std::vector<std::string > const& definesForEachShader)

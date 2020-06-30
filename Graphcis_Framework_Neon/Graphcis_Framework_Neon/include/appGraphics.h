@@ -6,10 +6,8 @@
 #include "enPixelShader.h"
 
 #include "enVertexShader.h"
-#include "enVertexBuffer.h"
 
 #include "enConstBuffer.h"
-#include "enIndexBuffer.h"
 #include "enRenderTargetView.h"
 
 #include "enViewport.h"
@@ -26,7 +24,6 @@
 
 #include <filesystem>
 #include <memory>
-#include <string_view>
   /**
   *  Forward declarations
   */

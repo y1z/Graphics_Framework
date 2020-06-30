@@ -40,8 +40,7 @@ private:
   */
   void
   TraversTree(const aiScene* scene,
-              aiNode* node,
-              enDevice& device);
+              aiNode* node);
 
   /**
   * @brief : Read the geometry data from the mesh.
@@ -49,7 +48,6 @@ private:
   */
   void
   ExtractMesh(const aiMesh* assimpMesh,
-              enDevice& device,
               const aiScene* scene);
 
 

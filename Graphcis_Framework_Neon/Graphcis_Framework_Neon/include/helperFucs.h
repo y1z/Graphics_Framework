@@ -311,7 +311,7 @@ namespace helper
   * that the variable should contain.
   * @bug : no known bug.
   */
-  EN_NODISCARD static void
+  static void
   GlUpdateUniform(sUniformDetails& details)
   {
     if( details.ptr_data == nullptr )

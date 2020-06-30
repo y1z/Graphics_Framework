@@ -252,7 +252,7 @@ enDeviceContext::UpdateSubresource(enBaseBuffer* Buffer,
 
   if( ptr_buffer )
   {
-    if( ptr_buffer->getIndex() == 0 )
+    if( 0 == ptr_buffer->getIndex() )
     {
       viewMatrix const* ptr_viewMatrix = reinterpret_cast<viewMatrix const*>(originOfData);
       for( sUniformDetails& uni : ptr_buffer->m_containedVariables )
@@ -266,7 +266,7 @@ enDeviceContext::UpdateSubresource(enBaseBuffer* Buffer,
       }
     }
 
-    else if( ptr_buffer->getIndex() == 1 )
+    else if( 1 == ptr_buffer->getIndex() )
     {
       projectionMatrix const* ptr_projectionMatrix = reinterpret_cast<projectionMatrix const*>(originOfData);
 
@@ -281,7 +281,7 @@ enDeviceContext::UpdateSubresource(enBaseBuffer* Buffer,
       }
     }
 
-    else if( ptr_buffer->getIndex() == 2 )
+    else if( 2 == ptr_buffer->getIndex() )
     {
       // TODO : update when using a different struct
       ConstBufferWorldColor const * worldMatrix =
@@ -333,8 +333,6 @@ enDeviceContext::UpdateSubresource(enBaseBuffer* Buffer,
         }
       }
     }
-    
-
   }
 
 
@@ -479,7 +477,7 @@ enDeviceContext::PSSetSingleShaderResource(enShaderResourceView& shaderResource)
     glBindTexture(GL_TEXTURE_2D, shaderResource.m_interface);
   }
 
-  (!GlCheckForError());
+  assert(!GlCheckForError());
 #endif // DIRECTX
 }
 
@@ -700,7 +698,8 @@ enDeviceContext::DrawIndexed(uint32_t indexCount)
   {
     assert(true == false && " Error when drawing ");
   }
- // UN-BIND FROM THE VERTEX BUFFER 
+ 
+  // UN-BIND FROM THE VERTEX BUFFER 
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   // draw the indices 

@@ -128,15 +128,20 @@ private:
   enVertexBuffer* mptr_vertexBuffer = nullptr;
 
   enIndexBuffer* mptr_indexBuffer= nullptr;
+
   //! this is so a mesh can share a texture with a another mesh 
   std::shared_ptr<enTexture2D> mptr_texture;
+
   /*! this contains the values that consist of the vertex data */
   std::unique_ptr<std::vector< ActiveVertex_t>> m_vertexDataContainer;
+
   /*! this contains the values that represent the indices */
   std::unique_ptr<std::vector<uint16>> m_indexDataContainer;
+
+
 public:
   //! controls which topology it used be each mesh.
   enTopology m_topology;
-  glm::mat4 m_transform;
+  enMatrix4x4 m_transform;
 };
 

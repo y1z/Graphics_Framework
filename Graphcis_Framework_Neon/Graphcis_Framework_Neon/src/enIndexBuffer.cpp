@@ -1,4 +1,4 @@
-#include "../include/enIndexBuffer.h"
+#include "enIndexBuffer.h"
 
 void
 enIndexBuffer::init(uint32 singleElementSize,

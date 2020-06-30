@@ -1,4 +1,4 @@
-#include "..\include\enMesh.h"
+#include "enMesh.h"
 #include "enDevice.h"
 #include "enDeviceContext.h"
 
@@ -54,8 +54,8 @@ void
 enMesh::initIndexBuffer(std::unique_ptr<std::vector<uint16>>&& indexes)
 {
   m_indexDataContainer = std::move(indexes);
-
-  mptr_indexBuffer->init(sizeof(uint16),
+  auto container = *m_indexDataContainer;
+  mptr_indexBuffer->init(sizeof(container[0]),
                          m_indexDataContainer->size(),
                          0,
                          m_indexDataContainer->data());

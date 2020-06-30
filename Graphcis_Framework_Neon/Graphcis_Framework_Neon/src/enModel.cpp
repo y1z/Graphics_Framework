@@ -1,11 +1,8 @@
-#include "..\include\enModel.h"
+#include "enModel.h"
 
-
-#include "assimp/cimport.h"
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
-#include "assimp/material.h"
 
 #include "enTypes.h"
 #include "helperFucs.h"
@@ -37,7 +34,7 @@ enModel::LoadModelFromFile(std::string_view modelPath)
   }
   else
   {
-    this->TraversTree(Scene, Scene->mRootNode, device);
+    this->TraversTree(Scene, Scene->mRootNode);
     return true;
   }
 
@@ -47,26 +44,24 @@ enModel::LoadModelFromFile(std::string_view modelPath)
 
 void
 enModel::TraversTree(const aiScene* scene,
-                     aiNode* node,
-                     enDevice& device)
+                     aiNode* node)
 {
-// extract the current mesh
+  // extract the current mesh
   for( uint32_t i = 0; i < node->mNumMeshes; ++i )
   {
     aiMesh* meshes = scene->mMeshes[node->mMeshes[i]];
-    this->ExtractMesh(meshes, device, scene);
+    this->ExtractMesh(meshes, scene);
   }
 
   // get the children in order to the rest of the meshes 
   for( uint32_t j = 0; j < node->mNumChildren; j++ )
   {
-    this->TraversTree(scene, node->mChildren[j], device);
+    this->TraversTree(scene, node->mChildren[j]);
   }
 }
 
 void
 enModel::ExtractMesh(const aiMesh* assimpMesh,
-                     enDevice& device,
                      const aiScene* scene)
 {
   std::unique_ptr<std::vector<uint16>> ptr_indices = std::make_unique<std::vector<uint16>>();
@@ -131,10 +126,11 @@ enModel::ExtractMesh(const aiMesh* assimpMesh,
     }
     else
     {
-      vertex.Tangent.x = 0;
-      vertex.Tangent.y = 0;
-      vertex.Tangent.z = 0;
+      vertex.Tangent.x = 0.f;
+      vertex.Tangent.y = 0.f;
+      vertex.Tangent.z = 0.f;
     }
+    if(assimpMesh->HasBones() )
 
     ptr_vertices->emplace_back(vertex);
 
