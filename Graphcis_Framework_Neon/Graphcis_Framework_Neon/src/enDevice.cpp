@@ -364,6 +364,36 @@ enDevice::CreateShaderResourceFromTexture(enShaderResourceView& shaderResourceVi
 
 #elif OPENGL
 // TODO : Create a shader Resource From a Texture.
+  shaderResourceView.autoInit();
+
+  glGenTextures(1, &shaderResourceView.m_interface);
+
+  glBindTexture(GL_TEXTURE_2D, shaderResourceView.m_interface);
+
+
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+
+  glTexImage2D(GL_TEXTURE_2D,
+               0,
+               GL_RGBA,
+               static_cast< GLint >(texture.m_desc.texWidth),
+               static_cast< GLint >(texture.m_desc.texHeight),
+               0,
+               GL_RGBA,
+               GL_UNSIGNED_BYTE,
+               NULL);
+
+
+  glBindTexture(GL_TEXTURE_2D, 0);
+
+
+  return !GlCheckForError();
 #endif // DIRECTX
   return true;
 }

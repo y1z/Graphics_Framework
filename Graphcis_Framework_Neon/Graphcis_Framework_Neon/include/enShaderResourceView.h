@@ -1,8 +1,5 @@
 #pragma once
 #include "util/Header.h"
-#include <string>
-#include <deque>
-#include <array>
 #include "util/enRangeIndexTracker.h"
 
   /**
@@ -42,6 +39,16 @@ public:
   */
   int32
   getIndex()const;
+
+#if DIRECTX
+
+  ID3D11ShaderResourceView*
+  getInterface();
+#elif OPENGL
+  uint32&
+  getInterface();
+#endif // DIRECTX
+
 
 private:
   /**

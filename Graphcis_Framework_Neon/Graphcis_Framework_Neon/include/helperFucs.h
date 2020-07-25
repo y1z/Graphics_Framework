@@ -64,6 +64,16 @@ namespace helper
 
     std::size_t checkForError = std::mbstowcs(Result.data(), String.data(), String.length());
 
+    /// TODO : Test commented code.
+
+    //std::size_t conversionResult;
+    //mbstowcs_s(&conversionResult,
+    //Result.data(),
+    //(Result.length() * sizeof(char)) / sizeof(WORD),
+    //String.data(),
+    //Result.size());
+    //
+
     assert(checkForError != static_cast<std::size_t>(-1) && "invalid string conversion");
 
     return Result;
@@ -345,14 +355,13 @@ namespace helper
       break;
 
       case enConstBufferElem::vec4:
-
       {
         glUniform4fv(details.id,
                      1,
                      static_cast< const  GLfloat* > (details.ptr_data));
       }
       break;
-      
+
       case enConstBufferElem::vec3:
       {
         glUniform3fv(details.id,
@@ -377,20 +386,35 @@ namespace helper
       }
       break;
 
-      case enConstBufferElem::imat4x4:
-      break;
-
-      case enConstBufferElem::imat3x3:
-      break;
-
       case enConstBufferElem::ivec4:
+      {
+        glUniform4iv(details.id,
+                     1,
+                     static_cast< const GLint* >(details.ptr_data));
+      }
       break;
 
       case enConstBufferElem::ivec3:
+      {
+        glUniform3iv(details.id,
+                     1,
+                     static_cast< const GLint* >(details.ptr_data));
+      }
       break;
       case enConstBufferElem::ivec2:
+      {
+        glUniform2iv(details.id,
+                     1,
+                     static_cast< const GLint* >(details.ptr_data));
+      }
       break;
       case enConstBufferElem::single_int:
+      {
+        glUniform1iv(details.id,
+                     1,
+                     static_cast< const GLint* >(details.ptr_data));
+
+      }
       break;
       default:
       assert(details.element != enConstBufferElem::NONE && "element in the buffer has no type");

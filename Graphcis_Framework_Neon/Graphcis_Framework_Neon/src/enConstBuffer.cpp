@@ -1,5 +1,4 @@
 #include "enConstBuffer.h"
-#include "..\include\enConstBuffer.h"
 
 enConstBuffer::enConstBuffer()
 :enBaseBuffer()

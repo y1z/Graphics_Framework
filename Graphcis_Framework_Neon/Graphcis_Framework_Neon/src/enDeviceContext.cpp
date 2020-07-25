@@ -470,11 +470,15 @@ enDeviceContext::PSSetSingleShaderResource(enShaderResourceView& shaderResource)
   GlRemoveAllErrors();
 
 
-  if( GL_TRUE == glIsTexture(shaderResource.m_interface) )
+  if( GL_TRUE == glIsTexture(shaderResource.m_interface) &&
+     m_drawingData.currentTexture != shaderResource.m_interface )
   {
+    this->m_drawingData.currentTexture = shaderResource.m_interface;
+
     glActiveTexture(GL_TEXTURE0 + shaderResource.getIndex());
 
     glBindTexture(GL_TEXTURE_2D, shaderResource.m_interface);
+
   }
 
   assert(!GlCheckForError());

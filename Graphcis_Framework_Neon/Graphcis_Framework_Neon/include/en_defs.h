@@ -401,9 +401,6 @@ enum class enConstBufferElem :int32
 
   single_float,
   // integer types  
-  imat4x4,
-  imat3x3,
-
   ivec4,
   ivec3,
   ivec2,
@@ -513,11 +510,7 @@ namespace enError
   static bool//success
   enCheckSuccess(enErrorCode code)
   {
-    if( code == enErrorCode::NoError )
-    {
-      return true;
-    }
-    return false;
+    return code == enErrorCode::NoError;
   }
 
 
@@ -799,7 +792,7 @@ struct sSwapDesc
   * in open-Gl.(in other word remember what was last set.)
   * 
   */
-struct sDrawData
+struct sRenderInformation
 {
 #if DIRECTX
 #elif OPENGL
@@ -811,6 +804,8 @@ struct sDrawData
   uint32 currentTopology = 0u;
   /*! used for knowing how to interpret the indices of the index buffer */
   uint32 currentFormat = 0u;
+  /*! used to keep track of the set textures.*/
+  uint32 currentTexture = std::numeric_limits<uint32>::max();
 #endif // DIRECTX
 };
 

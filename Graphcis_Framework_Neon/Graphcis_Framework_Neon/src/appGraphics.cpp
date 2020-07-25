@@ -341,7 +341,9 @@ appGraphics::createConstBuffers()
 
   m_lightDirsBuffer->init(LightDirDescriptor);
 
+  isSuccessful = device.CreateConstBuffer(*m_lightDirsBuffer);
 
+#if OPENGL
   sBufferDesc LightPosDescriptor;
   LightDirDescriptor.elementCount = 1;
   LightDirDescriptor.stride = sizeof(sLightPos);
@@ -349,7 +351,10 @@ appGraphics::createConstBuffers()
   LightDirDescriptor.usage = enBufferUse::Default;
   LightDirDescriptor.index = 4;
 
+  m_lightPosBuffer->init(LightPosDescriptor);
+
   isSuccessful = device.CreateConstBuffer(*m_lightPosBuffer);
+#endif // OPENGL
 
   return isSuccessful;
 }
@@ -482,27 +487,6 @@ appGraphics::initForRender()
   //    m_vertexShader->compileShaderFromFile(m_shaderNameTracker->getVertexShaderName(),
   //                                          "VS",
   //                                          "vs_4_0");
-
-  //  if( !EN_SUCCESS(vertexShaderCode) )
-  //  {
-  //    EN_LOG_ERROR_WITH_CODE(vertexShaderCode);
-  //    MessageBox(NULL,
-  //               L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.",
-  //               L"Error",
-  //               MB_OK);
-  //    return S_FALSE;
-  //  }
-  //}
-
-  //// Create the vertex shader
-  //isSuccessful = device.CreateVertexShader(*m_vertexShader);
-  //if( !isSuccessful )
-  //{
-  //  EN_LOG_ERROR_WITH_CODE(enErrorCode::FailedCreation);
-  //  return S_FALSE;
-  //}
-  //m_inputLayout->ReadShaderData(*m_vertexShader);
-
 
   //isSuccessful = device.CreateInputLayout(*m_inputLayout,
   //                                        *m_vertexShader);
@@ -678,7 +662,7 @@ appGraphics::InitWindow(HINSTANCE hInstance)
     return S_FALSE;
   }
 
-}
+  }
 
 void
 appGraphics::setShaderAndBuffers()
@@ -703,6 +687,7 @@ appGraphics::setShaderAndBuffers()
 
   deviceContext.PSSetConstantBuffers(*m_lightDirsBuffer,
                                      m_lightDirsBuffer->getIndex());
+
   deviceContext.PSSetSingleShaderResource(*m_resourceView);
   deviceContext.PSSetSampler(*m_sampler);
 }
@@ -748,7 +733,7 @@ appGraphics::drawWithSelectedRenderTarget(size_t renderTargetIndex)
 
   deviceContext.OMSetRenderTargets(ptr_renderTarget, m_depthStencilView.get());
 
-  m_model->DrawMeshes(m_ConstBufferContainer);
+  m_model->DrawMeshes();
 
 }
 

@@ -143,19 +143,15 @@ enModel::ExtractMesh(const aiMesh* assimpMesh,
   bool const IndexSuccessful = result.createIndexBuffer();
   bool const VertexSuccessful = result.createVertexBuffer();
 
-  assert(IndexSuccessful && VertexSuccessful && "error with index or vertex buffer creation");
+  //assert(IndexSuccessful && VertexSuccessful && "error with index or vertex buffer creation");
   m_meshes.emplace_back(std::move(result));
 }
 
-
-
-void
-enModel::DrawMeshes(std::vector<enConstBuffer*>& buffers,
-                    const sColorf& color)
+void 
+enModel::DrawMeshes(const sColorf& color)
 {
   enDeviceContext& deviceContext = enDeviceContext::getInstance();
 
-  ConstBufferWorldColor Cb;
 
   const glm::mat4 identity(1.0f);//identity
   const glm::mat4 Transform(identity * this->m_transform.getMatrix());
@@ -172,13 +168,5 @@ enModel::DrawMeshes(std::vector<enConstBuffer*>& buffers,
     deviceContext.DrawIndexed(mesh.getIndicesCount());
   }
 
-  enMatrix4x4 temp;
-  temp = Transform;
-  helper::arrangeForApi(temp);
-  Cb.mWorld = temp;
-  Cb.vMeshColor = resultingColor;
-  //deviceContext.UpdateSubresource(buffers[0], &Cb);
-
 }
-
 

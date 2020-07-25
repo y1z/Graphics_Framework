@@ -4,7 +4,7 @@
 
 /**
 * @brief : contains an index, and if that index is being used.
-* @tpara IndexType : the integer type of the index.
+* @tparam IndexType : the integer type of the index.
 * @bug : no known bugs.
 */
 template <class IndexType, std::enable_if_t<std::is_integral_v<IndexType>, int> = 0 >

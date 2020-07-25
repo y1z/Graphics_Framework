@@ -63,7 +63,7 @@ public:// operators
   operator= (enMultiShader const& other) = delete;
 
   enMultiShader& 
-  operator= (enMultiShader && other) noexcept;
+  operator= (enMultiShader && other) noexcept = default;
 
 public://methods 
 

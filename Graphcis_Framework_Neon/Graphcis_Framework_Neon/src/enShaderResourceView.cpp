@@ -67,3 +67,23 @@ enShaderResourceView::getIndex() const
   return this->m_descriptor.m_index;
 }
 
+#if DIRECTX
+
+ID3D11ShaderResourceView*
+enShaderResourceView::getInterface()
+{
+  return m_interface;
+}
+
+#elif OPENGL
+
+uint32&
+enShaderResourceView::getInterface()
+{
+  return m_interface;
+}
+
+#endif // DIRECTX
+
+
+

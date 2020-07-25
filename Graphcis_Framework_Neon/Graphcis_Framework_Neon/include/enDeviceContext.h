@@ -179,7 +179,7 @@ public:
 
   #elif OPENGL 
   int32 m_interface = -1;
- sDrawData m_drawingData;
+  sRenderInformation m_drawingData;
 #endif // DIRECTX
 
 };
